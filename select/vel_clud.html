@@ -1,0 +1,2008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Siemens Veloce – Daily Reference Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-card: #1a1f2e;
+    --bg-sidebar: #111827;
+    --bg-header: #0d1220;
+    --accent: #00bedc;
+    --accent-dark: #00a3b4;
+    --accent-light: #19d4f5;
+    --success: #00c389;
+    --warning: #f5a623;
+    --danger: #e8443a;
+    --text-primary: #e8eaf0;
+    --text-muted: #8892a4;
+    --border: #2a3142;
+    --sidebar-width: 280px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  #header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--border);
+    height: 60px;
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 20px;
+  }
+  #hamburger {
+    display: none; background: none; border: none;
+    color: var(--text-primary); font-size: 22px; cursor: pointer;
+    padding: 6px; border-radius: 6px;
+  }
+  #hamburger:hover { background: var(--border); }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 15px; color: var(--accent);
+    white-space: nowrap; text-decoration: none;
+  }
+  .logo-icon { font-size: 22px; }
+  .logo-sub { color: var(--text-muted); font-weight: 400; font-size: 12px; }
+  .search-wrap {
+    flex: 1; max-width: 480px; margin: 0 auto;
+    position: relative;
+  }
+  #searchInput {
+    width: 100%; padding: 8px 40px 8px 14px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text-primary);
+    font-family: inherit; font-size: 14px; outline: none;
+    transition: border-color .2s;
+  }
+  #searchInput:focus { border-color: var(--accent); }
+  #searchInput::placeholder { color: var(--text-muted); }
+  #clearSearch {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--text-muted);
+    cursor: pointer; font-size: 16px; display: none;
+  }
+  #searchCount {
+    position: absolute; right: 34px; top: 50%; transform: translateY(-50%);
+    font-size: 11px; color: var(--accent); white-space: nowrap;
+  }
+  .header-right { display: flex; align-items: center; gap: 8px; }
+  .kbd-hint { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    position: fixed; top: 60px; left: 0; bottom: 0;
+    width: var(--sidebar-width);
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
+    overflow-y: auto; z-index: 90;
+    transition: transform .3s ease;
+    padding-bottom: 30px;
+  }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .sidebar-section { padding: 16px 0 4px; }
+  .sidebar-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
+    color: var(--text-muted); text-transform: uppercase;
+    padding: 0 18px 8px;
+  }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 18px; cursor: pointer;
+    color: var(--text-muted); font-size: 13px; font-weight: 500;
+    border-left: 3px solid transparent;
+    transition: all .15s;
+    position: relative;
+  }
+  .sidebar-item:hover { color: var(--text-primary); background: rgba(0,190,220,.06); }
+  .sidebar-item.active {
+    color: var(--accent); background: rgba(0,190,220,.1);
+    border-left-color: var(--accent);
+  }
+  .sidebar-item .visited-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--success); margin-left: auto; flex-shrink: 0;
+    opacity: 0; transition: opacity .2s;
+  }
+  .sidebar-item.visited .visited-dot { opacity: 1; }
+  .fav-badge {
+    background: var(--warning); color: #000;
+    font-size: 10px; font-weight: 700; border-radius: 10px;
+    padding: 1px 6px; margin-left: auto;
+  }
+  .sidebar-divider { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
+
+  /* ── FILTER BAR ── */
+  #filterBar {
+    position: fixed; top: 60px; left: var(--sidebar-width); right: 0;
+    z-index: 80; background: var(--bg-primary);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 28px; display: flex; gap: 8px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-btn {
+    padding: 5px 13px; border-radius: 20px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-muted);
+    font-size: 12px; font-weight: 500; cursor: pointer;
+    transition: all .15s; white-space: nowrap;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 700; }
+  .filter-btn.fav-filter.active { background: var(--warning); border-color: var(--warning); color: #000; }
+  .filter-sep { width: 1px; height: 24px; background: var(--border); }
+
+  /* ── MAIN CONTENT ── */
+  #main {
+    margin-left: var(--sidebar-width);
+    padding-top: 120px;
+    padding-bottom: 60px;
+    min-height: 100vh;
+  }
+  .chapter-view { display: none; padding: 0 28px; max-width: 980px; }
+  .chapter-view.active { display: block; }
+  .chapter-header { margin-bottom: 28px; }
+  .chapter-header h1 {
+    font-size: 26px; font-weight: 700; color: var(--text-primary);
+    border-left: 4px solid var(--accent); padding-left: 16px;
+    line-height: 1.3;
+  }
+  .chapter-header p { color: var(--text-muted); font-size: 14px; margin-top: 8px; padding-left: 20px; }
+  .section-title {
+    font-size: 13px; font-weight: 600; letter-spacing: .8px;
+    text-transform: uppercase; color: var(--text-muted);
+    margin: 32px 0 14px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 18px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 22px;
+    transition: border-color .2s, transform .15s;
+    position: relative;
+  }
+  .card:hover { border-color: var(--accent-dark); transform: translateY(-1px); }
+  .card-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+  .badge {
+    font-size: 11px; font-weight: 700; padding: 3px 10px;
+    border-radius: 20px; border: 1px solid; white-space: nowrap; flex-shrink: 0;
+  }
+  .badge-command  { background: rgba(0,190,220,.13); border-color: #00bedc; color: #00bedc; }
+  .badge-config   { background: rgba(210,168,255,.13); border-color: #d2a8ff; color: #d2a8ff; }
+  .badge-workflow { background: rgba(0,195,137,.13); border-color: #00c389; color: #00c389; }
+  .badge-warning  { background: rgba(245,166,35,.13); border-color: #f5a623; color: #f5a623; }
+  .badge-tip      { background: rgba(25,212,245,.13); border-color: #19d4f5; color: #19d4f5; }
+  .badge-concept  { background: rgba(232,68,58,.13); border-color: #e8443a; color: #e8443a; }
+  .card-title {
+    font-size: 14px; font-weight: 600; color: var(--text-primary); flex: 1;
+  }
+  .fav-btn {
+    background: none; border: none; font-size: 18px; cursor: pointer;
+    color: var(--text-muted); padding: 0 0 0 8px; flex-shrink: 0;
+    transition: color .15s; line-height: 1;
+  }
+  .fav-btn.active { color: var(--warning); }
+  .card-body { font-size: 13.5px; color: var(--text-muted); line-height: 1.75; }
+  .card-body strong { color: var(--text-primary); }
+  .card-body ul { padding-left: 18px; margin-top: 6px; }
+  .card-body li { margin-bottom: 4px; }
+  .code-block {
+    background: #0a0e1a; border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 14px; margin-top: 10px;
+    position: relative; overflow-x: auto;
+  }
+  .code-block pre {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: 12.5px; color: #a8d8ea; white-space: pre-wrap; word-break: break-all;
+    line-height: 1.6;
+  }
+  .copy-btn {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--border); border: none; border-radius: 6px;
+    color: var(--text-muted); font-size: 13px; cursor: pointer;
+    padding: 4px 9px; transition: all .15s;
+  }
+  .copy-btn:hover { background: var(--accent); color: #000; }
+  .copy-btn.copied { background: var(--success); color: #000; }
+  .collapsible-toggle {
+    background: none; border: none; color: var(--accent);
+    font-size: 12px; cursor: pointer; padding: 6px 0 0;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .collapsible-content { display: none; margin-top: 10px; }
+  .collapsible-content.open { display: block; }
+  .no-results {
+    text-align: center; padding: 60px 20px; color: var(--text-muted);
+    font-size: 15px;
+  }
+  .no-results .icon { font-size: 40px; margin-bottom: 12px; }
+
+  /* ── OVERLAY ── */
+  #overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.6); z-index: 85;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    #hamburger { display: flex; }
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #overlay.open { display: block; }
+    #filterBar { left: 0; }
+    #main { margin-left: 0; }
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    #header { padding: 0 12px; gap: 8px; }
+    .logo-sub { display: none; }
+    .kbd-hint { display: none; }
+    .chapter-view { padding: 0 14px; }
+    #filterBar { padding: 8px 14px; }
+    .copy-btn { min-width: 44px; min-height: 44px; font-size: 16px; }
+  }
+
+  /* ── SEARCH HIGHLIGHT ── */
+  mark { background: rgba(0,190,220,.3); color: var(--accent-light); border-radius: 2px; }
+
+  /* ── WELCOME ── */
+  #welcome {
+    padding: 60px 28px; max-width: 700px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  #welcome h1 { font-size: 30px; font-weight: 700; color: var(--accent); }
+  #welcome p { color: var(--text-muted); font-size: 15px; }
+  .quick-stats {
+    display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px;
+  }
+  .stat-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 22px; flex: 1; min-width: 130px;
+    text-align: center;
+  }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="header">
+  <button id="hamburger" aria-label="Toggle sidebar">☰</button>
+  <a class="logo" href="#" onclick="showWelcome()">
+    <span class="logo-icon">⚡</span>
+    <span>Veloce<span class="logo-sub"> &nbsp;Daily Reference v25.0.2</span></span>
+  </a>
+  <div class="search-wrap">
+    <input id="searchInput" type="text" placeholder='Search commands, configs, workflows… (Press "/" to focus)' autocomplete="off"/>
+    <span id="searchCount"></span>
+    <button id="clearSearch" title="Clear search">✕</button>
+  </div>
+  <div class="header-right">
+    <span class="kbd-hint">Press <kbd style="background:var(--border);padding:2px 5px;border-radius:4px;font-size:11px">/</kbd> to search</span>
+  </div>
+</header>
+
+<!-- OVERLAY -->
+<div id="overlay"></div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">⭐ Bookmarks</div>
+    <div class="sidebar-item" onclick="showFavorites()" id="favNav">
+      ⭐ My Favorites <span class="fav-badge" id="favCount" style="display:none">0</span>
+    </div>
+  </div>
+  <hr class="sidebar-divider"/>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Chapters</div>
+    <div class="sidebar-item" onclick="showChapter('ch1')" data-ch="ch1">
+      <span>1.</span> Veloce Emulation Overview
+      <span class="visited-dot"></span>
+    </div>
+    <div class="sidebar-item" onclick="showChapter('ch2')" data-ch="ch2">
+      <span>2.</span> Getting Started
+      <span class="visited-dot"></span>
+    </div>
+    <div class="sidebar-item" onclick="showChapter('ch3')" data-ch="ch3">
+      <span>3.</span> Compiling Your Design
+      <span class="visited-dot"></span>
+    </div>
+    <div class="sidebar-item" onclick="showChapter('ch4')" data-ch="ch4">
+      <span>4.</span> Running Emulation
+      <span class="visited-dot"></span>
+    </div>
+    <div class="sidebar-item" onclick="showChapter('ch5')" data-ch="ch5">
+      <span>5.</span> Debugging
+      <span class="visited-dot"></span>
+    </div>
+    <div class="sidebar-item" onclick="showChapter('ch6')" data-ch="ch6">
+      <span>6.</span> Job Distribution
+      <span class="visited-dot"></span>
+    </div>
+    <div class="sidebar-item" onclick="showChapter('ch9')" data-ch="ch9">
+      <span>9.</span> Triggers
+      <span class="visited-dot"></span>
+    </div>
+    <div class="sidebar-item" onclick="showChapter('ch10')" data-ch="ch10">
+      <span>10.</span> Memory Modeling
+      <span class="visited-dot"></span>
+    </div>
+    <div class="sidebar-item" onclick="showChapter('ch11')" data-ch="ch11">
+      <span>11.</span> Performance &amp; Optimization
+      <span class="visited-dot"></span>
+    </div>
+    <div class="sidebar-item" onclick="showChapter('ch12')" data-ch="ch12">
+      <span>12.</span> Hello World &amp; Quick Reference
+      <span class="visited-dot"></span>
+    </div>
+  </div>
+</nav>
+
+<!-- FILTER BAR -->
+<div id="filterBar">
+  <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
+  <button class="filter-btn" data-filter="command" onclick="setFilter('command',this)">⚡ Commands</button>
+  <button class="filter-btn" data-filter="config" onclick="setFilter('config',this)">⚙️ Config</button>
+  <button class="filter-btn" data-filter="workflow" onclick="setFilter('workflow',this)">🔄 Workflow</button>
+  <button class="filter-btn" data-filter="warning" onclick="setFilter('warning',this)">⚠️ Warnings</button>
+  <button class="filter-btn" data-filter="tip" onclick="setFilter('tip',this)">💡 Tips</button>
+  <button class="filter-btn" data-filter="concept" onclick="setFilter('concept',this)">📌 Key Concepts</button>
+  <div class="filter-sep"></div>
+  <button class="filter-btn fav-filter" data-filter="favorites" onclick="setFilter('favorites',this)">⭐ Favorites Only</button>
+</div>
+
+<!-- MAIN -->
+<main id="main">
+
+  <!-- WELCOME -->
+  <div id="welcome">
+    <h1>⚡ Veloce Reference Dashboard</h1>
+    <p>Your daily interactive reference for Siemens Veloce Software v25.0.2. Select a chapter from the sidebar to explore commands, configurations, workflows, and key concepts.</p>
+    <div class="quick-stats">
+      <div class="stat-card"><div class="stat-num">10</div><div class="stat-label">Chapters</div></div>
+      <div class="stat-card"><div class="stat-num">50+</div><div class="stat-label">Commands</div></div>
+      <div class="stat-card"><div class="stat-num">30+</div><div class="stat-label">Workflows</div></div>
+      <div class="stat-card"><div class="stat-num">20+</div><div class="stat-label">Tips &amp; Warnings</div></div>
+    </div>
+    <p style="font-size:13px;color:var(--text-muted)">💡 <strong style="color:var(--accent)">Tip:</strong> Press <kbd style="background:var(--border);padding:2px 6px;border-radius:4px">/</kbd> to search across all chapters. Click ⭐ on any card to bookmark it.</p>
+  </div>
+
+  <!-- FAVORITES VIEW -->
+  <div class="chapter-view" id="favView">
+    <div class="chapter-header">
+      <h1>⭐ My Favorites</h1>
+      <p>All your bookmarked cards, grouped by chapter.</p>
+    </div>
+    <div id="favContent"><div class="no-results"><div class="icon">⭐</div>No favorites yet. Click the ⭐ on any card to bookmark it.</div></div>
+  </div>
+
+  <!-- CH 1: OVERVIEW -->
+  <div class="chapter-view" id="ch1">
+    <div class="chapter-header">
+      <h1>Chapter 1 — Veloce Emulation Overview</h1>
+      <p>Hardware-assisted verification systems for SoC and embedded system designs.</p>
+    </div>
+    <div class="section-title">Key Concepts</div>
+    <div class="cards-grid">
+
+      <div class="card" data-type="concept" data-id="c1_1">
+        <div class="card-top">
+          <span class="badge badge-concept">📌 Key Concept</span>
+          <span class="card-title">What is Veloce?</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c1_1','Veloce Overview')">☆</button>
+        </div>
+        <div class="card-body">
+          Veloce emulators are <strong>hardware-assisted verification systems</strong> for SoC and embedded system designs. They provide:
+          <ul>
+            <li>Transaction-based simulation acceleration</li>
+            <li>In-Circuit Emulation (ICE)</li>
+            <li>VirtuaLab emulation</li>
+            <li>Targetless emulation</li>
+          </ul>
+          Used to accelerate concurrent hardware/software validation and embedded software validation.
+        </div>
+      </div>
+
+      <div class="card" data-type="concept" data-id="c1_2">
+        <div class="card-top">
+          <span class="badge badge-concept">📌 Key Concept</span>
+          <span class="card-title">Hardware Environments</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c1_2','Hardware Environments')">☆</button>
+        </div>
+        <div class="card-body">
+          Veloce emulators operate in two environments:
+          <ul>
+            <li><strong>Local hardware environment</strong> — compile, runtime, and comodel hosts on local machines</li>
+            <li><strong>Data center environment</strong> — compile server, distributed compute, storage servers on a network (accessible globally via NFS)</li>
+          </ul>
+          <strong>Key platforms:</strong> Veloce StratoM, Strato T, StratoCS, StratoPlus, PrimoCS
+        </div>
+      </div>
+
+      <div class="card" data-type="concept" data-id="c1_3">
+        <div class="card-top">
+          <span class="badge badge-concept">📌 Key Concept</span>
+          <span class="card-title">Use Modes</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c1_3','Use Modes')">☆</button>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li><strong>Transaction-Based Acceleration</strong> — SCE-MI standard; DPI import/export, transaction pipes, TLM FIFOs</li>
+            <li><strong>ICE (In-Circuit Emulation)</strong> — IO ports/cables for real-world stimulus; iSolve™ Solutions</li>
+            <li><strong>Target-less</strong> — no physical target device required</li>
+            <li><strong>VirtuaLAB</strong> — transistor-level virtual peripheral models; no physical connection needed</li>
+            <li><strong>Software Development</strong> — Sourcery CodeBench, Veloce Virtual Probe, Codelink, Warpcore</li>
+          </ul>
+          ⚠️ All use modes require a <strong>comodel host</strong>.
+        </div>
+      </div>
+
+      <div class="card" data-type="workflow" data-id="c1_4">
+        <div class="card-top">
+          <span class="badge badge-workflow">🔄 Workflow</span>
+          <span class="card-title">General Emulation Flow</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c1_4','General Emulation Flow')">☆</button>
+        </div>
+        <div class="card-body">
+          <strong>High-level flow (in order):</strong>
+          <ol style="padding-left:18px;margin-top:6px">
+            <li>Create libraries → <code style="color:var(--accent)">velllib</code></li>
+            <li>Map libraries → <code style="color:var(--accent)">velmap</code></li>
+            <li>Create <code style="color:var(--accent)">veloce.config</code> file</li>
+            <li>Analyze RTL files → <code style="color:var(--accent)">velanalyze</code></li>
+            <li>Compile DUT → <code style="color:var(--accent)">velcomp</code></li>
+            <li>Compile testbench → <code style="color:var(--accent)">velhvl</code> or <code style="color:var(--accent)">vlog</code></li>
+            <li>Run emulation → <code style="color:var(--accent)">velrun</code> or <code style="color:var(--accent)">vsim</code></li>
+            <li>Debug → <code style="color:var(--accent)">velview</code> / Visualizer</li>
+          </ol>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CH 2: GETTING STARTED -->
+  <div class="chapter-view" id="ch2">
+    <div class="chapter-header">
+      <h1>Chapter 2 — Getting Started</h1>
+      <p>Setting up your environment and design for emulation.</p>
+    </div>
+    <div class="section-title">Environment Setup</div>
+    <div class="cards-grid">
+
+      <div class="card" data-type="config" data-id="c2_1">
+        <div class="card-top">
+          <span class="badge badge-config">⚙️ Config</span>
+          <span class="card-title">Required Environment Variables</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c2_1','Required Env Variables')">☆</button>
+        </div>
+        <div class="card-body">
+          Add these to your <code style="color:var(--accent)">setup.csh</code> resource file:
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>setenv VELOCE_HOME &lt;install_dir&gt;/Veloce_vx.x.x
+setenv MED_EMULATOR &lt;path_to_EMULATORS_dir&gt;
+setenv LM_LICENSE_FILE &lt;path_to_license_server&gt;
+# Add to PATH:
+setenv PATH $VELOCE_HOME/bin:$PATH</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="warning" data-id="c2_2">
+        <div class="card-top">
+          <span class="badge badge-warning">⚠️ Warning</span>
+          <span class="card-title">OS Version Dependency</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c2_2','OS Version Dependency')">☆</button>
+        </div>
+        <div class="card-body">
+          Veloce runtime has a <strong>hard dependency on the exact OS version</strong> due to the PHB card driver. Only the exact 2-digit OS version is explicitly tested. Subsequent minor versions are expected to be compatible but not guaranteed.
+        </div>
+      </div>
+
+      <div class="card" data-type="warning" data-id="c2_3">
+        <div class="card-top">
+          <span class="badge badge-warning">⚠️ Warning</span>
+          <span class="card-title">TCP/IP Port Requirement</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c2_3','TCP Port Requirement')">☆</button>
+        </div>
+        <div class="card-body">
+          <strong>Ephemeral TCP/IP ports (32768–61000) must be open</strong> or Veloce will error when running emulation with either <code style="color:var(--accent)">velrun</code> or <code style="color:var(--accent)">vsim</code>.
+        </div>
+      </div>
+
+      <div class="card" data-type="warning" data-id="c2_4">
+        <div class="card-top">
+          <span class="badge badge-warning">⚠️ Warning</span>
+          <span class="card-title">NFS Requirement for Compile Database</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c2_4','NFS Requirement')">☆</button>
+        </div>
+        <div class="card-body">
+          The compile database (or any file required for emulation) <strong>cannot be kept on local disk</strong> of any specific machine. Veloce requires NFS access to the database from comodel hosts and emulator hosts.
+        </div>
+      </div>
+
+    </div>
+    <div class="section-title">Design Setup</div>
+    <div class="cards-grid">
+
+      <div class="card" data-type="workflow" data-id="c2_5">
+        <div class="card-top">
+          <span class="badge badge-workflow">🔄 Workflow</span>
+          <span class="card-title">Setting Up Your Design</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c2_5','Design Setup Workflow')">☆</button>
+        </div>
+        <div class="card-body">
+          <ol style="padding-left:18px">
+            <li>Create a design directory</li>
+            <li>Prepare HDL and HVL source files</li>
+            <li>Set up and map analysis libraries (<code style="color:var(--accent)">velllib</code>, <code style="color:var(--accent)">velmap</code>)</li>
+            <li>Create a <code style="color:var(--accent)">veloce.config</code> file with all required parameters</li>
+          </ol>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># Using a libmap file for analysis:
+velanalyze -f &lt;command_file&gt; -libmap lib.map
+# Example:
+velanalyze -f file.f</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="config" data-id="c2_6">
+        <div class="card-top">
+          <span class="badge badge-config">⚙️ Config</span>
+          <span class="card-title">veloce.config — Phase Options</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c2_6','veloce.config Phase Options')">☆</button>
+        </div>
+        <div class="card-body">
+          <strong>Config file phase names and their purpose:</strong>
+          <ul>
+            <li><code style="color:var(--accent)">comp</code> — compilation options (clocks, assertions, RTLC, C compile, job distribution)</li>
+            <li><code style="color:var(--accent)">veanalyze / vhanalyze</code> — RTL source file analysis options</li>
+            <li><code style="color:var(--accent)">rtlc</code> — RTL compiler options</li>
+            <li><code style="color:var(--accent)">velsyn</code> — synthesis utility options</li>
+            <li><code style="color:var(--accent)">velcc</code> — crystal chip timing database generation</li>
+            <li><code style="color:var(--accent)">velgs</code> — global clock scheduler options</li>
+            <li><code style="color:var(--accent)">hvl</code> — DPI-C file compile options</li>
+            <li><code style="color:var(--accent)">source &lt;file&gt;</code> — include another config file</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" data-type="config" data-id="c2_7">
+        <div class="card-top">
+          <span class="badge badge-config">⚙️ Config</span>
+          <span class="card-title">veloce.config — Full Example</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c2_7','veloce.config Full Example')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>comp -platform StratoCS
+comp -num_boards 5
+comp -top sys
+comp -top_hdl verilog
+
+rtlc -partition_module_xrtl sys
+rtlc -partition_module_xrtl iotool
+rtlc -opt_best
+
+comp -distrib_flow grid
+
+hvl -cflags "-I./sim/include"
+hvl -ldflags "-L./sim/tbx -I./linux -lusertb"
+comp -cui_file vmw.cui</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="warning" data-id="c2_8">
+        <div class="card-top">
+          <span class="badge badge-warning">⚠️ Warning</span>
+          <span class="card-title">Config File — Critical Rule</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c2_8','Config File Critical Rule')">☆</button>
+        </div>
+        <div class="card-body">
+          You <strong>must specify ALL required parameters</strong> for compilation in the <code style="color:var(--accent)">veloce.config</code> file <strong>before</strong> compilation. You <strong>cannot</strong> modify or specify parameters during compilation.
+          <br/><br/>
+          ⚠️ Using <code style="color:var(--accent)">-svf</code> or <code style="color:var(--accent)">-vef</code> with <code style="color:var(--accent)">-libmap</code> results in an error.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CH 3: COMPILING -->
+  <div class="chapter-view" id="ch3">
+    <div class="chapter-header">
+      <h1>Chapter 3 — Compiling Your Design</h1>
+      <p>Compile-time features, options, and optimization techniques.</p>
+    </div>
+    <div class="section-title">Core Compile Commands</div>
+    <div class="cards-grid">
+
+      <div class="card" data-type="command" data-id="c3_1">
+        <div class="card-top">
+          <span class="badge badge-command">⚡ Command</span>
+          <span class="card-title">velanalyze — Analyze RTL Source Files</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c3_1','velanalyze command')">☆</button>
+        </div>
+        <div class="card-body">
+          Analyzes RTL source files before or during compilation.
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># Analyze SystemVerilog files:
+velanalyze hdl/*.sv
+
+# Analyze with a command file:
+velanalyze -f file.f
+
+# Analyze with libmap:
+velanalyze -f file.f -libmap lib.map
+
+# One-step (in veloce.config):
+veanalyze &lt;files&gt;    # Verilog
+vhanalyze &lt;files&gt;   # VHDL</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="command" data-id="c3_2">
+        <div class="card-top">
+          <span class="badge badge-command">⚡ Command</span>
+          <span class="card-title">velcomp — Compile DUT</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c3_2','velcomp command')">☆</button>
+        </div>
+        <div class="card-body">
+          Main compilation command. Run from top level of design directory.
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># Basic compile:
+velcomp
+
+# Compile with top module specified:
+velcomp -top &lt;top_module&gt;
+
+# Single-step (analyze + compile):
+velcomp -top &lt;top_module&gt;   # with comp -single_step in config
+
+# Start at specific task:
+velcomp -start_task &lt;task_name&gt;
+
+# Run only velvis task:
+velcomp -task velvis
+
+# Lock/unlock project (before export):
+velcomp -lock_project
+velcomp -unlock_project
+
+# Export compile database:
+velcomp -create_export_db /path/to/exportedDir
+
+# Clean and restart a task:
+velcomp -clean_task velcc
+velcomp -start_task velcc</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="command" data-id="c3_3">
+        <div class="card-top">
+          <span class="badge badge-command">⚡ Command</span>
+          <span class="card-title">velhvl — Compile HVL Testbench</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c3_3','velhvl command')">☆</button>
+        </div>
+        <div class="card-body">
+          Compiles C/C++/SystemC HVL models into a comodel executable.
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># Compile C testbench:
+velhvl -cfiles hvl/hello.cxx
+
+# With include flags:
+velhvl -cfiles mytest.cxx -cflags "-I./include"
+
+# With link flags:
+velhvl -cfiles mytest.cxx -ldflags "-L./lib -lmylib"</pre>
+          </div>
+          <div style="margin-top:10px;font-size:12.5px;color:var(--text-muted)">
+            💡 <code style="color:var(--accent)">velhvl</code> reads <code style="color:var(--accent)">veloce.config</code> and uses options under the <code style="color:var(--accent)">hvl</code> phase. Command-line options take precedence over config file.
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="workflow" data-id="c3_4">
+        <div class="card-top">
+          <span class="badge badge-workflow">🔄 Workflow</span>
+          <span class="card-title">Two-Step vs One-Step Compile</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c3_4','Two-Step vs One-Step Compile')">☆</button>
+        </div>
+        <div class="card-body">
+          <strong>Option A — Two-Step (separate analyze + compile):</strong>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>velanalyze hdl/*.sv    # Step 1: analyze
+velcomp               # Step 2: compile (starts from RTL phase)</pre>
+          </div>
+          <strong>Option B — One-Step (analyze + compile together):</strong>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># In veloce.config add:
+comp -single_step
+veanalyze &lt;files&gt;
+
+# Then run:
+velcomp -top &lt;top_module&gt;</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="config" data-id="c3_5">
+        <div class="card-top">
+          <span class="badge badge-config">⚙️ Config</span>
+          <span class="card-title">Exporting a Compiled Database</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c3_5','Export Compile Database')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>velcomp -lock_project
+velcomp -create_export_db /path/to/exportedDir
+velcomp -unlock_project</pre>
+          </div>
+          <strong>Allowed on exported DB:</strong> HVL compiles, shadow creation, emulation run, emulation debug.<br/>
+          <strong>NOT allowed:</strong> <code style="color:var(--danger)">velanalyze</code> or <code style="color:var(--danger)">velcomp</code>.
+        </div>
+      </div>
+
+      <div class="card" data-type="tip" data-id="c3_6">
+        <div class="card-top">
+          <span class="badge badge-tip">💡 Tip</span>
+          <span class="card-title">Improving Compile Time</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c3_6','Improving Compile Time')">☆</button>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li><strong>Parallel velsyn</strong> — run velsyn in parallel threads</li>
+            <li><strong>Distributed velsyn</strong> — distribute across farm machines</li>
+            <li><strong>Template Processing</strong> — process repeated module hierarchy once; reduces memory and compile time for large designs (2M/3M/4M gate Strato)</li>
+            <li><strong>RTLC Templates</strong> — reuse RTLC results across identical instances</li>
+          </ul>
+          Add to <code style="color:var(--accent)">veloce.config</code>:
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>comp -distrib_flow grid    # or lsf / custom
+comp -single_step</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="warning" data-id="c3_7">
+        <div class="card-top">
+          <span class="badge badge-warning">⚠️ Warning</span>
+          <span class="card-title">velcc Partitioning/Routing Issues</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c3_7','velcc Partitioning Issues')">☆</button>
+        </div>
+        <div class="card-body">
+          Before generating a CUI file for routing issues, check:
+          <ul>
+            <li>Did you use <code style="color:var(--warning)">rtlc advisor capOnly/perfOnly/capAndPerf/aggressive</code>? These make partitioning harder.</li>
+            <li>Did you use <code style="color:var(--warning)">-Mm higher than 10.0</code>? Not recommended — causes routing difficulty.</li>
+            <li>Did you use <code style="color:var(--warning)">velsyn -enableSoftCMEMF</code>? Consider removing it — increases routing congestion.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" data-type="config" data-id="c3_8">
+        <div class="card-top">
+          <span class="badge badge-config">⚙️ Config</span>
+          <span class="card-title">Enable Critical Path Analysis (velcp)</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c3_8','Enable velcp')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># In veloce.config:
+comp -enable_velcp
+
+# If already compiled without it:
+velcomp -clean_task velcc
+velcomp -start_task velcc
+velcp</pre>
+          </div>
+          ⚠️ Increases compile database size by ~15%. Negligible effect on compile time/memory.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CH 4: RUNNING EMULATION -->
+  <div class="chapter-view" id="ch4">
+    <div class="chapter-header">
+      <h1>Chapter 4 — Running Emulation</h1>
+      <p>Runtime use modes, commands, and examples.</p>
+    </div>
+    <div class="section-title">Runtime Commands</div>
+    <div class="cards-grid">
+
+      <div class="card" data-type="command" data-id="c4_1">
+        <div class="card-top">
+          <span class="badge badge-command">⚡ Command</span>
+          <span class="card-title">velrun — Runtime Use Modes</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c4_1','velrun modes')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># Auto-run (connect, download, run, exit):
+velrun
+
+# Interactive Tcl shell:
+velrun -c
+
+# Interactive Tcl shell (no auto-connect):
+velrun -c -nac
+
+# GUI mode (Tcl shell + debug window):
+velrun -gui
+
+# Run from do file:
+velrun -c -nac -do cmd.do
+
+# Questa testbench:
+vsim hdlTop hvlTop TbxSvManager</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="command" data-id="c4_2">
+        <div class="card-top">
+          <span class="badge badge-command">⚡ Command</span>
+          <span class="card-title">velrun — Special Use Modes</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c4_2','velrun special modes')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># Download only (manual connect):
+velrun -download
+
+# Disconnect a downloaded session:
+velrun -disconnect
+
+# Pass args to comodel executable:
+velrun -exe_args "-enable_display"
+
+# Specify custom comodel executable:
+velrun -exe hello_world -exe_args "-myOpt1 -myOpt2"</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="command" data-id="c4_3">
+        <div class="card-top">
+          <span class="badge badge-command">⚡ Command</span>
+          <span class="card-title">Runtime Examples — Full Sequences</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c4_3','Runtime Examples')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># Basic run sequence:
+velrun -c
+% hwtrace autoupload on -tracedir abc
+% run 1000000 ns
+% upload wave ..
+% quit
+
+# With memory and trigger:
+velrun -c
+% memory download ..
+% trigger download vmw.trig
+% run
+% waitfor runcomplete
+% upload wave ..
+% quit
+
+# Multiple tests:
+velrun -gui -exe_args "-mytest1"
+run
+setvar comdel_exe_args "-mytest2"
+reinitialize
+run
+setvar comdel_exe_args "-mytest3"
+reinitialize
+quit</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="command" data-id="c4_4">
+        <div class="card-top">
+          <span class="badge badge-command">⚡ Command</span>
+          <span class="card-title">Questa Runtime Commands</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c4_4','Questa Runtime Commands')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>vsim hdlTop hvlTop TbxSvManager
+% velocecmd "trigger download file"
+% run X ns
+% velocecmd "upload -tracedir abc"
+% quit
+
+# Or with velrungui:
+vsim -c
+% log -r *
+% run 100 ns
+% velocecmd "reg getvalue signame"
+% run 100 ns
+velrungui open
+% hwtrace autoupload on -tracedir abc
+% reg setvalue signame
+% display off
+% velrungui close
+% run 200 ns</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="config" data-id="c4_5">
+        <div class="card-top">
+          <span class="badge badge-config">⚙️ Config</span>
+          <span class="card-title">Physical Channel Mapping</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c4_5','Physical Channel Mapping')">☆</button>
+        </div>
+        <div class="card-body">
+          P0, P1…Pn are aliases for comodel channel connectors. For Veloce Strato platform:
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>P0 => AVB3_0
+P1 => AVB3_1
+P2 => AVB3_2
+# Alter with: comp -comodelLayout</pre>
+          </div>
+          💡 This keeps config independent of hard-coded connector names.
+        </div>
+      </div>
+
+      <div class="card" data-type="command" data-id="c4_6">
+        <div class="card-top">
+          <span class="badge badge-command">⚡ Command</span>
+          <span class="card-title">xWave Command-Line Options</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c4_6','xWave Commands')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>velrun -xwave_select_group &lt;group_1&gt;
+velrun -xwave_select_group &lt;group_2&gt;
+velrun -xwave_select_all_groups
+velrun -xwave_on
+velrun -xwave_start_time &lt;N[units]&gt;
+velrun -xwave_end_time &lt;N[units]&gt;
+velrun -xwave_dump &lt;dump_file_base_name&gt;
+velrun -xwave_format fsdb
+velrun -xwave_blk
+
+# Pass to vsim:
++velrun+xwave_on</pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CH 5: DEBUGGING -->
+  <div class="chapter-view" id="ch5">
+    <div class="chapter-header">
+      <h1>Chapter 5 — Debugging</h1>
+      <p>Waveform capture, upload, triggers, and runtime behavior debugging.</p>
+    </div>
+    <div class="section-title">Waveform Capture</div>
+    <div class="cards-grid">
+
+      <div class="card" data-type="concept" data-id="c5_1">
+        <div class="card-top">
+          <span class="badge badge-concept">📌 Key Concept</span>
+          <span class="card-title">Waveform Capture Methods</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c5_1','Waveform Capture Methods')">☆</button>
+        </div>
+        <div class="card-body">
+          Three methods to capture waveforms:
+          <ul>
+            <li><strong>Time-based</strong> — know the timepoint where design mismatches</li>
+            <li><strong>Line Breakpoint (LBP)</strong> — know the RTL source line; StratoCS does NOT support this</li>
+            <li><strong>Trigger-based</strong> — capture based on signal state/event</li>
+          </ul>
+          ⚠️ Emulator only captures waveforms when <strong>Trace is ON</strong>. Default: Trace is ON after design download.
+        </div>
+      </div>
+
+      <div class="card" data-type="command" data-id="c5_2">
+        <div class="card-top">
+          <span class="badge badge-command">⚡ Command</span>
+          <span class="card-title">Trace ON / OFF</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c5_2','Trace ON OFF')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># From Tcl shell:
+hwtrace on
+hwtrace off
+
+# Auto-upload with trace directory:
+hwtrace autoupload on -tracedir &lt;dir&gt;
+
+# Recover interrupted conversion:
+hwtrace autoupload on -recover</pre>
+          </div>
+          Via GUI: <code style="color:var(--accent)">DesignFlow &gt; Emulation &gt; Set Trace On</code>
+        </div>
+      </div>
+
+      <div class="card" data-type="workflow" data-id="c5_3">
+        <div class="card-top">
+          <span class="badge badge-workflow">🔄 Workflow</span>
+          <span class="card-title">Time-Based Waveform Capture</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c5_3','Time-Based Waveform Capture')">☆</button>
+        </div>
+        <div class="card-body">
+          <ol style="padding-left:18px">
+            <li>Invoke GUI: <code style="color:var(--accent)">velrun -gui</code></li>
+            <li>Ensure Trace is ON: <code style="color:var(--accent)">DesignFlow &gt; Emulation &gt; Set Trace On</code></li>
+            <li>Run to timepoint of interest: <code style="color:var(--accent)">run 10000 ns</code></li>
+            <li>Upload waveform (see Upload Waveforms)</li>
+            <li>View in Wave Viewer: <code style="color:var(--accent)">DesignFlow &gt; Debug &gt; Wave Viewer</code></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="card" data-type="workflow" data-id="c5_4">
+        <div class="card-top">
+          <span class="badge badge-workflow">🔄 Workflow</span>
+          <span class="card-title">Viewing Waveforms</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c5_4','Viewing Waveforms')">☆</button>
+        </div>
+        <div class="card-body">
+          <ol style="padding-left:18px">
+            <li>Open Wave Viewer: <code style="color:var(--accent)">DesignFlow &gt; Debug &gt; Wave Viewer</code></li>
+            <li>If after runtime: <code style="color:var(--accent)">File &gt; Specify Dataset</code> → navigate to Trace directory</li>
+            <li>Load signal list: <code style="color:var(--accent)">File &gt; Load Signal List</code> or drag from Objects tab</li>
+            <li>View waveforms in Wave Viewer</li>
+          </ol>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># View RTL triggers with DUT:
+vis -veloc -veltrigger &lt;trigger_db_name&gt;
+
+# Load DUT + all RTL trigger hierarchies:
+vis -tracedir &lt;trace_directory_name&gt;</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="command" data-id="c5_5">
+        <div class="card-top">
+          <span class="badge badge-command">⚡ Command</span>
+          <span class="card-title">Convert to CRD / FSDB Format</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c5_5','Convert CRD FSDB')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># Convert trace to CRD (shareable, no reconstruction needed):
+ecf2wave -tracedir &lt;dir&gt; -crd -o output.crd -siglist &lt;sigfile&gt;
+
+# Generate FSDB offline:
+ecf2wave -tracedir &lt;dir&gt; -fsdb</pre>
+          </div>
+          💡 CRD datasets can be exported as tarred zip for remote debugging teams.
+        </div>
+      </div>
+
+      <div class="card" data-type="concept" data-id="c5_6">
+        <div class="card-top">
+          <span class="badge badge-concept">📌 Key Concept</span>
+          <span class="card-title">Waveform Special Values</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c5_6','Waveform Special Values')">☆</button>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li><strong>X</strong> — unknown value</li>
+            <li><strong>Z</strong> — high impedance</li>
+            <li><strong>NA</strong> — not available (trace buffer not filled for that chip); propagates as X</li>
+          </ul>
+          ⚠️ Low power X does not further propagate. Propagation from flops to combinational logic is based on real emulation values.
+        </div>
+      </div>
+
+      <div class="card" data-type="concept" data-id="c5_7">
+        <div class="card-top">
+          <span class="badge badge-concept">📌 Key Concept</span>
+          <span class="card-title">Backup-Replay &amp; Testbench Restore</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c5_7','Backup Replay')">☆</button>
+        </div>
+        <div class="card-body">
+          Two methods for deterministic debugging:
+          <ul>
+            <li><strong>Backup-Replay</strong> — captures software/testbench input transactions → replay later with design on emulator</li>
+            <li><strong>Replay-Based Testbench Restore</strong> — captures emulator output transactions → replay later with software on comodel machine</li>
+          </ul>
+          Unified interface: <code style="color:var(--accent)">xcapture</code> and <code style="color:var(--accent)">xreplay</code> commands.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CH 6: JOB DISTRIBUTION -->
+  <div class="chapter-view" id="ch6">
+    <div class="chapter-header">
+      <h1>Chapter 6 — Job Distribution</h1>
+      <p>LSF, Grid Engine, and custom job distribution setup.</p>
+    </div>
+    <div class="section-title">Distribution Setup</div>
+    <div class="cards-grid">
+
+      <div class="card" data-type="config" data-id="c6_1">
+        <div class="card-top">
+          <span class="badge badge-config">⚙️ Config</span>
+          <span class="card-title">Enable Grid Distribution</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c6_1','Enable Grid Distribution')">☆</button>
+        </div>
+        <div class="card-body">
+          Add to <code style="color:var(--accent)">veloce.config</code>:
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>comp -distrib_flow grid
+# Specify cluster queue:
+# (default: -q all.q)
+# To use veloce.q:
+comp -grid_queue veloce.q
+
+# Set Grid environment variable:
+setenv SGE_EXECD_PORT &lt;port&gt;</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="config" data-id="c6_2">
+        <div class="card-top">
+          <span class="badge badge-config">⚙️ Config</span>
+          <span class="card-title">Enable LSF Distribution</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c6_2','Enable LSF Distribution')">☆</button>
+        </div>
+        <div class="card-body">
+          <ol style="padding-left:18px">
+            <li>Set up LSF environment (verify: <code style="color:var(--accent)">lsid</code> and <code style="color:var(--accent)">bsub</code> work from shell)</li>
+            <li>Add to <code style="color:var(--accent)">veloce.config</code>:</li>
+          </ol>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>comp -distrib_flow lsf
+# For delayed log files (when JOB_SPOOL_DIR=/tmp):
+comp_lsf_delayed_log_files</pre>
+          </div>
+          ⚠️ With delayed log files: log not created while job runs; errors not visible until task completes.
+        </div>
+      </div>
+
+      <div class="card" data-type="config" data-id="c6_3">
+        <div class="card-top">
+          <span class="badge badge-config">⚙️ Config</span>
+          <span class="card-title">Custom Job Distribution</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c6_3','Custom Job Distribution')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># In veloce.config:
+comp -distrib_flow custom
+comp -custom_task_distrib_conf_file &lt;config_file&gt;</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="config" data-id="c6_4">
+        <div class="card-top">
+          <span class="badge badge-config">⚙️ Config</span>
+          <span class="card-title">Job Distribution Config File Example</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c6_4','Job Distribution Config Example')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>job_submission_memreq_option -l mem_total=
+job_submission_output_option -o
+job_submission_script /user/veloce/job_distrib/my_qsub.pl
+job_monitor_script /user/veloce/job_distrib/my_qstat.pl
+job_delete_script /user/veloce/job_distrib/my_qdel.pl
+job_exit_stat_script /user/veloce/job_distrib/my_qacct.pl
+job_submission_options -l OPsys=redhat4 -cwd -q all.q -V -j y -b y -shell no</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="config" data-id="c6_5">
+        <div class="card-top">
+          <span class="badge badge-config">⚙️ Config</span>
+          <span class="card-title">velvis Partition Size</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c6_5','velvis Partition Size')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># In veloce.config:
+comp_distrib_recon_jobsize [small | medium | large]
+# Default: large (300kbits)
+# Use small/medium to reduce memory for distributed jobs
+# Trade-off: larger velvis1 time</pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CH 9: TRIGGERS -->
+  <div class="chapter-view" id="ch9">
+    <div class="chapter-header">
+      <h1>Chapter 9 — Triggers</h1>
+      <p>Control hardware trace buffers during runtime to capture waveform data efficiently.</p>
+    </div>
+    <div class="section-title">Trigger Types &amp; Usage</div>
+    <div class="cards-grid">
+
+      <div class="card" data-type="concept" data-id="c9_1">
+        <div class="card-top">
+          <span class="badge badge-concept">📌 Key Concept</span>
+          <span class="card-title">Trigger Types</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c9_1','Trigger Types')">☆</button>
+        </div>
+        <div class="card-body">
+          <strong>Flexible RTL Triggers (newer, recommended):</strong>
+          <ul>
+            <li>Specified using standard SystemVerilog (RTL subset)</li>
+            <li>Signal list provided in trigger input file during main design compile</li>
+            <li>Quick trigger compile without full re-compile (StratoPlus only)</li>
+            <li>Runtime Tcl commands for control/observation</li>
+          </ul>
+          <strong>Runtime Triggers (older):</strong>
+          <ul>
+            <li>Proprietary HDL-like language</li>
+            <li>Limited expressions; only ONE active trigger state machine</li>
+            <li>Trigger input file provided at runtime</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" data-type="command" data-id="c9_2">
+        <div class="card-top">
+          <span class="badge badge-command">⚡ Command</span>
+          <span class="card-title">Trigger Examples</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c9_2','Trigger Examples')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>// Store trigger (captures waveforms, doesn't stop design):
+domain domain0 @ (posedge Uclock);
+state S0 : initial, store
+begin
+end
+next (top.SIM_TIME[63:0] == 100);
+state S1 : trigger, store;
+
+// Stop trigger (stops design when trigger matures):
+state S0 : initial, store
+begin
+next (top.SIM_TIME[63:0] == 100);
+end
+state S1 : trigger, stop;</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="workflow" data-id="c9_3">
+        <div class="card-top">
+          <span class="badge badge-workflow">🔄 Workflow</span>
+          <span class="card-title">Trigger-Based Waveform Capture</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c9_3','Trigger Waveform Workflow')">☆</button>
+        </div>
+        <div class="card-body">
+          <ol style="padding-left:18px">
+            <li>Create a trigger file</li>
+            <li>Invoke GUI: <code style="color:var(--accent)">velrun -gui</code></li>
+            <li>Ensure Trace is ON: <code style="color:var(--accent)">DesignFlow &gt; Emulation &gt; Set Trace On</code></li>
+            <li>Download trigger: <code style="color:var(--accent)">DesignFlow &gt; Emulation &gt; Download Trigger</code></li>
+            <li>Run: <code style="color:var(--accent)">run</code></li>
+            <li>Upload and view waveform</li>
+          </ol>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># Load RTL trigger at runtime:
+velrun ... -veltrigger sync_trig_part_1</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="concept" data-id="c9_4">
+        <div class="card-top">
+          <span class="badge badge-concept">📌 Key Concept</span>
+          <span class="card-title">Trigger Position</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c9_4','Trigger Position')">☆</button>
+        </div>
+        <div class="card-body">
+          Trigger position controls where in the captured waveform the trigger event falls:
+          <ul>
+            <li><strong>50 (default)</strong> — trigger at midpoint; half before, half after</li>
+            <li><strong>0</strong> — trigger at start; window mostly after trigger</li>
+            <li><strong>100</strong> — trigger at end; window mostly before trigger</li>
+          </ul>
+          ⚠️ After a trigger matures, Trace is automatically turned OFF. You must set Trace ON again for next capture.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CH 10: MEMORY MODELING -->
+  <div class="chapter-view" id="ch10">
+    <div class="chapter-header">
+      <h1>Chapter 10 — Memory Modeling</h1>
+      <p>Parameterized memories, Flexmem, TCAM, and memory optimization.</p>
+    </div>
+    <div class="section-title">Memory Types &amp; Concepts</div>
+    <div class="cards-grid">
+
+      <div class="card" data-type="concept" data-id="c10_1">
+        <div class="card-top">
+          <span class="badge badge-concept">📌 Key Concept</span>
+          <span class="card-title">Parameterized Memory Interface</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c10_1','Parameterized Memory')">☆</button>
+        </div>
+        <div class="card-body">
+          Veloce recognizes a module as memory when it has <code style="color:var(--accent)">VMW_PARAM_MEM</code> prefix and exactly <strong>6 parameters in order</strong>:
+          <ol style="padding-left:18px;margin-top:6px">
+            <li>address width</li>
+            <li>data width</li>
+            <li>write semantics</li>
+            <li>output enable</li>
+            <li>number of read ports</li>
+            <li>number of write ports</li>
+          </ol>
+          ⚠️ Any number other than 6 with the VMW_PARAM_MEM prefix → velsyn reports an <strong>error</strong>.
+        </div>
+      </div>
+
+      <div class="card" data-type="concept" data-id="c10_2">
+        <div class="card-top">
+          <span class="badge badge-concept">📌 Key Concept</span>
+          <span class="card-title">Flexmem Overview</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c10_2','Flexmem Overview')">☆</button>
+        </div>
+        <div class="card-body">
+          Flexmem partitions memory between HDL and HVL sides:
+          <ul>
+            <li><strong>HVL side</strong> — full memory image (sparse, page-based)</li>
+            <li><strong>HDL side</strong> — small cached copy (&lt;1% of total memory)</li>
+          </ul>
+          <strong>Benefits:</strong> Eliminates capacity issues for large memories; fast HVL access; transparent data sync; supports $readmem/$writemem.
+          <br/><strong>hd page size:</strong> configurable, typically 128B–16KB.
+        </div>
+      </div>
+
+      <div class="card" data-type="warning" data-id="c10_3">
+        <div class="card-top">
+          <span class="badge badge-warning">⚠️ Warning</span>
+          <span class="card-title">Flexmem — Important Limitations</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c10_3','Flexmem Limitations')">☆</button>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li>Do <strong>NOT</strong> use 0-time export DPIs with Flexmem → use back-door access with SCEMI-DMIs instead</li>
+            <li>Small memories (&lt;=16MB) with primarily HDL access are <strong>NOT good candidates</strong> for Flexmem</li>
+            <li>Do NOT use <code style="color:var(--danger)">-enableSoftCMEMF</code> option with Flexmem → significant drop in compile frequency</li>
+            <li>Reads/writes inside synchronous always blocks with <strong>asynchronous set/reset are NOT supported</strong></li>
+            <li>Asynchronous writes from combinational always blocks are <strong>NOT supported</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" data-type="tip" data-id="c10_4">
+        <div class="card-top">
+          <span class="badge badge-tip">💡 Tip</span>
+          <span class="card-title">Flexmem — Optimal Channel Size</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c10_4','Flexmem Channel Size')">☆</button>
+        </div>
+        <div class="card-body">
+          Keep transaction word size a <strong>multiple of memory word size</strong>, or use 32 or 64 (default: 64 words of 32-bit each).
+          <br/><br/>
+          Example: 128-bit memory word → use transaction size of 32 (32 × 32-bit = 1024-bit = 128 bytes = 8 memory words). This maximizes comodel channel throughput.
+        </div>
+      </div>
+
+      <div class="card" data-type="command" data-id="c10_5">
+        <div class="card-top">
+          <span class="badge badge-command">⚡ Command</span>
+          <span class="card-title">TCAM Modeling — Optimized Implementation</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c10_5','TCAM Modeling')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>// Pragma to mark TCAM memory:
+//pragma attribute CAM_MEMORY tcam_block 1
+
+// Optimized TCAM write:
+$cam_write(CAM_MEMORY, WRADDR, DATA_B, DATA_A);
+
+// Optimized TCAM read:
+$cam_read(CAM_MEMORY, RDADDR, Temp_RdDataB, Temp_RdDataA);</pre>
+          </div>
+          ⚠️ Requires a Veloce OS license depending on platform.
+        </div>
+      </div>
+
+      <div class="card" data-type="concept" data-id="c10_6">
+        <div class="card-top">
+          <span class="badge badge-concept">📌 Key Concept</span>
+          <span class="card-title">Out-of-Bounds Access Behavior</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c10_6','Out of Bounds Access')">☆</button>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li><strong>Out-of-bounds writes</strong> → ignored</li>
+            <li><strong>Out-of-bounds reads</strong> → 'X' in simulator, <strong>0</strong> in Veloce emulation</li>
+          </ul>
+          To enable compile-time error for out-of-bounds reads, add to config:
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>rtlc -oob_read_error</pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CH 11: PERFORMANCE -->
+  <div class="chapter-view" id="ch11">
+    <div class="chapter-header">
+      <h1>Chapter 11 — Performance &amp; Capacity Optimization</h1>
+      <p>General optimization, HDL optimization, concurrent modeling, and hardware configuration.</p>
+    </div>
+    <div class="section-title">RTLC Advisor &amp; HDL Optimization</div>
+    <div class="cards-grid">
+
+      <div class="card" data-type="concept" data-id="c11_1">
+        <div class="card-top">
+          <span class="badge badge-concept">📌 Key Concept</span>
+          <span class="card-title">RTLC Advisor</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c11_1','RTLC Advisor')">☆</button>
+        </div>
+        <div class="card-body">
+          Automates cross-module capacity and performance optimization. Modes:
+          <ul>
+            <li><code style="color:var(--accent)">capAndPerf</code> — optimize for both capacity AND performance (recommended, 2-step)</li>
+            <li><code style="color:var(--accent)">capOnly</code> — capacity only</li>
+            <li><code style="color:var(--accent)">perfOnly</code> — performance only</li>
+          </ul>
+          <strong>Output:</strong> Performance analysis report + critical capacity modules list in compile directory.
+        </div>
+      </div>
+
+      <div class="card" data-type="command" data-id="c11_2">
+        <div class="card-top">
+          <span class="badge badge-command">⚡ Command</span>
+          <span class="card-title">RTLC Optimization Commands</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c11_2','RTLC Optimization Commands')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># Flattening options:
+rtlc -flatten_mod &lt;module&gt;
+rtlc -flatten_hier &lt;module&gt;
+rtlc -flatten_netlist_mod &lt;module&gt;
+
+# Retiming:
+rtlc -ena_retime_shift_delay
+rtlc -retime_annot
+comp -rtlc_advisor_options "-retime_opt"
+
+# Interleaved AMCP partitioning:
+rtlc -interleaved_amcp
+
+# One-way import DPI optimization:
+rtlc -one_way_caller_opt          # global
+rtlc -one_way_caller_opt_mod &lt;mod&gt;  # per module
+rtlc -no_one_way_caller_opt_mod &lt;mod&gt;  # disable per module</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="workflow" data-id="c11_3">
+        <div class="card-top">
+          <span class="badge badge-workflow">🔄 Workflow</span>
+          <span class="card-title">RTLC Optimization Re-Use Flow</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c11_3','RTLC Re-Use Flow')">☆</button>
+        </div>
+        <div class="card-body">
+          Save compile time in subsequent compilations:
+          <ol style="padding-left:18px">
+            <li>Disable RTLC Advisor in <code style="color:var(--accent)">veloce.config</code></li>
+            <li>Copy the feedback directory to a user area (velcomp deletes it at start)</li>
+            <li>Point to copied directory with: <code style="color:var(--accent)">rtlc -feedback_dir &lt;path&gt;</code></li>
+            <li>Run <code style="color:var(--accent)">velcomp</code></li>
+            <li>After each compile, copy the new feedback directory — quality improves each iteration</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="card" data-type="tip" data-id="c11_4">
+        <div class="card-top">
+          <span class="badge badge-tip">💡 Tip</span>
+          <span class="card-title">Guidelines for Better Performance</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c11_4','Performance Guidelines')">☆</button>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li>Use <code style="color:var(--accent)">$display</code> tasks sparingly — they impact performance</li>
+            <li>Use <strong>Inbound Streaming DPIs</strong> for streaming data from files/sockets (avoids reactive DPI overhead)</li>
+            <li>Use <strong>AOWC optimization</strong> (enabled by default) for one-way hardware-to-software communication — can provide up to <strong>2X performance gain</strong></li>
+            <li>Use <strong>Concurrent HDL/HVL modeling</strong> for up to <strong>2X+ gain</strong> over reactive DPI systems</li>
+            <li>For Flexmem: avoid 0-time export DPIs; use SCEMI-DMIs for back-door access</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" data-type="config" data-id="c11_5">
+        <div class="card-top">
+          <span class="badge badge-config">⚙️ Config</span>
+          <span class="card-title">Frequency Configuration</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c11_5','Frequency Configuration')">☆</button>
+        </div>
+        <div class="card-body">
+          Change runtime frequency in <code style="color:var(--accent)">veloce.config</code>:
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre>comp -freq &lt;value&gt;
+# Supported on Strato and StratoCS platforms</pre>
+          </div>
+          <strong>Precision vs Minimum Clock Frequency:</strong>
+          <ul>
+            <li>1ps precision → min 62 MHz</li>
+            <li>10ps → min 6.2 MHz</li>
+            <li>100ps → min 620 KHz</li>
+            <li>1ns → min 62 KHz</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" data-type="warning" data-id="c11_6">
+        <div class="card-top">
+          <span class="badge badge-warning">⚠️ Warning</span>
+          <span class="card-title">RTLC Advisor — Important Restrictions</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c11_6','RTLC Advisor Restrictions')">☆</button>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li>Do NOT perform design analysis in subsequent runs after advisor</li>
+            <li>Do NOT change RTLC elaboration options between runs</li>
+            <li>Do NOT change velsyn control files and options between runs</li>
+            <li>Different compile flows (power, DFT, gate-level, PCR) are treated as <strong>separate entries</strong> — recommendations do NOT cross flows</li>
+            <li>Aggressive capacity optimization optimizes state elements → those signals become <strong>inaccessible at runtime</strong> unless preserved</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CH 12: HELLO WORLD / QUICK REF -->
+  <div class="chapter-view" id="ch12">
+    <div class="chapter-header">
+      <h1>Chapter 12 — Hello World &amp; Quick Reference</h1>
+      <p>Complete end-to-end example and platform reference tables.</p>
+    </div>
+    <div class="section-title">Hello World — Full Flow</div>
+    <div class="cards-grid">
+
+      <div class="card" data-type="workflow" data-id="c12_1">
+        <div class="card-top">
+          <span class="badge badge-workflow">🔄 Workflow</span>
+          <span class="card-title">Hello World — C Testbench (Full Flow)</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c12_1','Hello World Full Flow')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># Step 1: Analyze RTL files
+velanalyze hdl/*.sv
+
+# Step 2: Compile the DUT
+velcomp
+
+# Step 3: Compile HVL C testbench
+velhvl -cfiles hvl/hello.cxx
+
+# Step 4: Run the emulation
+velrun</pre>
+          </div>
+          <strong>Expected result:</strong> Veloce connects to emulator, loads design, starts emulation. C executable runs, sends msg file contents → emulator returns <code style="color:var(--success)">HELLO WORLD!</code>
+        </div>
+      </div>
+
+      <div class="card" data-type="workflow" data-id="c12_2">
+        <div class="card-top">
+          <span class="badge badge-workflow">🔄 Workflow</span>
+          <span class="card-title">Hello World — Single-Step Compile</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c12_2','Hello World Single Step')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># Single-step compile (analyze + compile together):
+velcomp
+
+# Run emulation:
+velrun</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-type="concept" data-id="c12_3">
+        <div class="card-top">
+          <span class="badge badge-concept">📌 Key Concept</span>
+          <span class="card-title">Platform ID Map</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c12_3','Platform ID Map')">☆</button>
+        </div>
+        <div class="card-body">
+          <table style="width:100%;font-size:12.5px;border-collapse:collapse">
+            <thead>
+              <tr style="color:var(--accent);border-bottom:1px solid var(--border)">
+                <th style="text-align:left;padding:4px 8px">Emulator</th>
+                <th style="text-align:left;padding:4px 8px">Platform ID</th>
+              </tr>
+            </thead>
+            <tbody style="color:var(--text-muted)">
+              <tr><td style="padding:4px 8px">Veloce Strato M and T</td><td style="padding:4px 8px">Veloce StratoM</td></tr>
+              <tr><td style="padding:4px 8px">Veloce Strato TIL, Ti, Mi</td><td style="padding:4px 8px">Veloce Strato</td></tr>
+              <tr><td style="padding:4px 8px">Veloce Strato+M and +T</td><td style="padding:4px 8px">Veloce StratoPlusM</td></tr>
+              <tr><td style="padding:4px 8px">Veloce Strato+TIL, Ti, Mi</td><td style="padding:4px 8px">Veloce StratoPlus</td></tr>
+              <tr><td style="padding:4px 8px">Veloce StratoCS (all)</td><td style="padding:4px 8px">Veloce StratoCS</td></tr>
+              <tr><td style="padding:4px 8px">PrimoCS</td><td style="padding:4px 8px">PrimoCS</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" data-type="command" data-id="c12_4">
+        <div class="card-top">
+          <span class="badge badge-command">⚡ Command</span>
+          <span class="card-title">Complete Command Cheat Sheet</span>
+          <button class="fav-btn" onclick="toggleFav(this,'c12_4','Command Cheat Sheet')">☆</button>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+            <pre># ── SETUP ──────────────────────────────
+setenv VELOCE_HOME &lt;install_dir&gt;/Veloce_vx.x.x
+setenv MED_EMULATOR &lt;emulators_path&gt;
+setenv LM_LICENSE_FILE &lt;license_path&gt;
+setenv PATH $VELOCE_HOME/bin:$PATH
+
+# ── COMPILE FLOW ────────────────────────
+velanalyze hdl/*.sv          # Analyze RTL
+velcomp                      # Compile DUT
+velhvl -cfiles hvl/test.cxx  # Compile HVL
+
+# ── RUN ─────────────────────────────────
+velrun                       # Auto run
+velrun -c                    # Interactive Tcl
+velrun -gui                  # GUI mode
+velrun -c -nac -do cmd.do    # From do file
+
+# ── DEBUG ───────────────────────────────
+hwtrace on / off
+hwtrace autoupload on -tracedir &lt;dir&gt;
+run &lt;N&gt; ns
+upload wave ..
+vis -tracedir &lt;dir&gt;
+ecf2wave -tracedir &lt;dir&gt; -crd -o out.crd
+
+# ── OPTIMIZATION ────────────────────────
+velcomp -task velvis
+velcomp -clean_task velcc
+velcomp -start_task velcc
+velcp</pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────
+let currentFilter = 'all';
+let favorites = JSON.parse(localStorage.getItem('veloce_favs') || '{}');
+let visited = JSON.parse(localStorage.getItem('veloce_visited') || '{}');
+let currentChapter = localStorage.getItem('veloce_lastChapter') || null;
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  applyFavoritesUI();
+  updateFavCount();
+  updateVisitedDots();
+  if (currentChapter) showChapter(currentChapter);
+  else document.getElementById('welcome').style.display = 'flex';
+  setupSearch();
+  setupKeyboard();
+});
+
+// ── SIDEBAR TOGGLE ─────────────────────────────────────────────────────────
+document.getElementById('hamburger').addEventListener('click', toggleSidebar);
+document.getElementById('overlay').addEventListener('click', closeSidebar);
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+// ── CHAPTER NAVIGATION ─────────────────────────────────────────────────────
+function showChapter(id) {
+  document.querySelectorAll('.chapter-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('favView').classList.remove('active');
+
+  const view = document.getElementById(id);
+  if (view) {
+    view.classList.add('active');
+    currentChapter = id;
+    localStorage.setItem('veloce_lastChapter', id);
+    visited[id] = true;
+    localStorage.setItem('veloce_visited', JSON.stringify(visited));
+    updateVisitedDots();
+  }
+
+  document.querySelectorAll('.sidebar-item[data-ch]').forEach(el => el.classList.remove('active'));
+  const activeItem = document.querySelector(`.sidebar-item[data-ch="${id}"]`);
+  if (activeItem) activeItem.classList.add('active');
+
+  applyFilter();
+  closeSidebar();
+  window.scrollTo(0, 0);
+}
+
+function showWelcome() {
+  document.querySelectorAll('.chapter-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('welcome').style.display = 'flex';
+  document.querySelectorAll('.sidebar-item[data-ch]').forEach(el => el.classList.remove('active'));
+  currentChapter = null;
+  localStorage.removeItem('veloce_lastChapter');
+  closeSidebar();
+}
+
+function showFavorites() {
+  document.querySelectorAll('.chapter-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('favView').classList.add('active');
+  document.querySelectorAll('.sidebar-item[data-ch]').forEach(el => el.classList.remove('active'));
+  document.getElementById('favNav').classList.add('active');
+  renderFavorites();
+  closeSidebar();
+}
+
+// ── VISITED DOTS ───────────────────────────────────────────────────────────
+function updateVisitedDots() {
+  document.querySelectorAll('.sidebar-item[data-ch]').forEach(el => {
+    const ch = el.dataset.ch;
+    if (visited[ch]) el.classList.add('visited');
+  });
+}
+
+// ── FILTER ─────────────────────────────────────────────────────────────────
+function setFilter(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilter();
+}
+
+function applyFilter() {
+  const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+  const cards = document.querySelectorAll('.chapter-view.active .card');
+  let visible = 0;
+
+  cards.forEach(card => {
+    const type = card.dataset.type;
+    const isFav = favorites[card.dataset.id];
+    const text = card.innerText.toLowerCase();
+
+    let show = true;
+    if (currentFilter === 'favorites') show = !!isFav;
+    else if (currentFilter !== 'all') show = type === currentFilter;
+    if (searchTerm && !text.includes(searchTerm)) show = false;
+
+    card.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+
+  const countEl = document.getElementById('searchCount');
+  if (searchTerm) {
+    countEl.textContent = `${visible} result${visible !== 1 ? 's' : ''}`;
+  } else {
+    countEl.textContent = '';
+  }
+}
+
+// ── SEARCH ─────────────────────────────────────────────────────────────────
+function setupSearch() {
+  const input = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('clearSearch');
+
+  input.addEventListener('input', () => {
+    clearBtn.style.display = input.value ? 'block' : 'none';
+    applyFilter();
+  });
+
+  clearBtn.addEventListener('click', () => {
+    input.value = '';
+    clearBtn.style.display = 'none';
+    document.getElementById('searchCount').textContent = '';
+    applyFilter();
+  });
+}
+
+function setupKeyboard() {
+  document.addEventListener('keydown', e => {
+    if ((e.key === '/' || (e.ctrlKey && e.key === 'k')) && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      document.getElementById('searchInput').focus();
+    }
+    if (e.key === 'Escape') {
+      document.getElementById('searchInput').blur();
+    }
+  });
+}
+
+// ── COPY TO CLIPBOARD ──────────────────────────────────────────────────────
+function copyCode(btn) {
+  const pre = btn.nextElementSibling;
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✅ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '📋 Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '✅ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── FAVORITES ──────────────────────────────────────────────────────────────
+function toggleFav(btn, id, label) {
+  if (favorites[id]) {
+    delete favorites[id];
+    btn.textContent = '☆';
+    btn.classList.remove('active');
+  } else {
+    favorites[id] = { label, chapter: currentChapter };
+    btn.textContent = '★';
+    btn.classList.add('active');
+  }
+  localStorage.setItem('veloce_favs', JSON.stringify(favorites));
+  updateFavCount();
+}
+
+function applyFavoritesUI() {
+  Object.keys(favorites).forEach(id => {
+    const card = document.querySelector(`.card[data-id="${id}"]`);
+    if (card) {
+      const btn = card.querySelector('.fav-btn');
+      if (btn) { btn.textContent = '★'; btn.classList.add('active'); }
+    }
+  });
+}
+
+function updateFavCount() {
+  const count = Object.keys(favorites).length;
+  const badge = document.getElementById('favCount');
+  if (count > 0) {
+    badge.style.display = 'inline';
+    badge.textContent = count;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function renderFavorites() {
+  const container = document.getElementById('favContent');
+  const keys = Object.keys(favorites);
+  if (keys.length === 0) {
+    container.innerHTML = '<div class="no-results"><div class="icon">⭐</div>No favorites yet. Click the ⭐ on any card to bookmark it.</div>';
+    return;
+  }
+
+  const grouped = {};
+  keys.forEach(id => {
+    const fav = favorites[id];
+    const ch = fav.chapter || 'other';
+    if (!grouped[ch]) grouped[ch] = [];
+    grouped[ch].push({ id, label: fav.label });
+  });
+
+  let html = '';
+  Object.entries(grouped).forEach(([ch, items]) => {
+    const chEl = document.getElementById(ch);
+    const chTitle = chEl ? chEl.querySelector('h1')?.textContent || ch : ch;
+    html += `<div class="section-title">${chTitle}</div><div class="cards-grid">`;
+    items.forEach(({ id, label }) => {
+      const origCard = document.querySelector(`.card[data-id="${id}"]`);
+      if (origCard) {
+        const clone = origCard.cloneNode(true);
+        const favBtn = clone.querySelector('.fav-btn');
+        if (favBtn) {
+          favBtn.textContent = '★';
+          favBtn.classList.add('active');
+          favBtn.onclick = () => {
+            toggleFav(favBtn, id, label);
+            renderFavorites();
+          };
+        }
+        clone.querySelectorAll('.copy-btn').forEach(btn => {
+          btn.onclick = () => copyCode(btn);
+        });
+        html += clone.outerHTML;
+      }
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+</script>
+</body>
+</html>
