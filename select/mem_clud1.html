@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Veloce® User Guide — Chapter 10: Memories</title>
+<style>
+  :root {
+    --bg:        #0d1117;
+    --surface:   #161b22;
+    --surface2:  #1c2330;
+    --surface3:  #21262d;
+    --border:    #30363d;
+    --accent:    #00b4d8;
+    --accent2:   #0077b6;
+    --accent3:   #48cae4;
+    --green:     #3fb950;
+    --yellow:    #d29922;
+    --red:       #f85149;
+    --purple:    #bc8cff;
+    --orange:    #f0883e;
+    --text:      #e6edf3;
+    --text-muted:#8b949e;
+    --text-dim:  #6e7681;
+    --radius:    10px;
+    --radius-sm: 6px;
+    --shadow:    0 4px 24px rgba(0,0,0,0.4);
+    --transition:0.25s ease;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
+
+  /* ── Top Header ── */
+  .top-header {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1a2744 50%, #0d2137 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.5);
+  }
+  .top-header .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; color: #fff;
+    box-shadow: 0 0 16px rgba(0,180,216,0.4);
+  }
+  .logo-text { display: flex; flex-direction: column; }
+  .logo-title { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: 0.3px; }
+  .logo-sub   { font-size: 11px; color: var(--text-muted); }
+  .header-badges { display: flex; gap: 8px; align-items: center; }
+  .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; }
+  .badge-blue   { background: rgba(0,180,216,0.15); color: var(--accent);  border: 1px solid rgba(0,180,216,0.3); }
+  .badge-green  { background: rgba(63,185,80,0.15);  color: var(--green);   border: 1px solid rgba(63,185,80,0.3); }
+  .badge-purple { background: rgba(188,140,255,0.15);color: var(--purple);  border: 1px solid rgba(188,140,255,0.3); }
+
+  /* ── Layout ── */
+  .layout { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 64px); }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 260px; min-width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px 0;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .sidebar-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+    color: var(--text-dim); text-transform: uppercase;
+    padding: 12px 20px 4px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 20px; cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: var(--transition);
+    font-size: 13px; color: var(--text-muted);
+    user-select: none;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); border-left-color: var(--border); }
+  .nav-item.active { background: rgba(0,180,216,0.1); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+  .nav-item .nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+  .nav-item .nav-num  { font-size: 10px; color: var(--text-dim); margin-left: auto; }
+
+  /* ── Main Content ── */
+  .main { flex: 1; overflow-y: auto; padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; }
+
+  /* ── Section ── */
+  .section { display: none; flex-direction: column; gap: 20px; animation: fadeIn 0.3s ease; }
+  .section.active { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── Section Header ── */
+  .section-header {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    width: 44px; height: 44px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .icon-blue   { background: rgba(0,180,216,0.15);   color: var(--accent); }
+  .icon-green  { background: rgba(63,185,80,0.15);    color: var(--green); }
+  .icon-purple { background: rgba(188,140,255,0.15);  color: var(--purple); }
+  .icon-orange { background: rgba(240,136,62,0.15);   color: var(--orange); }
+  .icon-yellow { background: rgba(210,153,34,0.15);   color: var(--yellow); }
+  .icon-red    { background: rgba(248,81,73,0.15);    color: var(--red); }
+  .section-title { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.2; }
+  .section-desc  { font-size: 13px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
+
+  /* ── Cards Grid ── */
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px; transition: var(--transition);
+  }
+  .card:hover { border-color: var(--accent2); box-shadow: 0 0 16px rgba(0,180,216,0.1); transform: translateY(-1px); }
+  .card-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .card-body  { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── Comparison Table ── */
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .compare-table th {
+    background: var(--surface3); color: var(--accent);
+    padding: 10px 14px; text-align: left; font-size: 11px;
+    font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+    border-bottom: 2px solid var(--border);
+  }
+  .compare-table td {
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    color: var(--text-muted); vertical-align: top;
+  }
+  .compare-table tr:hover td { background: rgba(255,255,255,0.05); color: var(--text); }
+  
+  .compare-table td:first-child { color: var(--text); font-weight: 600; }
+  .yes { color: var(--green); font-weight: 700; }
+  .no  { color: var(--red);   font-weight: 700; }
+
+  /* ── Code Block ── */
+  .code-block {
+    background: #0d1117; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 14px 16px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 12px; color: #e6edf3; overflow-x: auto; line-height: 1.7; position: relative;
+  }
+  .code-block .kw  { color: #ff7b72; }
+  .code-block .str { color: #a5d6ff; }
+  .code-block .cmt { color: #8b949e; font-style: italic; }
+  .code-block .num { color: #79c0ff; }
+  .code-block .fn  { color: #d2a8ff; }
+  .code-block .var { color: #ffa657; }
+  .code-block .op  { color: #ff7b72; }
+  .code-block-header {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface3); border: 1px solid var(--border); border-bottom: none;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    padding: 8px 14px; font-size: 11px; color: var(--text-muted);
+    font-family: 'Cascadia Code', monospace;
+  }
+  .code-block-header .lang-tag {
+    background: rgba(0,180,216,0.15); color: var(--accent);
+    padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;
+  }
+  .code-block-header + .code-block { border-radius: 0 0 var(--radius-sm) var(--radius-sm); }
+  .copy-btn {
+    background: none; border: 1px solid var(--border); color: var(--text-muted);
+    padding: 3px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; transition: var(--transition);
+  }
+  .copy-btn:hover { background: var(--surface2); color: var(--text); }
+
+  /* ── Info Boxes ── */
+  .info-box {
+    border-radius: var(--radius-sm); padding: 12px 16px;
+    font-size: 12.5px; line-height: 1.6;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .info-box .box-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .info-box.tip    { background: rgba(63,185,80,0.08);  border-left: 3px solid var(--green);  color: #b3e8b8; }
+  .info-box.warn   { background: rgba(210,153,34,0.08); border-left: 3px solid var(--yellow); color: #e8d5a3; }
+  .info-box.danger { background: rgba(248,81,73,0.08);  border-left: 3px solid var(--red);    color: #f5b8b5; }
+  .info-box.note   { background: rgba(0,180,216,0.08);  border-left: 3px solid var(--accent); color: #a8d8e8; }
+
+  /* ── Pills ── */
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .pill {
+    padding: 5px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 600;
+    display: flex; align-items: center; gap: 5px; cursor: default; transition: var(--transition);
+  }
+  .pill:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+  .pill-blue   { background: rgba(0,180,216,0.15);   color: var(--accent);  border: 1px solid rgba(0,180,216,0.3); }
+  .pill-green  { background: rgba(63,185,80,0.15);    color: var(--green);   border: 1px solid rgba(63,185,80,0.3); }
+  .pill-yellow { background: rgba(210,153,34,0.15);   color: var(--yellow);  border: 1px solid rgba(210,153,34,0.3); }
+  .pill-red    { background: rgba(248,81,73,0.15);    color: var(--red);     border: 1px solid rgba(248,81,73,0.3); }
+  .pill-purple { background: rgba(188,140,255,0.15);  color: var(--purple);  border: 1px solid rgba(188,140,255,0.3); }
+  .pill-orange { background: rgba(240,136,62,0.15);   color: var(--orange);  border: 1px solid rgba(240,136,62,0.3); }
+
+  /* ── Accordion ── */
+  .accordion { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .accordion-item { border-bottom: 1px solid var(--border); }
+  .accordion-item:last-child { border-bottom: none; }
+  .accordion-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 18px; cursor: pointer;
+    background: var(--surface2); transition: var(--transition); user-select: none;
+  }
+  .accordion-header:hover { background: var(--surface3); }
+  .accordion-header.open  { background: rgba(0,180,216,0.08); }
+  .accordion-title { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 10px; }
+  .accordion-arrow { color: var(--text-muted); transition: transform 0.25s; font-size: 12px; }
+  .accordion-header.open .accordion-arrow { transform: rotate(180deg); color: var(--accent); }
+  .accordion-body { display: none; padding: 16px 18px; background: var(--surface); border-top: 1px solid var(--border); }
+  .accordion-body.open { display: block; animation: fadeIn 0.2s ease; }
+
+  /* ── Tab Bar ── */
+  .tab-bar { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  .tab-btn {
+    padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;
+    cursor: pointer; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text-muted); transition: var(--transition);
+  }
+  .tab-btn:hover { color: var(--text); border-color: var(--accent2); }
+  .tab-btn.active { background: rgba(0,180,216,0.15); color: var(--accent); border-color: var(--accent); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
+
+  /* ── Stat Cards ── */
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .stat-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 14px; text-align: center;
+  }
+  .stat-num   { font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1; }
+  .stat-unit  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+  /* ── TOC Table ── */
+  .toc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .toc-table th {
+    background: var(--surface3); color: var(--accent);
+    padding: 10px 16px; text-align: left; font-size: 11px;
+    font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+    border-bottom: 2px solid var(--border);
+  }
+  .toc-table td { padding: 10px 16px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+  .toc-table tr:hover td { background: rgba(255,255,255,0.05); color: var(--text); cursor: pointer; }
+  .toc-table td:first-child { color: var(--accent3); font-weight: 700; font-family: monospace; }
+  .toc-table td:last-child  { color: var(--text-dim); text-align: right; font-family: monospace; font-size: 11px; }
+.compare-table tbody tr:hover,
+.toc-table tbody tr:hover,
+.param-table tbody tr:hover {
+  background-color: #1c2330 !important;
+}
+
+.compare-table tbody tr:hover td,
+.toc-table tbody tr:hover td,
+.param-table tbody tr:hover td {
+  background-color: #1c2330 !important;
+  color: #e6edf3 !important;
+}
+  /* ── Param Table ── */
+  .param-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .param-table th {
+    background: var(--surface3); color: var(--purple);
+    padding: 9px 14px; text-align: left; font-size: 11px;
+    font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+    border-bottom: 2px solid var(--border);
+  }
+  .param-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+  .param-table td:first-child { color: var(--accent3); font-family: monospace; font-weight: 700; }
+  .param-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── Flow Steps ── */
+  .flow-steps { display: flex; flex-direction: column; gap: 12px; }
+  .flow-step {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px;
+    transition: var(--transition);
+  }
+  .flow-step:hover { border-color: var(--accent2); }
+  .flow-step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(0,180,216,0.15); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; flex-shrink: 0;
+  }
+  .flow-step-body { flex: 1; }
+  .flow-step-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .flow-step-desc  { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+  /* ── Inline code ── */
+  code {
+    background: var(--surface3); color: var(--accent3);
+    padding: 1px 6px; border-radius: 4px;
+    font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 11.5px;
+  }
+
+  h3 { font-size: 15px; font-weight: 700; color: var(--text); margin: 0 0 10px; }
+  h4 { font-size: 13px; font-weight: 700; color: var(--text-muted); margin: 0 0 8px; }
+  p  { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin: 0; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     TOP HEADER
+══════════════════════════════════════════════ -->
+<header class="top-header">
+  <div class="logo">
+    <div class="logo-icon">V</div>
+    <div class="logo-text">
+      <span class="logo-title">Veloce® User Guide</span>
+      <span class="logo-sub">Software Version 25.0.2 · Siemens EDA</span>
+    </div>
+  </div>
+  <div class="header-badges">
+    <span class="badge badge-blue">Chapter 10</span>
+    <span class="badge badge-green">Memories</span>
+    <span class="badge badge-purple">Interactive Reference</span>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════
+     LAYOUT
+══════════════════════════════════════════════ -->
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <nav class="sidebar">
+    <div class="sidebar-section-label">Chapter 10 — Memories</div>
+
+    <div class="nav-item active" onclick="showSection('overview')">
+      <span class="nav-icon">📋</span> Overview
+      <span class="nav-num">10-1</span>
+    </div>
+    <div class="nav-item" onclick="showSection('mem-types')">
+      <span class="nav-icon">🗄️</span> Memory Types
+      <span class="nav-num">10-1</span>
+    </div>
+    <div class="nav-item" onclick="showSection('param-mem')">
+      <span class="nav-icon">⚙️</span> Parameterized Memory
+      <span class="nav-num">10-2</span>
+    </div>
+    <div class="nav-item" onclick="showSection('write-sem')">
+      <span class="nav-icon">✏️</span> Write Semantics
+      <span class="nav-num">10-3</span>
+    </div>
+    <div class="nav-item" onclick="showSection('content-init')">
+      <span class="nav-icon">📄</span> Content Initialization
+      <span class="nav-num">10-10</span>
+    </div>
+    <div class="nav-item" onclick="showSection('comb-cycles')">
+      <span class="nav-icon">🔄</span> Combinational Cycles
+      <span class="nav-num">10-11</span>
+    </div>
+    <div class="nav-item" onclick="showSection('parallel-upload')">
+      <span class="nav-icon">⬆️</span> Parallel Upload
+      <span class="nav-num">10-11</span>
+    </div>
+    <div class="nav-item" onclick="showSection('out-of-bounds')">
+      <span class="nav-icon">⚠️</span> Out-of-Bounds Access
+      <span class="nav-num">10-12</span>
+    </div>
+    <div class="nav-item" onclick="showSection('flexmem')">
+      <span class="nav-icon">🧩</span> Flexmem
+      <span class="nav-num">10-12</span>
+    </div>
+    <div class="nav-item" onclick="showSection('sbmem')">
+      <span class="nav-icon">🔗</span> SBMEM Comodel
+      <span class="nav-num">10-52</span>
+    </div>
+    <div class="nav-item" onclick="showSection('tcam')">
+      <span class="nav-icon">🔍</span> TCAM Modeling
+      <span class="nav-num">10-52</span>
+    </div>
+    <div class="nav-item" onclick="showSection('tcam-veloce')">
+      <span class="nav-icon">🚀</span> TCAM for Veloce
+      <span class="nav-num">10-57</span>
+    </div>
+  </nav>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="main">
+
+    <!-- ════════════════════════════════
+         SECTION: OVERVIEW
+    ════════════════════════════════ -->
+    <div class="section active" id="sec-overview">
+      <div class="section-header">
+        <div class="section-icon icon-blue">📋</div>
+        <div>
+          <div class="section-title">Chapter 10 — Memories</div>
+          <div class="section-desc">This chapter covers how Veloce handles memories — from memory types and parameterized interfaces to Flexmem, TCAM modeling, and SBMEM comodel transactions.</div>
+        </div>
+      </div>
+
+      <div class="info-box note">
+        <span class="box-icon">ℹ️</span>
+        <span>For memory inference documentation, see <strong>Memory Inference in RTLC</strong>.</span>
+      </div>
+
+      <!-- TOC -->
+      <table class="toc-table">
+        <thead>
+          <tr><th>Section</th><th>Topic</th><th>Page Ref</th></tr>
+        </thead>
+        <tbody>
+          <tr onclick="showSection('mem-types')">    <td>10-1</td>  <td>Memory Types and Characteristics</td>                          <td>10-1</td></tr>
+          <tr onclick="showSection('param-mem')">    <td>10-2</td>  <td>Using Parameterized Memory Interface</td>                      <td>10-2</td></tr>
+          <tr onclick="showSection('write-sem')">    <td>10-3</td>  <td>Write Semantics</td>                                           <td>10-3</td></tr>
+          <tr onclick="showSection('param-mem')">    <td>10-5</td>  <td>Parameterized Memories (Terminals)</td>                        <td>10-5</td></tr>
+          <tr onclick="showSection('param-mem')">    <td>10-6</td>  <td>Parameterized Memory for RTL</td>                              <td>10-6</td></tr>
+          <tr onclick="showSection('param-mem')">    <td>10-7</td>  <td>Parameterized Memory for VHDL</td>                             <td>10-7</td></tr>
+          <tr onclick="showSection('content-init')"> <td>10-10</td> <td>Memory Content Initialization (RTL, VHDL, Gates)</td>          <td>10-10</td></tr>
+          <tr onclick="showSection('comb-cycles')">  <td>10-11</td> <td>Memories in Combinational Cycles Error Reporting</td>          <td>10-11</td></tr>
+          <tr onclick="showSection('parallel-upload')"><td>10-11</td><td>Uploading Multiple Memories in Parallel</td>                  <td>10-11</td></tr>
+          <tr onclick="showSection('out-of-bounds')"><td>10-12</td> <td>Behavior of Out-of-Bounds Access</td>                          <td>10-12</td></tr>
+          <tr onclick="showSection('flexmem')">      <td>10-12</td> <td>Flexmem</td>                                                   <td>10-12</td></tr>
+          <tr onclick="showSection('sbmem')">        <td>10-52</td> <td>Comodel Transaction-Based Upload/Download for SBMEMs</td>      <td>10-52</td></tr>
+          <tr onclick="showSection('tcam')">         <td>10-52</td> <td>Ternary Content-Addressable Memory (TCAM) Modeling</td>        <td>10-52</td></tr>
+          <tr onclick="showSection('tcam-veloce')">  <td>10-57</td> <td>TCAM Modeling for Veloce</td>                                  <td>10-57</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Stat Row -->
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-num" style="color:var(--accent)">4</div>
+          <div class="stat-unit">Memory Types</div>
+          <div class="stat-label">XMEM · CMEM · LCMEM · SBMEM</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:var(--green)">6</div>
+          <div class="stat-unit">Required Params</div>
+          <div class="stat-label">VMW_PARAM_MEM interface</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:var(--purple)">1GB</div>
+          <div class="stat-unit">Max SBMEM Size</div>
+          <div class="stat-label">64M × 128 bits</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:var(--orange)">&lt;1%</div>
+          <div class="stat-unit">HDL Cache</div>
+          <div class="stat-label">Flexmem on-emulator footprint</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         SECTION: MEMORY TYPES
+    ════════════════════════════════ -->
+    <div class="section" id="sec-mem-types">
+      <div class="section-header">
+        <div class="section-icon icon-blue">🗄️</div>
+        <div>
+          <div class="section-title">Memory Types and Characteristics</div>
+          <div class="section-desc">Veloce Strato supports several physical memory types, each with distinct capacity, port, and muxing characteristics.</div>
+        </div>
+      </div>
+
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Memory Type</th>
+            <th>Instances / Unit</th>
+            <th>Size</th>
+            <th>Read Ports</th>
+            <th>Write Ports</th>
+            <th>Muxing</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>XMEM</td>
+            <td>560 / crystal</td>
+            <td>1 KB (1K × 8 bits)</td>
+            <td>1</td>
+            <td>1</td>
+            <td class="no">No</td>
+            <td>No muxing possible</td>
+          </tr>
+          <tr>
+            <td>CMEM</td>
+            <td>64 / crystal</td>
+            <td>256 KB (64K × 32 bits)</td>
+            <td>Up to 16R</td>
+            <td>Up to 16W</td>
+            <td class="yes">Yes</td>
+            <td>Up to 16R/16W with muxing</td>
+          </tr>
+          <tr>
+            <td>LCMEM</td>
+            <td>4 / crystal</td>
+            <td>4 MB (1M × 32 bits)</td>
+            <td>Up to 16R</td>
+            <td>Up to 16W</td>
+            <td class="yes">Yes</td>
+            <td>Up to 16R/16W with muxing</td>
+          </tr>
+          <tr>
+            <td>SBMEM</td>
+            <td>4 / SXB (32 SXBs/StratM)</td>
+            <td>1 GB (64M × 128 bits)</td>
+            <td>1</td>
+            <td>1</td>
+            <td class="no">No</td>
+            <td>No mixing possible</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-title"><span>⚡</span> XMEM — Small & Fast</div>
+          <div class="card-body">560 instances per crystal. Ideal for small, high-speed memories. 1KB per instance with single read/write ports. No muxing capability.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>🔀</span> CMEM — Muxable Medium</div>
+          <div class="card-body">64 instances per crystal with 256KB each. Supports up to 16 read and 16 write ports via muxing — great for multi-port memory needs.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>📦</span> LCMEM — Large Capacity</div>
+          <div class="card-body">4 instances per crystal at 4MB each. Same muxing flexibility as CMEM but with much larger capacity for system-level memories.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>🏢</span> SBMEM — Massive Storage</div>
+          <div class="card-body">4 instances per SXB with 1GB each. Used for very large system memories. No mixing possible. Supports comodel transaction-based upload/download.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         SECTION: PARAMETERIZED MEMORY
+    ════════════════════════════════ -->
+    <div class="section" id="sec-param-mem">
+      <div class="section-header">
+        <div class="section-icon icon-purple">⚙️</div>
+        <div>
+          <div class="section-title">Using Parameterized Memory Interface</div>
+          <div class="section-desc">Veloce recognizes a module as a memory when it has the <code>VMW_PARAM_MEM</code> prefix and exactly six parameters in the correct order.</div>
+        </div>
+      </div>
+
+      <div class="info-box note">
+        <span class="box-icon">ℹ️</span>
+        <span>When any non-zero number of parameters are passed to a module <strong>without</strong> the <code>VMW_PARAM_MEM</code> prefix, velsyn reports a <strong>warning</strong>. When any number of parameters other than six is passed to a module <strong>with</strong> the prefix, velsyn reports an <strong>error</strong>.</span>
+      </div>
+
+      <!-- 6 Required Parameters -->
+      <h3>Six Required Parameters (in order)</h3>
+      <table class="param-table">
+        <thead>
+          <tr><th>#</th><th>Parameter</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>address_width</td><td>Width of address bus</td></tr>
+          <tr><td>2</td><td>data_width</td><td>Width of data bus</td></tr>
+          <tr><td>3</td><td>write_semantics</td><td>e.g. <code>VMW_MEM_RISING_EDGE</code>, <code>VMW_MEM_FALLING_EDGE</code></td></tr>
+          <tr><td>4</td><td>output_enable</td><td><code>VMW_MEM_NO_OUTPUT_ENABLE</code> or <code>VMW_MEM_OUTPUT_ENABLE</code></td></tr>
+          <tr><td>5</td><td>num_read_ports</td><td>Number of read ports</td></tr>
+          <tr><td>6</td><td>num_write_ports</td><td>Number of write ports</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Terminal Names -->
+      <h3>Memory Module Terminal Names</h3>
+      <p style="margin-bottom:10px;">Terminals use the following naming convention where <code>n</code> is the read or write port number:</p>
+      <table class="param-table">
+        <thead>
+          <tr><th>Direction</th><th>Terminal</th><th>Width</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>input</td>  <td>RAn</td>  <td>[addr_width-1:0]</td> <td>Read Address port n</td></tr>
+          <tr><td>input</td>  <td>WAn</td>  <td>[addr_width-1:0]</td> <td>Write Address port n</td></tr>
+          <tr><td>output</td> <td>RDn</td>  <td>[data_width-1:0]</td> <td>Read Data port n</td></tr>
+          <tr><td>input</td>  <td>WDn</td>  <td>[data_width-1:0]</td> <td>Write Data port n</td></tr>
+          <tr><td>input</td>  <td>WEn</td>  <td>1 bit</td>            <td>Write Enable port n</td></tr>
+          <tr><td>input</td>  <td>OEn</td>  <td>1 bit</td>            <td>Output Enable port n</td></tr>
+          <tr><td>input</td>  <td>CWEn</td> <td>1 bit</td>            <td>Conditional Write Enable</td></tr>
+          <tr><td>input</td>  <td>CLKn</td> <td>1 bit</td>            <td>Clock port n</td></tr>
+          <tr><td>input</td>  <td>BEn</td>  <td>[b-1:0]</td>          <td>Byte Enable (b = data_width in bytes)</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Tabs: RTL vs VHDL -->
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="showTab(this,'tab-rtl')">📄 RTL Example</button>
+        <button class="tab-btn" onclick="showTab(this,'tab-vhdl')">📘 VHDL Example</button>
+        <button class="tab-btn" onclick="showTab(this,'tab-bitwr')">🔧 Bit-Writable RTL</button>
+      </div>
+
+      <div class="tab-content active" id="tab-rtl">
+        <div class="code-block-header">
+          <span>Two-Read-Port, One-Write-Port Memory Instantiation</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="lang-tag">VERILOG</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+        </div>
+        <div class="code-block"><span class="cmt">// Infers Two-Read-Port, One-Write-Port Memory</span>
+<span class="fn">VMW_PARAM_MEM_mem</span>
+  #(<span class="num">8</span>, <span class="num">16</span>, <span class="str">`VMW_MEM_RISING_EDGE</span>, <span class="str">`VMW_MEM_NO_OUTPUT_ENABLE</span>, <span class="num">2</span>, <span class="num">1</span>)
+  mem_instance (
+    .<span class="var">RA0</span>(ra0), .<span class="var">RD0</span>(rd0),
+    .<span class="var">RA1</span>(ra1), .<span class="var">RD1</span>(rd1),
+    .<span class="var">WA0</span>(wa),  .<span class="var">WD0</span>(wd), .<span class="var">WE0</span>(we)
+  );</div>
+
+        <div class="info-box tip" style="margin-top:12px;">
+          <span class="box-icon">💡</span>
+          <span>The generated module interface will have: <code>RAO, RDO, RA1, RD1, WAO, WDO, WEO</code> — read/write ports numbered independently starting at port zero.</span>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-vhdl">
+        <div class="code-block-header">
+          <span>VHDL Parameterized Memory Instantiation</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="lang-tag">VHDL</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+        </div>
+        <div class="code-block"><span class="cmt">-- First instantiation: AddrW=16, DataW=8, 2 write ports, 1 read port</span>
+<span class="var">g1</span>: <span class="fn">VMW_PARAM_MEM_MY_MEM</span> <span class="kw">generic map</span> (<span class="var">AddrW</span> => <span class="num">16</span>, <span class="var">DataW</span> => <span class="num">8</span>)
+  <span class="kw">PORT MAP</span> (
+    <span class="var">RA0</span> => address1,  <span class="var">WA0</span> => address1,
+    <span class="var">WA1</span> => address2,  <span class="var">WE0</span> => we1,
+    <span class="var">WE1</span> => we2,       <span class="var">RD0</span> => out_data1,
+    <span class="var">WD0</span> => data1,     <span class="var">WD1</span> => data2
+  );
+
+<span class="cmt">-- Second instantiation: same component, AddrW=8</span>
+<span class="var">g2</span>: <span class="fn">VMW_PARAM_MEM_MY_MEM</span> <span class="kw">generic map</span> (<span class="var">AddrW</span> => <span class="num">8</span>, <span class="var">DataW</span> => <span class="num">8</span>)
+  <span class="kw">PORT MAP</span> (
+    <span class="var">RA0</span> => address1(<span class="num">7</span> <span class="kw">downto</span> <span class="num">0</span>),
+    <span class="var">WA0</span> => address2(<span class="num">7</span> <span class="kw">downto</span> <span class="num">0</span>),
+    <span class="var">WA1</span> => address2(<span class="num">15</span> <span class="kw">downto</span> <span class="num">8</span>),
+    <span class="var">WE0</span> => we1,  <span class="var">WE1</span> => we2,
+    <span class="var">RD0</span> => out_data2,
+    <span class="var">WD0</span> => data1, <span class="var">WD1</span> => data2
+  );</div>
+        <div class="info-box tip" style="margin-top:12px;">
+          <span class="box-icon">💡</span>
+          <span>VHDL parameterized memory does <strong>not</strong> require entity/architecture definitions. Only address and data widths are parameterizable. RTLC automatically treats these as memory candidates.</span>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-bitwr">
+        <div class="code-block-header">
+          <span>Bit-Writable RTL Parameterized Memory Wrapper</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="lang-tag">VERILOG</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+        </div>
+        <div class="code-block"><span class="kw">module</span> <span class="fn">RAM_BITWR_12_32_FALLING</span> (rd_a, rd_d, wr_a, wr_d, enable);
+  <span class="kw">input</span>  [<span class="num">11</span>:<span class="num">0</span>] rd_a;
+  <span class="kw">input</span>  [<span class="num">11</span>:<span class="num">0</span>] wr_a;
+  <span class="kw">input</span>         enable;
+  <span class="kw">output</span> [<span class="num">31</span>:<span class="num">0</span>] rd_d;
+  <span class="kw">input</span>  [<span class="num">31</span>:<span class="num">0</span>] wr_d;
+
+  <span class="fn">write_mem</span> #(<span class="num">12</span>, <span class="num">32</span>, <span class="str">`VMW_MEM_FALLING_EDGE</span>, <span class="num">1</span>) mem (
+    .<span class="var">ra</span>(rd_a), .<span class="var">rd</span>(rd_d),
+    .<span class="var">wa</span>(wr_a), .<span class="var">wd</span>(wr_d), .<span class="var">we</span>(enable)
+  );
+<span class="kw">endmodule</span></div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         SECTION: WRITE SEMANTICS
+    ════════════════════════════════ -->
+    <div class="section" id="sec-write-sem">
+      <div class="section-header">
+        <div class="section-icon icon-yellow">✏️</div>
+        <div>
+          <div class="section-title">Write Semantics</div>
+          <div class="section-desc">Write semantics define when a memory write takes effect relative to the clock edge or level signal.</div>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-title"><span style="color:var(--accent)">⬆️</span> VMW_MEM_RISING_EDGE</div>
+          <div class="card-body">Write is triggered on the <strong>rising edge</strong> of the clock. Most common write semantic for synchronous memories.</div>
+          <div class="pills" style="margin-top:10px;">
+            <span class="pill pill-blue">Synchronous</span>
+            <span class="pill pill-green">Most Common</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span style="color:var(--orange)">⬇️</span> VMW_MEM_FALLING_EDGE</div>
+          <div class="card-body">Write is triggered on the <strong>falling edge</strong> of the clock. Used in designs that latch data on the negative clock edge.</div>
+          <div class="pills" style="margin-top:10px;">
+            <span class="pill pill-orange">Synchronous</span>
+            <span class="pill pill-yellow">Falling Edge</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span style="color:var(--purple)">〰️</span> Level-Sensitive</div>
+          <div class="card-body">Write occurs while the write enable signal is <strong>asserted high</strong>. Used for latch-based or asynchronous memory designs.</div>
+          <div class="pills" style="margin-top:10px;">
+            <span class="pill pill-purple">Asynchronous</span>
+            <span class="pill pill-yellow">Level-Ordered</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>Output Enable Types</h3>
+      <table class="compare-table">
+        <thead>
+          <tr><th>Constant</th><th>Read Data Terminal Type</th><th>Use Case</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>VMW_MEM_NO_OUTPUT_ENABLE</code></td>
+            <td>Declared as <code>output</code></td>
+            <td>Standard read port — always drives output</td>
+          </tr>
+          <tr>
+            <td><code>VMW_MEM_OUTPUT_ENABLE</code></td>
+            <td>Declared as <code>inout</code></td>
+            <td>Tri-state read port — output enable controls driving</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box warn">
+        <span class="box-icon">⚠️</span>
+        <span>If you use a memory module name twice, this implies they have the <strong>same semantics</strong>. Only the width and depth can differ. Module names must be consistent across the design.</span>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         SECTION: CONTENT INITIALIZATION
+    ════════════════════════════════ -->
+    <div class="section" id="sec-content-init">
+      <div class="section-header">
+        <div class="section-icon icon-green">📄</div>
+        <div>
+          <div class="section-title">Memory Content Initialization</div>
+          <div class="section-desc">Memory content initialization for RTL, VHDL, and Gates. Initialization comes from the <code>rtl.out/vmw_mem_contents</code> file.</div>
+        </div>
+      </div>
+
+      <!-- Accordion -->
+      <div class="accordion">
+        <div class="accordion-item">
+          <div class="accordion-header open" onclick="toggleAccordion(this)">
+            <div class="accordion-title">📂 $readmemb / $readmemh in Initial Block</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body open">
+            <p style="margin-bottom:12px;">RTLC supports Verilog <code>$readmemb</code> and <code>$readmemh</code> tasks for initialization of memories within a local scope. All instances of the memory receive the same file by default.</p>
+            <div class="code-block-header">
+              <span>Local scope $readmemh</span>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <span class="lang-tag">VERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+              </div>
+            </div>
+            <div class="code-block"><span class="kw">module</span> <span class="fn">Mod</span> (....);
+  <span class="kw">initial</span>
+    <span class="fn">$readmemh</span>(<span class="str">"init.txt"</span>, mem);
+<span class="kw">endmodule</span>
+
+<span class="kw">module</span> <span class="fn">Top</span> (....);
+  <span class="fn">Mod</span> m1 ();  <span class="cmt">// → reads init.txt</span>
+  <span class="fn">Mod</span> m2 ();  <span class="cmt">// → reads init.txt</span>
+<span class="kw">endmodule</span></div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title">🔗 Hierarchical Memory Initialization</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <p style="margin-bottom:12px;">Hierarchical initialization takes precedence over generic initialization. A specific instance can be given a different file than the module default.</p>
+            <div class="code-block-header">
+              <span>Hierarchical override</span>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <span class="lang-tag">VERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+              </div>
+            </div>
+            <div class="code-block"><span class="kw">module</span> <span class="fn">Top</span> (....);
+  <span class="kw">initial</span>
+    <span class="fn">$readmemh</span>(<span class="str">"init1.txt"</span>, Top.m1.mem); <span class="cmt">// hierarchical — overrides</span>
+  <span class="fn">Mod</span> m1 ();  <span class="cmt">// → reads init1.txt (hierarchical takes precedence)</span>
+  <span class="fn">Mod</span> m2 ();  <span class="cmt">// → reads init.txt  (module default)</span>
+<span class="kw">endmodule</span></div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title">🔁 Explicit Assignment / Loop in Initial Block</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <p style="margin-bottom:12px;">Assign small memories explicitly in the initial block. Veloce creates a corresponding contents file automatically.</p>
+            <div class="code-block-header">
+              <span>Explicit + loop initialization</span>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <span class="lang-tag">VERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+              </div>
+            </div>
+            <div class="code-block"><span class="kw">bit</span> [<span class="num">31</span>:<span class="num">0</span>] mem2 [<span class="num">7</span>:<span class="num">0</span>]; <span class="cmt">// pragma attribute mem2 ram_block 1</span>
+<span class="kw">bit</span> [<span class="num">31</span>:<span class="num">0</span>] mem3 [<span class="num">7</span>:<span class="num">0</span>]; <span class="cmt">// pragma attribute mem3 ram_block 1</span>
+
+<span class="kw">initial begin</span>
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < <span class="num">8</span>; ++i)
+    mem2[i] = {<span class="num">32</span>*i+<span class="num">1</span>'b1};
+  <span class="cmt">// Remaining mem3 locations initialized with 0's</span>
+  mem3[<span class="num">1</span>] = <span class="num">32</span>'d7;  mem3[<span class="num">5</span>] = <span class="num">32</span>'d9;  mem3[<span class="num">7</span>] = <span class="num">32</span>'d11;
+<span class="kw">end</span></div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title">🧬 SystemVerilog Array Literal Initialization</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <p style="margin-bottom:12px;">Use SystemVerilog array literals to specify initial contents. Veloce creates a corresponding contents file and adds an entry to the <code>vmw_mem_contents</code> file.</p>
+            <div class="code-block-header">
+              <span>SV array literal</span>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <span class="lang-tag">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+              </div>
+            </div>
+            <div class="code-block"><span class="cmt">// Initialize all 8 locations with value 37</span>
+<span class="kw">bit</span> [<span class="num">31</span>:<span class="num">0</span>] mem4 [<span class="num">7</span>:<span class="num">0</span>] = {<span class="num">8</span>{<span class="num">32</span>'d37}}; <span class="cmt">// pragma attribute mem4 ram_block 1</span></div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title">📁 vmw_mem_contents File Format</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <p style="margin-bottom:12px;">You can override memory contents at emulation time by writing a new <code>vmw_mem_contents</code> file:</p>
+            <div class="code-block-header">
+              <span>vmw_mem_contents format</span>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <span class="lang-tag">PLAINTEXT</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+              </div>
+            </div>
+            <div class="code-block"><span class="cmt"># Initialize all instances of a descriptor</span>
+DESCRIPTOR descriptor_name contents_file content_format
+
+<span class="cmt"># Initialize a specific instance only</span>
+INSTANCE instance_name contents_file contents_format</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         SECTION: COMBINATIONAL CYCLES
+    ════════════════════════════════ -->
+    <div class="section" id="sec-comb-cycles">
+      <div class="section-header">
+        <div class="section-icon icon-red">🔄</div>
+        <div>
+          <div class="section-title">Memories in Combinational Cycles</div>
+          <div class="section-desc">Velsyn does not support memories found as part of a combinational cycle and will exit compilation with an error.</div>
+        </div>
+      </div>
+
+      <div class="info-box danger">
+        <span class="box-icon">🚫</span>
+        <span>Only memories with <strong>ordered write semantics</strong> and <strong>level sensitivity</strong> can form part of combinational cycles. When velsyn finds a memory in a combinational cycle, it issues an error and exits compilation.</span>
+      </div>
+
+      <h3>Example Error Messages</h3>
+      <div class="code-block-header">
+        <span>Velsyn combinational cycle errors</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="lang-tag" style="background:rgba(248,81,73,0.15);color:var(--red);">ERROR</span>
+        </div>
+      </div>
+      <div class="code-block"><span class="op">Error [Velsyn-14040]</span>: Path top.wram: Memory appears to be in a
+  combinational cycle via terminal <span class="var">WDO[1]</span>.
+
+<span class="op">Error [Velsyn-14040]</span>: Path top.sram: Memory appears to be in a
+  combinational cycle via terminal <span class="var">RDO[0]</span>.
+
+<span class="op">Error [Velsyn-14040]</span>: Path top.sram: Memory appears to be in a
+  combinational cycle via terminal <span class="var">WDO[1]</span>.</div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-title"><span style="color:var(--yellow)">⚠️</span> Limitation 1</div>
+          <div class="card-body">Combinational cycles carried in by the <strong>address terminals</strong> of memories are not reported. However, associated read port data terminals that carry the cycle out are reported.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span style="color:var(--yellow)">⚠️</span> Limitation 2</div>
+          <div class="card-body">Combinational cycles carried in by <strong>byte enable terminals</strong> are instead reported as cycles carried through the <strong>write enable terminals</strong>.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span style="color:var(--green)">✅</span> Workaround Pragma</div>
+          <div class="card-body">Use <code>ignore_read_write_priority</code> pragma on the register declaration to make Veloce infer a <strong>level unordered</strong> memory and avoid false combinational loop errors.</div>
+        </div>
+      </div>
+
+      <div class="code-block-header">
+        <span>ignore_read_write_priority pragma</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="lang-tag">VERILOG</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+      </div>
+      <div class="code-block"><span class="cmt">// pragma attribute &lt;registerName&gt; ignore_read_write_priority 1</span>
+<span class="kw">reg</span> [<span class="num">31</span>:<span class="num">0</span>] core [<span class="num">63</span>:<span class="num">0</span>]; <span class="cmt">// 64x32 bit memory array</span>
+<span class="cmt">// pragma attribute core ram_block 1</span>
+<span class="cmt">// pragma attribute core ignore_read_write_priority 1</span></div>
+    </div>
+
+    <!-- ════════════════════════════════
+         SECTION: PARALLEL UPLOAD
+    ════════════════════════════════ -->
+    <div class="section" id="sec-parallel-upload">
+      <div class="section-header">
+        <div class="section-icon icon-green">⬆️</div>
+        <div>
+          <div class="section-title">Uploading Multiple Memories in Parallel</div>
+          <div class="section-desc">Veloce supports parallel memory upload to improve performance when working with multiple memories simultaneously.</div>
+        </div>
+      </div>
+
+      <div class="info-box tip">
+        <span class="box-icon">💡</span>
+        <span>Parallel upload allows you to upload multiple memories at the <strong>same simulation time</strong>, significantly improving throughput for designs with many large memories.</span>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-title"><span style="color:var(--green)">⚡</span> Deferred Upload (Default)</div>
+          <div class="card-body">By default, Veloce defers memory upload — contents are not uploaded immediately but batched for better performance. Only modified pages are written to save disk space.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span style="color:var(--accent)">🔄</span> Disable Deferred Upload</div>
+          <div class="card-body">To force immediate upload always, set the deferred upload flag to <code>"true"</code> in the Veloce config. Useful for debugging memory state at precise simulation times.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span style="color:var(--orange)">📦</span> Full Memory Dump</div>
+          <div class="card-body">By default only modified pages are uploaded. Use <code>-flexmem_dump_full_memory</code> at runtime to force a complete memory dump including unmodified pages.</div>
+        </div>
+      </div>
+
+      <div class="code-block-header">
+        <span>Force full memory upload at runtime</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="lang-tag">BASH</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+      </div>
+      <div class="code-block"><span class="cmt"># Upload all pages including unmodified ones</span>
+velrrun -c -flexmem_dump_full_memory -do run.do</div>
+    </div>
+
+    <!-- ════════════════════════════════
+         SECTION: OUT OF BOUNDS
+    ════════════════════════════════ -->
+    <div class="section" id="sec-out-of-bounds">
+      <div class="section-header">
+        <div class="section-icon icon-red">⚠️</div>
+        <div>
+          <div class="section-title">Out-of-Bounds Access on Signals and Memories</div>
+          <div class="section-desc">Veloce defines specific behavior for out-of-bounds reads and writes on signals and memories.</div>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-title"><span style="color:var(--green)">✏️</span> Out-of-Bounds Writes</div>
+          <div class="card-body">Out-of-bounds <strong>writes are silently ignored</strong>. No error is generated at runtime. The memory contents remain unchanged.</div>
+          <div class="pills" style="margin-top:10px;"><span class="pill pill-green">Silently Ignored</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span style="color:var(--red)">📖</span> Out-of-Bounds Reads</div>
+          <div class="card-body">Out-of-bounds reads return <code>'X'</code> in simulation but return <strong>0</strong> in Veloce emulation. This applies regardless of whether the signal is mapped to gates or memories.</div>
+          <div class="pills" style="margin-top:10px;"><span class="pill pill-red">Returns 0 in Emulation</span><span class="pill pill-yellow">X in Simulation</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span style="color:var(--orange)">🔍</span> Compile-Time Detection</div>
+          <div class="card-body">By default, no compile-time information is provided for out-of-bounds accesses. Use a compile switch to enable a <code>SimError</code> during the rtic phase for out-of-bounds read detection.</div>
+          <div class="pills" style="margin-top:10px;"><span class="pill pill-orange">Optional Flag</span></div>
+        </div>
+      </div>
+
+      <div class="info-box note">
+        <span class="box-icon">ℹ️</span>
+        <span>Out-of-bounds behavior is <strong>independent of where the signal is implemented</strong> — it applies equally to signals mapped to gates, standard memories, or Flexmem memories.</span>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         SECTION: FLEXMEM
+    ════════════════════════════════ -->
+    <div class="section" id="sec-flexmem">
+      <div class="section-header">
+        <div class="section-icon icon-purple">🧩</div>
+        <div>
+          <div class="section-title">Flexmem</div>
+          <div class="section-desc">Flexmem partitions large memory images between the HDL emulator and HVL host — keeping only a small cache on hardware while the full image resides on the HVL side.</div>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-num" style="color:var(--purple)">&lt;1%</div>
+          <div class="stat-unit">HDL Cache</div>
+          <div class="stat-label">On-emulator footprint</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:var(--green)">100%</div>
+          <div class="stat-unit">HVL Image</div>
+          <div class="stat-label">Full memory on host side</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:var(--accent)">16KB</div>
+          <div class="stat-unit">Max Page Size</div>
+          <div class="stat-label">Configurable 128B–16KB</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:var(--orange)">Sparse</div>
+          <div class="stat-unit">HVL Storage</div>
+          <div class="stat-label">Grows with usage</div>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-title"><span style="color:var(--purple)">🧠</span> Problem 1: Capacity</div>
+          <div class="card-body">Large system-level memories mapped entirely into emulator hardware cause significant capacity impact, long compile times, and sub-optimal clock speeds.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span style="color:var(--red)">🔗</span> Problem 2: HVL Access</div>
+          <div class="card-body">Frequent HVL-side access to memories inside the DUT causes significant communication overhead that impacts runtime throughput.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span style="color:var(--green)">✅</span> Flexmem Solution</div>
+          <div class="card-body">Automatically partitions the memory image. Full image on HVL side for fast access. HDL holds only a small cache — optimizing both compile time and runtime.</div>
+        </div>
+      </div>
+
+      <!-- Flexmem Pragma -->
+      <h3>Specifying Flexmem</h3>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="showTab(this,'tab-xrtl')">XRTl Pragma</button>
+        <button class="tab-btn" onclick="showTab(this,'tab-vattr')">Verilog Attributes</button>
+        <button class="tab-btn" onclick="showTab(this,'tab-vparam')">Parameterized Values</button>
+      </div>
+
+      <div class="tab-content active" id="tab-xrtl">
+        <div class="code-block-header">
+          <span>XRTl pragma — Flexmem declaration</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="lang-tag">XRTL</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+        </div>
+        <div class="code-block"><span class="cmt">// pragma attribute XMEM flexmem cache [options]</span>
+<span class="kw">bit</span> [<span class="num">7</span>:<span class="num">0</span>] XMEM [<span class="num">1</span>&lt;&lt;<span class="num">36</span>];</div>
+      </div>
+
+      <div class="tab-content" id="tab-vattr">
+        <div class="code-block-header">
+          <span>Verilog attribute — Flexmem declaration</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="lang-tag">VERILOG</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+        </div>
+        <div class="code-block"><span class="cmt">(* flexmem="cache", [options] *)</span>
+<span class="kw">int</span> RAM [<span class="num">1</span> &lt;&lt; <span class="num">25</span>];</div>
+        <div class="info-box tip" style="margin-top:12px;">
+          <span class="box-icon">💡</span>
+          <span>Providing an empty string <code>""</code> or <code>"null"</code> as the Flexmem type makes the memory <strong>non-Flexmem</strong>. This lets you keep smaller memories as non-Flexmem while larger ones use Flexmem.</span>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-vparam">
+        <div class="code-block-header">
+          <span>Parameterized Flexmem values</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="lang-tag">VERILOG</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+        </div>
+        <div class="code-block"><span class="kw">parameter</span> P_PC = <span class="num">100</span>;
+<span class="cmt">(* flexmem="cache", page_count=P_PC, page_size_in_bytes=2048 *)</span>
+<span class="kw">int</span> RAM [<span class="num">1</span> &lt;&lt; <span class="num">25</span>];</div>
+      </div>
+
+      <!-- Flexmem Supported Access -->
+      <h3>Supported Access Patterns</h3>
+      <table class="compare-table">
+        <thead>
+          <tr><th>Access Type</th><th>Supported</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Synchronous Read/Write</td>     <td class="yes">✔ Yes</td><td>Reads/writes inside synchronous always blocks. Async set/reset not supported.</td></tr>
+          <tr><td>Asynchronous Reads</td>          <td class="yes">✔ Yes</td><td>From combinational always blocks or concurrent assign statements.</td></tr>
+          <tr><td>Asynchronous Writes</td>         <td class="no">✘ No</td> <td>From combinational always blocks — not supported.</td></tr>
+          <tr><td>$readmem / $writemem</td>        <td class="yes">✔ Yes</td><td>System tasks are supported.</td></tr>
+          <tr><td>SCEMI-DMI APIs</td>              <td class="yes">✔ Yes</td><td>Preferred method for backdoor access.</td></tr>
+          <tr><td>Veloce dm_APIs</td>              <td class="yes">✔ Yes</td><td>HVL-side memory access.</td></tr>
+          <tr><td>Tcl Memory Commands</td>         <td class="yes">✔ Yes</td><td>Global — work for all Flexmems.</td></tr>
+          <tr><td>0-time export DPIs (backdoor)</td><td class="no">⚠ Discouraged</td><td>Use SCEMI-DMI instead for backdoor access.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ════════════════════════════════
+         SECTION: SBMEM COMODEL
+    ════════════════════════════════ -->
+    <div class="section" id="sec-sbmem">
+      <div class="section-header">
+        <div class="section-icon icon-orange">🔗</div>
+        <div>
+          <div class="section-title">Comodel Transaction-Based Upload/Download for SBMEMs</div>
+          <div class="section-desc">Specify at compile time that SBMEM upload and download should use comodel transactions for improved performance.</div>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-title"><span style="color:var(--green)">⬇️</span> Download Performance</div>
+          <div class="card-body">Memory <strong>download using comodel transactions is faster</strong> when the number of locations to be downloaded is small. Avoids full-memory transfer overhead.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span style="color:var(--accent)">⬆️</span> Upload Performance</div>
+          <div class="card-body">Memory <strong>upload using comodel transactions</strong> improves performance by allowing you to upload multiple memories at the <strong>same simulation time</strong>.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span style="color:var(--purple)">🔀</span> Multi-Comodel Mapping</div>
+          <div class="card-body">In multi-comodel mode, Flexmem HVL images and communication traffic can be distributed across multiple secondary comodel processes for better bandwidth.</div>
+        </div>
+      </div>
+
+      <div class="info-box warn">
+        <span class="box-icon">⚠️</span>
+        <span>Once a comodel process exits (e.g., due to <code>$finish</code> or C-side <code>exit()</code>), you <strong>cannot use Tcl memory commands on Flexmems</strong>. The comodel process keeps the complete Flexmem HVL memory image. Use a Verilog <code>final</code> block for memory upload in such cases.</span>
+      </div>
+
+      <h3>SCEMI-DMI SystemVerilog Parameterized Class</h3>
+      <div class="code-block-header">
+        <span>scemi_mem parameterized class usage</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="lang-tag">SYSTEMVERILOG</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+      </div>
+      <div class="code-block"><span class="cmt">// Default data type is byte unsigned</span>
+<span class="kw">class</span> <span class="fn">scemi_mem</span> #(<span class="kw">type</span> T = <span class="kw">byte unsigned</span>);
+  <span class="cmt">// Get block of bytes from memory</span>
+  <span class="kw">extern function void</span> <span class="fn">scemi_mem_get_block_of_bytes</span>(
+    <span class="kw">input longint unsigned</span> mem_byte_offset,
+    <span class="kw">input longint unsigned</span> num_bytes,
+    <span class="kw">ref</span> T data[]
+  );
+  <span class="cmt">// Put block of bytes into memory</span>
+  <span class="kw">extern function void</span> <span class="fn">scemi_mem_put_block_of_bytes</span>(
+    <span class="kw">input longint unsigned</span> mem_byte_offset,
+    <span class="kw">input longint unsigned</span> num_bytes,
+    <span class="kw">const ref</span> T data[]
+  );
+<span class="kw">endclass</span>
+
+<span class="cmt">// Example: using int unsigned data type</span>
+<span class="fn">scemi_mem</span> #(<span class="kw">int unsigned</span>) mem_obj = <span class="kw">new</span>(<span class="str">"test.mem"</span>);
+
+<span class="kw">task</span> <span class="fn">run</span>;
+  <span class="kw">automatic int unsigned</span> data_put[] = <span class="kw">new</span> [<span class="num">4</span>];
+  <span class="kw">begin</span>
+    data_put[<span class="num">0</span>] = <span class="num">32</span>'d1;  data_put[<span class="num">1</span>] = <span class="num">32</span>'d2;
+    data_put[<span class="num">2</span>] = <span class="num">32</span>'d3;  data_put[<span class="num">3</span>] = <span class="num">32</span>'d4;
+    mem_obj.<span class="fn">scemi_mem_put_block_of_bytes</span>(
+      <span class="num">1024</span>, <span class="cmt">/*mem addr byte-offset*/</span>
+      <span class="num">32</span>,   <span class="cmt">/*num bytes*/</span>
+      data_put
+    );
+  <span class="kw">end</span>
+<span class="kw">endtask</span></div>
+    </div>
+
+    <!-- ════════════════════════════════
+         SECTION: TCAM MODELING
+    ════════════════════════════════ -->
+    <div class="section" id="sec-tcam">
+      <div class="section-header">
+        <div class="section-icon icon-blue">🔍</div>
+        <div>
+          <div class="section-title">Ternary Content-Addressable Memory (TCAM) Modeling</div>
+          <div class="section-desc">TCAM extends CAM by allowing "don't care" matching using two-bit representation per data bit — modeled as two memory signals in RTL.</div>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-title"><span style="color:var(--accent)">🔍</span> CAM</div>
+          <div class="card-body">Content-Addressable Memory searches for data content in memory and returns the memory address(es) containing that data. Reverse of a normal memory lookup.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span style="color:var(--purple)">🔀</span> TCAM</div>
+          <div class="card-body">Extends CAM with "don't care" matching. Uses <strong>two-bit representation</strong> per data bit — modeled as two memory signals (MEMORY_A and MEMORY_B) in RTL.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span style="color:var(--green)">📊</span> Encoding Scheme</div>
+          <div class="card-body">DB=0, DA=0 → X (don't care) · DB=1, DA=0 → 0 · DB=0, DA=1 → 1 · DB=1, DA=1 → Invalid. Two bits encode four states.</div>
+        </div>
+      </div>
+
+      <h3>TCAM Encoding Table</h3>
+      <table class="compare-table">
+        <thead>
+          <tr><th>DB (MEMORY_B)</th><th>DA (MEMORY_A)</th><th>Encoded Value</th><th>Meaning</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0</td><td>0</td><td style="color:var(--yellow);font-weight:700;">X</td><td>Don't care — matches both 0 and 1</td></tr>
+          <tr><td>1</td><td>0</td><td style="color:var(--accent);font-weight:700;">0</td><td>Matches only 0</td></tr>
+          <tr><td>0</td><td>1</td><td style="color:var(--green);font-weight:700;">1</td><td>Matches only 1</td></tr>
+          <tr><td>1</td><td>1</td><td style="color:var(--red);font-weight:700;">Invalid</td><td>Not a valid encoding</td></tr>
+        </tbody>
+      </table>
+
+      <!-- TCAM Write -->
+      <h3>TCAM Write Operations</h3>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="showTab(this,'tab-tcam-basic-wr')">Basic RTL Write</button>
+        <button class="tab-btn" onclick="showTab(this,'tab-tcam-basic-rd')">Basic RTL Read</button>
+      </div>
+
+      <div class="tab-content active" id="tab-tcam-basic-wr">
+        <div class="code-block-header">
+          <span>TCAM Write — Basic RTL</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="lang-tag">VERILOG</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+        </div>
+        <div class="code-block"><span class="kw">reg</span> [DATA_WIDTH-<span class="num">1</span>:<span class="num">0</span>] MEMORY_A [DEPTH_WORDS-<span class="num">1</span>:<span class="num">0</span>];
+<span class="kw">reg</span> [DATA_WIDTH-<span class="num">1</span>:<span class="num">0</span>] MEMORY_B [DEPTH_WORDS-<span class="num">1</span>:<span class="num">0</span>];
+
+<span class="kw">always</span>@(<span class="kw">posedge</span> CLK)
+<span class="kw">begin</span>
+  <span class="kw">if</span> (WE)
+  <span class="kw">begin</span>
+    MEMORY_B[WRADDR] = DATA_B;
+    MEMORY_A[WRADDR] = DATA_A;
+    <span class="cmt">// valid bit population to track valid addresses</span>
+    VBIT[WRADDR] = <span class="num">1</span>'b1;
+  <span class="kw">end</span>
+<span class="kw">end</span></div>
+      </div>
+
+      <div class="tab-content" id="tab-tcam-basic-rd">
+        <div class="code-block-header">
+          <span>TCAM Read — Basic RTL</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="lang-tag">VERILOG</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+        </div>
+        <div class="code-block"><span class="cmt">// read operation on TCAM</span>
+<span class="kw">always</span>@(*)
+<span class="kw">begin</span>
+  RD_DATA = (Rd_En) ? MEMORY_B[RDADDR] : MEMORY_A[RDADDR];
+<span class="kw">end</span></div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         SECTION: TCAM FOR VELOCE
+    ════════════════════════════════ -->
+    <div class="section" id="sec-tcam-veloce">
+      <div class="section-header">
+        <div class="section-icon icon-green">🚀</div>
+        <div>
+          <div class="section-title">TCAM Modeling for Veloce</div>
+          <div class="section-desc">Optimized Veloce TCAM implementation using <code>$cam_write</code> and <code>$cam_read</code> system calls, plus the <code>CAMUpload</code> C API.</div>
+        </div>
+      </div>
+
+      <div class="info-box tip">
+        <span class="box-icon">💡</span>
+        <span>Replace dual-memory RTL with a single <code>CAM_MEMORY</code> array marked with <code>tcam_block 1</code> pragma. Use <code>$cam_write</code> and <code>$cam_read</code> for optimized emulation performance.</span>
+      </div>
+
+      <!-- Optimized Write -->
+      <h3>Optimized Write with $cam_write</h3>
+      <div class="code-block-header">
+        <span>Veloce-optimized TCAM write</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="lang-tag">VERILOG</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+      </div>
+      <div class="code-block"><span class="kw">reg</span> [(<span class="num">2</span>*DATA_WIDTH)-<span class="num">1</span>:<span class="num">0</span>] CAM_MEMORY [DEPTH_WORDS-<span class="num">1</span>:<span class="num">0</span>];
+<span class="cmt">//pragma attribute CAM_MEMORY tcam_block 1</span>
+
+<span class="kw">always</span>@(<span class="kw">posedge</span> CLK)
+<span class="kw">begin</span>
+  <span class="kw">if</span>(WE)
+  <span class="kw">begin</span>
+    <span class="fn">$cam_write</span>(CAM_MEMORY, WRADDR, DATA_B, DATA_A);
+    VBIT[WRADDR] = <span class="num">1</span>'b1;
+  <span class="kw">end</span>
+<span class="kw">end</span></div>
+
+      <!-- Optimized Read -->
+      <h3>Optimized Read with $cam_read</h3>
+      <div class="code-block-header">
+        <span>Veloce-optimized TCAM read</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="lang-tag">VERILOG</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+      </div>
+      <div class="code-block"><span class="kw">reg</span> [(<span class="num">2</span>*DATA_WIDTH)-<span class="num">1</span>:<span class="num">0</span>] CAM_MEMORY [DEPTH_WORDS-<span class="num">1</span>:<span class="num">0</span>];
+<span class="cmt">//pragma attribute CAM_MEMORY tcam_block 1</span>
+<span class="kw">reg</span>[DATA_WIDTH-<span class="num">1</span>:<span class="num">0</span>] Temp_RdDataA, Temp_RdDataB;
+
+<span class="kw">always</span>@(*)
+<span class="kw">begin</span>
+  <span class="fn">$cam_read</span>(CAM_MEMORY, RDADDR, Temp_RdDataB, Temp_RdDataA);
+  RD_DATA = (Rd_En) ? Temp_RdDataB : Temp_RdDataA;
+<span class="kw">end</span></div>
+
+      <!-- CAMUpload API -->
+      <h3>CAMUpload C API</h3>
+      <div class="code-block-header">
+        <span>TbxManager::CAMUpload signature</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="lang-tag">C++</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+      </div>
+      <div class="code-block"><span class="kw">bool</span> TbxManager::<span class="fn">CAMUpload</span>(
+  <span class="kw">const char</span>* instName,          <span class="cmt">// TCAM hierarchical path in RTL</span>
+  <span class="kw">const char</span>* maskFile,          <span class="cmt">// mandatory mask file name</span>
+  <span class="kw">const char</span>* dataFile,          <span class="cmt">// mandatory data file name</span>
+  <span class="kw">int</span> start_addr = -<span class="num">1</span>,           <span class="cmt">// default: LSB of TCAM depth</span>
+  <span class="kw">int</span> end_addr   = -<span class="num">1</span>,           <span class="cmt">// default: MSB of TCAM depth</span>
+  CAMDataFormat eFormat = DF_HEX  <span class="cmt">// DF_BIN or DF_HEX (default)</span>
+);</div>
+
+      <div class="info-box note">
+        <span class="box-icon">ℹ️</span>
+        <span>Supported data formats for CAMUpload are <strong>binary (DF_BIN)</strong> and <strong>hex (DF_HEX)</strong> only. Default format is hex. Runtime Tcl commands <code>cam upload</code> and <code>cam download</code> are also supported.</span>
+      </div>
+
+      <h3>TCAM Auto-Inference Cases</h3>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-step-num">1</div>
+          <div class="flow-step-body">
+            <div class="flow-step-title">Two Separate Memories (MEMORY_A + MEMORY_B)</div>
+            <div class="flow-step-desc">Memory is inferred automatically. No extra marking pragma required. Veloce detects the dual-memory TCAM pattern.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">2</div>
+          <div class="flow-step-body">
+            <div class="flow-step-title">Single Memory — Side by Side or Vertical</div>
+            <div class="flow-step-desc">A single memory used for both Mask and Data placed side by side or vertically. No extra marking pragma required.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">3</div>
+          <div class="flow-step-body">
+            <div class="flow-step-title">Single Memory — Consecutive Addresses</div>
+            <div class="flow-step-desc">A single memory where Mask and Data are placed on consecutive addresses. No extra marking pragma required.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">4</div>
+          <div class="flow-step-body">
+            <div class="flow-step-title">Issues? Use tcam_block Pragma</div>
+            <div class="flow-step-desc">If auto-inference fails, manually mark the TCAM memory signal with <code>// pragma attribute CAM_MEMORY tcam_block 1</code> or use the remodeling methodology.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // ── Section Navigation ──
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const sec = document.getElementById('sec-' + id);
+    if (sec) sec.classList.add('active');
+    event.currentTarget && event.currentTarget.classList.add('active');
+    // Find matching nav item by onclick
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + id + "'")) {
+        n.classList.add('active');
+      }
+    });
+  }
+
+  // ── Tab Switching ──
+  function showTab(btn, tabId) {
+    const bar = btn.closest('.tab-bar');
+    bar.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // Find sibling tab-contents
+    let el = bar.nextElementSibling;
+    while (el && (el.classList.contains('tab-content'))) {
+      el.classList.remove('active');
+      el = el.nextElementSibling;
+    }
+    const target = document.getElementById(tabId);
+    if (target) target.classList.add('active');
+  }
+
+  // ── Accordion ──
+  function toggleAccordion(header) {
+    const body = header.nextElementSibling;
+    const isOpen = header.classList.contains('open');
+    header.classList.toggle('open', !isOpen);
+    body.classList.toggle('open', !isOpen);
+  }
+
+  // ── Copy Code ──
+  function copyCode(btn) {
+    const block = btn.closest('.code-block-header').nextElementSibling;
+    const text = block ? block.innerText : '';
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 1500);
+    });
+  }
+
+  // ── TOC row clicks ──
+  document.querySelectorAll('.toc-table tbody tr').forEach(row => {
+    row.style.cursor = 'pointer';
+  });
+</script>
+</body>
+</html>

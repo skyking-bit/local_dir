@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Veloce UG – Chapter 9: Triggers Dashboard</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:        #0d1117;
+    --surface:   #161b22;
+    --surface2:  #1c2330;
+    --surface3:  #21262d;
+    --border:    #30363d;
+    --accent:    #00b4d8;
+    --accent2:   #0077b6;
+    --accent3:   #48cae4;
+    --green:     #3fb950;
+    --yellow:    #d29922;
+    --red:       #f85149;
+    --purple:    #bc8cff;
+    --orange:    #f0883e;
+    --text:      #e6edf3;
+    --text-muted:#8b949e;
+    --text-dim:  #6e7681;
+    --radius:    10px;
+    --radius-sm: 6px;
+    --shadow:    0 4px 24px rgba(0,0,0,0.4);
+    --transition:0.25s ease;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
+
+  /* ── Top Header ── */
+  .top-header {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1a2744 50%, #0d2137 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.5);
+  }
+  .top-header .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; color: #fff;
+    box-shadow: 0 0 16px rgba(0,180,216,0.4);
+  }
+  .logo-text { display: flex; flex-direction: column; }
+  .logo-title { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: 0.3px; }
+  .logo-sub   { font-size: 11px; color: var(--text-muted); }
+  .header-badges { display: flex; gap: 8px; align-items: center; }
+  .badge {
+    padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .badge-blue   { background: rgba(0,180,216,0.15); color: var(--accent);  border: 1px solid rgba(0,180,216,0.3); }
+  .badge-green  { background: rgba(63,185,80,0.15);  color: var(--green);   border: 1px solid rgba(63,185,80,0.3); }
+  .badge-purple { background: rgba(188,140,255,0.15);color: var(--purple);  border: 1px solid rgba(188,140,255,0.3); }
+
+  /* ── Layout ── */
+  .layout { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 64px); }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .sidebar-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+    color: var(--text-dim); text-transform: uppercase;
+    padding: 12px 20px 4px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 20px; cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: var(--transition);
+    font-size: 13px; color: var(--text-muted);
+    user-select: none;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); border-left-color: var(--border); }
+  .nav-item.active { background: rgba(0,180,216,0.1); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+  .nav-item .nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+  .nav-item .nav-num  { font-size: 10px; color: var(--text-dim); margin-left: auto; }
+
+  /* ── Main Content ── */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ── Section ── */
+  .section { display: none; flex-direction: column; gap: 20px; animation: fadeIn 0.3s ease; }
+  .section.active { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── Section Header ── */
+  .section-header {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    width: 44px; height: 44px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .icon-blue   { background: rgba(0,180,216,0.15);   color: var(--accent); }
+  .icon-green  { background: rgba(63,185,80,0.15);    color: var(--green); }
+  .icon-purple { background: rgba(188,140,255,0.15);  color: var(--purple); }
+  .icon-orange { background: rgba(240,136,62,0.15);   color: var(--orange); }
+  .icon-yellow { background: rgba(210,153,34,0.15);   color: var(--yellow); }
+  .icon-red    { background: rgba(248,81,73,0.15);    color: var(--red); }
+  .section-title { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.2; }
+  .section-desc  { font-size: 13px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
+
+  /* ── Cards Grid ── */
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    transition: var(--transition);
+  }
+  .card:hover { border-color: var(--accent2); box-shadow: 0 0 16px rgba(0,180,216,0.1); transform: translateY(-1px); }
+  .card-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .card-body  { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── Comparison Table ── */
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .compare-table th {
+    background: var(--surface3); color: var(--accent);
+    padding: 10px 14px; text-align: left; font-size: 11px;
+    font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+    border-bottom: 2px solid var(--border);
+  }
+  .compare-table td {
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    color: var(--text-muted); vertical-align: top;
+  }
+  .compare-table tr:hover td { background: rgba(255,255,255,0.02); color: var(--text); }
+  .compare-table td:first-child { color: var(--text); font-weight: 600; }
+  .yes { color: var(--green); font-weight: 700; }
+  .no  { color: var(--red);   font-weight: 700; }
+
+  /* ── Code Block ── */
+  .code-block {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 12px;
+    color: #e6edf3;
+    overflow-x: auto;
+    line-height: 1.7;
+    position: relative;
+  }
+  .code-block .kw  { color: #ff7b72; }
+  .code-block .str { color: #a5d6ff; }
+  .code-block .cmt { color: #8b949e; font-style: italic; }
+  .code-block .num { color: #79c0ff; }
+  .code-block .fn  { color: #d2a8ff; }
+  .code-block .var { color: #ffa657; }
+  .code-block .op  { color: #ff7b72; }
+  .code-block-header {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface3);
+    border: 1px solid var(--border); border-bottom: none;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    padding: 8px 14px;
+    font-size: 11px; color: var(--text-muted);
+    font-family: 'Cascadia Code', monospace;
+  }
+  .code-block-header .lang-tag {
+    background: rgba(0,180,216,0.15); color: var(--accent);
+    padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;
+  }
+  .code-block-header + .code-block { border-radius: 0 0 var(--radius-sm) var(--radius-sm); }
+  .copy-btn {
+    background: none; border: 1px solid var(--border); color: var(--text-muted);
+    padding: 3px 10px; border-radius: 4px; font-size: 10px; cursor: pointer;
+    transition: var(--transition);
+  }
+  .copy-btn:hover { background: var(--surface2); color: var(--text); }
+
+  /* ── Info / Warning / Tip Boxes ── */
+  .info-box {
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .info-box .box-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .info-box.tip     { background: rgba(63,185,80,0.08);  border-left: 3px solid var(--green);  color: #b3e8b8; }
+  .info-box.warn    { background: rgba(210,153,34,0.08); border-left: 3px solid var(--yellow); color: #e8d5a3; }
+  .info-box.danger  { background: rgba(248,81,73,0.08);  border-left: 3px solid var(--red);    color: #f5b8b5; }
+  .info-box.note    { background: rgba(0,180,216,0.08);  border-left: 3px solid var(--accent); color: #a8d8e8; }
+
+  /* ── Attribute Pills ── */
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .pill {
+    padding: 5px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 600;
+    display: flex; align-items: center; gap: 5px; cursor: default;
+    transition: var(--transition);
+  }
+  .pill:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+  .pill-blue   { background: rgba(0,180,216,0.15);   color: var(--accent);  border: 1px solid rgba(0,180,216,0.3); }
+  .pill-green  { background: rgba(63,185,80,0.15);    color: var(--green);   border: 1px solid rgba(63,185,80,0.3); }
+  .pill-yellow { background: rgba(210,153,34,0.15);   color: var(--yellow);  border: 1px solid rgba(210,153,34,0.3); }
+  .pill-red    { background: rgba(248,81,73,0.15);    color: var(--red);     border: 1px solid rgba(248,81,73,0.3); }
+  .pill-purple { background: rgba(188,140,255,0.15);  color: var(--purple);  border: 1px solid rgba(188,140,255,0.3); }
+  .pill-orange { background: rgba(240,136,62,0.15);   color: var(--orange);  border: 1px solid rgba(240,136,62,0.3); }
+
+  /* ── Accordion ── */
+  .accordion { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .accordion-item { border-bottom: 1px solid var(--border); }
+  .accordion-item:last-child { border-bottom: none; }
+  .accordion-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 18px; cursor: pointer;
+    background: var(--surface2);
+    transition: var(--transition);
+    user-select: none;
+  }
+  .accordion-header:hover { background: var(--surface3); }
+  .accordion-header.open  { background: rgba(0,180,216,0.08); }
+  .accordion-title { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 10px; }
+  .accordion-arrow { color: var(--text-muted); transition: transform 0.25s; font-size: 12px; }
+  .accordion-header.open .accordion-arrow { transform: rotate(180deg); color: var(--accent); }
+  .accordion-body { display: none; padding: 16px 18px; background: var(--surface); border-top: 1px solid var(--border); }
+  .accordion-body.open { display: block; animation: fadeIn 0.2s ease; }
+
+  /* ── Progress Bar (Trigger Position) ── */
+  .position-demo { background: var(--surface3); border-radius: var(--radius); padding: 20px; }
+  .pos-label { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+  .pos-bar-wrap { position: relative; height: 36px; background: var(--surface2); border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
+  .pos-bar-pre  { height: 100%; background: linear-gradient(90deg, rgba(0,119,182,0.5), rgba(0,180,216,0.5)); transition: width 0.5s ease; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; }
+  .pos-bar-post { position: absolute; right: 0; top: 0; height: 100%; background: rgba(240,136,62,0.35); transition: width 0.5s ease; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; }
+  .pos-marker   { position: absolute; top: 0; height: 100%; width: 3px; background: #fff; box-shadow: 0 0 8px rgba(255,255,255,0.8); transition: left 0.5s ease; }
+  .pos-slider   { width: 100%; margin-top: 12px; accent-color: var(--accent); cursor: pointer; }
+  .pos-value    { text-align: center; font-size: 22px; font-weight: 800; color: var(--accent); margin-top: 8px; }
+  .pos-hint     { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+  /* ── Example Tabs ── */
+  .tab-bar { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  .tab-btn {
+    padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;
+    cursor: pointer; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text-muted);
+    transition: var(--transition);
+  }
+  .tab-btn:hover { color: var(--text); border-color: var(--accent2); }
+  .tab-btn.active { background: rgba(0,180,216,0.15); color: var(--accent); border-color: var(--accent); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
+
+  /* ── FSM Diagram ── */
+  .fsm-diagram {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+  }
+  .fsm-row { display: flex; align-items: center; gap: 0; }
+  .fsm-state {
+    width: 110px; height: 60px; border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; text-align: center; cursor: default;
+    transition: var(--transition); border: 2px solid;
+    position: relative;
+  }
+  .fsm-state:hover { transform: scale(1.05); }
+  .fsm-state.initial  { background: rgba(0,180,216,0.15); border-color: var(--accent);  color: var(--accent); }
+  .fsm-state.normal   { background: rgba(139,148,158,0.1); border-color: var(--border); color: var(--text); }
+  .fsm-state.trigger  { background: rgba(63,185,80,0.15);  border-color: var(--green);  color: var(--green); }
+  .fsm-state.stop-st  { background: rgba(248,81,73,0.15);  border-color: var(--red);    color: var(--red); }
+  .fsm-state .st-label{ font-size: 9px; color: var(--text-muted); font-weight: 400; }
+  .fsm-arrow { display: flex; align-items: center; padding: 0 4px; }
+  .fsm-arrow .arr-line { width: 40px; height: 2px; background: var(--border); position: relative; }
+  .fsm-arrow .arr-line::after { content: '▶'; position: absolute; right: -8px; top: -7px; color: var(--border); font-size: 12px; }
+  .fsm-arrow .arr-label { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: 9px; color: var(--text-muted); white-space: nowrap; }
+  .fsm-arrow-wrap { display: flex; flex-direction: column; align-items: center; }
+  .fsm-cond { font-size: 9px; color: var(--yellow); margin-bottom: 2px; white-space: nowrap; }
+  .fsm-down { display: flex; flex-direction: column; align-items: center; margin: 0; }
+  .fsm-vert-line { width: 2px; height: 24px; background: var(--border); }
+  .fsm-vert-arrow { color: var(--border); font-size: 12px; margin-top: -4px; }
+
+  /* ── Command Reference ── */
+  .cmd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
+  .cmd-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    transition: var(--transition);
+  }
+  .cmd-card:hover { border-color: var(--accent2); }
+  .cmd-name { font-family: 'Cascadia Code', monospace; font-size: 12px; color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+  .cmd-desc { font-size: 11.5px; color: var(--text-muted); line-height: 1.5; }
+  .cmd-type { font-size: 10px; padding: 2px 7px; border-radius: 4px; margin-left: 6px; }
+  .cmd-type.tcl  { background: rgba(0,180,216,0.15); color: var(--accent); }
+  .cmd-type.capi { background: rgba(188,140,255,0.15); color: var(--purple); }
+
+  /* ── HW Events ── */
+  .event-flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; margin: 16px 0; }
+  .event-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 10px 14px;
+    font-size: 11.5px; font-weight: 600; color: var(--text);
+    text-align: center; min-width: 110px;
+  }
+  .event-arrow { font-size: 18px; color: var(--accent); padding: 0 6px; }
+
+  /* ── Stat Cards ── */
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .stat-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 14px; text-align: center;
+  }
+  .stat-num  { font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1; }
+  .stat-unit { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .stat-label{ font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .sidebar { width: 56px; min-width: 56px; }
+    .nav-item .nav-label, .nav-item .nav-num, .sidebar-section-label { display: none; }
+    .nav-item { justify-content: center; padding: 12px; }
+    .main { padding: 16px; }
+    .top-header { padding: 0 16px; }
+    .header-badges .badge:not(:first-child) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ TOP HEADER ══════════════ -->
+<header class="top-header">
+  <div class="logo">
+    <div class="logo-icon">V</div>
+    <div class="logo-text">
+      <span class="logo-title">Veloce® User Guide</span>
+      <span class="logo-sub">Software Version 25.0.2 · Siemens EDA</span>
+    </div>
+  </div>
+  <div class="header-badges">
+    <span class="badge badge-blue">Chapter 9</span>
+    <span class="badge badge-green">Triggers</span>
+    <span class="badge badge-purple">Interactive Reference</span>
+  </div>
+</header>
+
+<!-- ══════════════ LAYOUT ══════════════ -->
+<div class="layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <nav class="sidebar">
+    <div class="sidebar-section-label">Navigation</div>
+
+    <div class="nav-item active" onclick="showSection('overview', this)">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Overview</span>
+      <span class="nav-num">9.1</span>
+    </div>
+    <div class="nav-item" onclick="showSection('rtl', this)">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">Flexible RTL Triggers</span>
+      <span class="nav-num">9.2</span>
+    </div>
+    <div class="nav-item" onclick="showSection('incremental', this)">
+      <span class="nav-icon">🔄</span>
+      <span class="nav-label">Incremental Triggers</span>
+      <span class="nav-num">9.3</span>
+    </div>
+    <div class="nav-item" onclick="showSection('misc', this)">
+      <span class="nav-icon">🔧</span>
+      <span class="nav-label">Misc RTL Topics</span>
+      <span class="nav-num">9.4</span>
+    </div>
+    <div class="nav-item" onclick="showSection('commands', this)">
+      <span class="nav-icon">💻</span>
+      <span class="nav-label">Tcl Commands & C-APIs</span>
+      <span class="nav-num">9.5</span>
+    </div>
+    <div class="nav-item" onclick="showSection('runtime', this)">
+      <span class="nav-icon">🕹️</span>
+      <span class="nav-label">Runtime Triggers</span>
+      <span class="nav-num">9.6</span>
+    </div>
+    <div class="nav-item" onclick="showSection('elements', this)">
+      <span class="nav-icon">🧩</span>
+      <span class="nav-label">Description Elements</span>
+      <span class="nav-num">9.7</span>
+    </div>
+    <div class="nav-item" onclick="showSection('position', this)">
+      <span class="nav-icon">📍</span>
+      <span class="nav-label">Trigger Position</span>
+      <span class="nav-num">9.8</span>
+    </div>
+    <div class="nav-item" onclick="showSection('examples', this)">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Trigger Examples</span>
+      <span class="nav-num">9.9</span>
+    </div>
+    <div class="nav-item" onclick="showSection('hwevents', this)">
+      <span class="nav-icon">⚡</span>
+      <span class="nav-label">HW Events</span>
+      <span class="nav-num">9.10</span>
+    </div>
+  </nav>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <!-- ════════════════════════════════════
+         9.1 OVERVIEW
+    ════════════════════════════════════ -->
+    <section id="overview" class="section active">
+      <div class="section-header">
+        <div class="section-icon icon-blue">🏠</div>
+        <div>
+          <div class="section-title">Chapter 9 — Triggers</div>
+          <div class="section-desc">Overview of Veloce trigger mechanisms for hardware-assisted waveform capture and emulation control.</div>
+        </div>
+      </div>
+
+      <div class="info-box note">
+        <span class="box-icon">ℹ️</span>
+        <div><strong>What are Triggers?</strong> Triggers control the hardware trace buffers in the Veloce emulator to capture waveform data around a specific event or time of interest — without unnecessary runtime disruption. Veloce only captures waveforms when <strong>trace is ON</strong>. When a trigger matures, waveform capture occurs and trace turns <strong>OFF</strong> automatically.</div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Trigger Methods</div></div>
+        <div class="stat-card"><div class="stat-num">50%</div><div class="stat-label">Default Position</div></div>
+        <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">Max Transitions / State</div></div>
+        <div class="stat-card"><div class="stat-num">1</div><div class="stat-label">Active Runtime FSM</div></div>
+        <div class="stat-card"><div class="stat-num">13+</div><div class="stat-label">Trigger Examples</div></div>
+      </div>
+
+      <h3 style="font-size:14px;color:var(--text);margin-bottom:10px;">⚖️ Two Methods Compared</h3>
+      <div style="overflow-x:auto;">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>🟢 Flexible RTL Triggers</th>
+              <th>🔵 Runtime Triggers</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Language</td><td>Standard SystemVerilog (RTL subset)</td><td>Proprietary HDL-like language</td></tr>
+            <tr><td>When Specified</td><td>Compile time</td><td>Runtime</td></tr>
+            <tr><td>Expression Power</td><td>High — full RTL expressions</td><td>Limited</td></tr>
+            <tr><td>Active FSMs</td><td>Multiple allowed</td><td><strong>Only one</strong> at a time</td></tr>
+            <tr><td>Incremental Compile</td><td><span class="yes">✅ Yes</span> (StratoPlus only)</td><td><span class="no">❌ No</span></td></tr>
+            <tr><td>Tcl Runtime Control</td><td><span class="yes">✅ Yes</span></td><td><span class="yes">✅ Yes</span></td></tr>
+            <tr><td>Mutual Exclusion</td><td colspan="2" style="text-align:center;color:var(--yellow);">⚠️ Cannot use both simultaneously</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box warn">
+        <span class="box-icon">⚠️</span>
+        <div>You <strong>cannot</strong> use both Flexible RTL Triggers and Runtime Triggers at the same time. You also cannot issue <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">hwtrace on/off</code> while an RTL trigger is active.</div>
+      </div>
+
+      <h3 style="font-size:14px;color:var(--text);margin-bottom:10px;">🎯 Waveform Capture Methods</h3>
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-title">⏱️ Time-Based Capture</div>
+          <div class="card-body">Run the design for a fixed time and capture waveforms during that period. Useful when you know the exact timepoint of a design mismatch.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔴 Line Breakpoint (LBP)</div>
+          <div class="card-body">Set a breakpoint on a specific RTL source line. Emulation stops when the breakpointed line executes. Not supported on StratoCS.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🎯 Trigger-Based Capture</div>
+          <div class="card-body">Capture waveforms based on signal values or event sequences. Most flexible — supports store, stop, and conditional triggers.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         9.2 FLEXIBLE RTL TRIGGERS
+    ════════════════════════════════════ -->
+    <section id="rtl" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-green">⚙️</div>
+        <div>
+          <div class="section-title">Flexible RTL Triggers</div>
+          <div class="section-desc">Define triggers at compile time using SystemVerilog RTL subset, then control them at runtime with Tcl commands.</div>
+        </div>
+      </div>
+
+      <!-- Steps -->
+      <div class="accordion">
+        <div class="accordion-item">
+          <div class="accordion-header open" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>📝</span> Step 1 — Specifying Input Signals (Signal List File)</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body open">
+            <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:12px;">Create a signal list text file and reference it during compile:</p>
+            <div class="code-block-header"><span>Signal List File Format</span><span class="lang-tag">PLAINTEXT</span></div>
+            <div class="code-block">TRIGPART &lt;trigger_partition_name&gt;
+GROUP &lt;group_name&gt;
+CLOCK &lt;POS|NEG|BOTH&gt; &lt;clock_signal_name&gt;
+NET &lt;netname1&gt;
+NET &lt;netname2&gt;
+GROUP &lt;group_name2&gt;
+CLOCK &lt;clock_signal_name&gt;
+NET &lt;netname1&gt;</div>
+            <div class="code-block-header" style="margin-top:12px;"><span>Compile Command</span><span class="lang-tag">BASH</span></div>
+            <div class="code-block"><span class="fn">comp</span> <span class="var">-veltriggersiglist</span> &lt;signal_list_file_name&gt;</div>
+            <div style="margin-top:12px;">
+              <h4 style="font-size:12px;color:var(--text);margin-bottom:8px;">📌 Signal List Rules</h4>
+              <table class="compare-table">
+                <thead><tr><th>Rule</th><th>Detail</th></tr></thead>
+                <tbody>
+                  <tr><td>TRIGPART</td><td>Required — names the trigger partition. Only one supported.</td></tr>
+                  <tr><td>Partition Limit</td><td>4K bits per partition</td></tr>
+                  <tr><td>Cross-partition signals</td><td><span class="no">❌</span> A trigger FSM cannot use signals from multiple partitions</td></tr>
+                  <tr><td>Duplicate signals</td><td><span class="no">❌</span> Cannot duplicate signals across partitions</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>🔬</span> Step 2 — SystemVerilog Subset & FSM Rules</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <div class="code-block-header"><span>Trigger Module Example</span><span class="lang-tag">SYSTEMVERILOG</span></div>
+            <div class="code-block"><span class="kw">module</span> <span class="fn">trigger</span>();
+  <span class="cmt">// No ports allowed in trigger module</span>
+  <span class="kw">typedef enum</span> {TRIG1_INIT, TRIG1_S1, TRIG1_S2, TRIG1_FINAL} trigger_state;
+  trigger_state trigpos; <span class="cmt">// pragma veltrigger statevar trigpos</span>
+  <span class="kw">int</span> counter;           <span class="cmt">// pragma veltrigger counter counter</span>
+  <span class="kw">int</span> counterfinal;      <span class="cmt">// pragma veltrigger counter counterfinal</span>
+  <span class="kw">bit</span> clk1;
+  ...
+<span class="kw">endmodule</span></div>
+            <div style="margin-top:12px;">
+              <h4 style="font-size:12px;color:var(--text);margin-bottom:8px;">📌 Key Constraints</h4>
+              <table class="compare-table">
+                <thead><tr><th>Constraint</th><th>Detail</th></tr></thead>
+                <tbody>
+                  <tr><td>Ports</td><td><span class="no">❌</span> Trigger modules must have <strong>no ports</strong></td></tr>
+                  <tr><td>State variable pragma</td><td>Required: <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">// pragma veltrigger statevar &lt;varname&gt;</code></td></tr>
+                  <tr><td>Counter pragma</td><td>Required: <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">// pragma veltrigger counter &lt;varname&gt;</code></td></tr>
+                  <tr><td>Sub-hierarchies</td><td><span class="no">❌</span> Not allowed inside trigger modules</td></tr>
+                  <tr><td>Design outputs</td><td><span class="no">❌</span> Triggers cannot assign to design signals</td></tr>
+                  <tr><td>FSMs per module</td><td>Only <strong>one</strong> trigger FSM per module</td></tr>
+                  <tr><td>Reset type</td><td>Only <strong>synchronous reset</strong> is allowed</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="margin-top:12px;">
+              <h4 style="font-size:12px;color:var(--text);margin-bottom:8px;">🛠️ Supported Proprietary System Tasks</h4>
+              <div class="pills">
+                <span class="pill pill-green">$trigger — Marks maturity</span>
+                <span class="pill pill-red">$halt — Stops emulation</span>
+                <span class="pill pill-yellow">$captureoff — Turns off trace</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>🏗️</span> Step 3 — Named Generate Blocks (Multiple FSMs)</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <div class="code-block-header"><span>Named Generate Block Example</span><span class="lang-tag">SYSTEMVERILOG</span></div>
+            <div class="code-block"><span class="kw">module</span> triggers;
+  trigger1: <span class="kw">begin</span>
+    <span class="kw">int</span> counter;
+    <span class="kw">reg</span> [<span class="num">3</span>:<span class="num">0</span>] state;
+    <span class="kw">always</span> @(<span class="kw">posedge</span> top.clk) <span class="kw">begin</span>
+      <span class="cmt">// FSM logic</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+  trigger2: <span class="kw">begin</span>
+    <span class="kw">int</span> counter;
+    <span class="kw">reg</span> [<span class="num">3</span>:<span class="num">0</span>] state;
+    <span class="kw">always</span> @(<span class="kw">posedge</span> top.clk) <span class="kw">begin</span>
+      <span class="cmt">// FSM logic</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">endmodule</span></div>
+            <div class="info-box tip" style="margin-top:12px;">
+              <span class="box-icon">💡</span>
+              <div>Triggers are referenced as <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">triggers.trigger1</code> and <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">triggers.trigger2</code> at runtime. The reset pragma is the only one you can specify in the global module scope — all generate blocks can refer to it.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>🚀</span> Step 4 — Downloading & Managing at Runtime</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <div class="code-block-header"><span>Download at Startup</span><span class="lang-tag">BASH</span></div>
+            <div class="code-block"><span class="fn">velrun</span> <span class="var">-veltrigger</span> &lt;trigger_database_name&gt;
+<span class="cmt"># Multiple databases:</span>
+<span class="fn">velrun</span> <span class="var">-emul</span> MYEMULATOR <span class="var">-veltrigger</span> TRIGDBNAME <span class="var">-exe_args</span> <span class="str">"-useropts1 ..."</span></div>
+            <div class="code-block-header" style="margin-top:12px;"><span>Download at Runtime (Tcl)</span><span class="lang-tag">TCL</span></div>
+            <div class="code-block"><span class="fn">veltrigger</span> <span class="var">-download</span> &lt;db_name&gt; <span class="var">-pos</span> &lt;position&gt;</div>
+            <div class="code-block-header" style="margin-top:12px;"><span>Download at Runtime (C-API)</span><span class="lang-tag">C</span></div>
+            <div class="code-block"><span class="kw">int</span> <span class="fn">VeltriggerDownLoad</span>(<span class="kw">char</span>** DB_Name, <span class="kw">int</span> numberOfDB, <span class="kw">unsigned int</span> position);</div>
+            <div class="info-box warn" style="margin-top:12px;">
+              <span class="box-icon">⚠️</span>
+              <div>If a <strong>runtime trigger is active</strong>, delete it before issuing <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">veltrigger -download</code>. If an <strong>RTL trigger is already active</strong>, the old one is automatically replaced.</div>
+            </div>
+            <div style="margin-top:12px;">
+              <h4 style="font-size:12px;color:var(--text);margin-bottom:8px;">🎛️ Control Commands</h4>
+              <table class="compare-table">
+                <thead><tr><th>Action</th><th>Tcl Command</th></tr></thead>
+                <tbody>
+                  <tr><td>Enable trigger</td><td><code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">veltrigger -enable &lt;name&gt;</code></td></tr>
+                  <tr><td>Enable all</td><td><code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">veltrigger -enable all</code></td></tr>
+                  <tr><td>Disable trigger</td><td><code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">veltrigger -disable &lt;name&gt;</code></td></tr>
+                  <tr><td>Reset FSM</td><td><code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">veltrigger -reset &lt;name&gt;</code></td></tr>
+                  <tr><td>Delete trigger</td><td><code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">veltrigger -delete</code></td></tr>
+                  <tr><td>Register halt callback</td><td><code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">veltrigger -onhalt &lt;proc_name&gt;</code></td></tr>
+                  <tr><td>Clear trigger state</td><td><code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">veltrigger -cleartriggerstate</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>🔍</span> Step 5 — Observing & Debugging Triggers</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <div class="code-block-header"><span>Display Trigger Status</span><span class="lang-tag">TCL</span></div>
+            <div class="code-block"><span class="fn">veltrigger</span> <span class="var">-display</span> &lt;trigger_name&gt; [hex|dec]</div>
+            <div class="code-block-header" style="margin-top:12px;"><span>Sample Output</span><span class="lang-tag">OUTPUT</span></div>
+            <div class="code-block"><span class="cmt"># Trigger 'trigger1' status</span>
+<span class="cmt"># Trigger in Reset State : 1</span>
+<span class="cmt"># Trigger is Disabled    : 0</span>
+<span class="cmt"># Trigger in Stop State  : Not Defined</span>
+<span class="cmt"># Trace Contribution     : Not Defined</span>
+<span class="cmt"># Trigger has Matured    : Not Defined</span>
+<span class="cmt"># trigger1.counter Value        : 0x00000000</span>
+<span class="cmt"># trigger1.counterFinal Value   : 0x00000001</span>
+<span class="cmt"># trigger1.counterInitial Value : 0x0000000b</span></div>
+            <div class="code-block-header" style="margin-top:12px;"><span>Debug in Visualizer</span><span class="lang-tag">TCL</span></div>
+            <div class="code-block"><span class="cmt"># Compile database mode (one trigger DB at a time)</span>
+<span class="fn">vis</span> <span class="var">-veloc</span> <span class="var">-veltrigger</span> &lt;trigger_db_name&gt;
+
+<span class="cmt"># With waveform data (loads all configured RTL triggers)</span>
+<span class="fn">vis</span> <span class="var">-tracedir</span> &lt;trace_directory_name&gt;</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         9.3 INCREMENTAL
+    ════════════════════════════════════ -->
+    <section id="incremental" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-purple">🔄</div>
+        <div>
+          <div class="section-title">Incremental RTL Triggers</div>
+          <div class="section-desc">Add new trigger signals without a full design recompile. Available on Veloce Strato CS only.</div>
+        </div>
+      </div>
+
+      <div class="info-box note">
+        <span class="box-icon">ℹ️</span>
+        <div>Incremental RTL triggers use <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">veltrigcomp</code> to compile triggers independently from the main design database — enabling fast iteration without full recompile.</div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-title">📝 Step 1 — Signal List Compile</div>
+          <div class="card-body" style="margin-bottom:10px;">Create and compile the trigger signal list:</div>
+          <div class="code-block-header"><span>Signal List</span><span class="lang-tag">PLAINTEXT</span></div>
+          <div class="code-block" style="font-size:11px;">TRIGPART sync_trig_part
+GROUP pos_clk_bar_clk
+CLOCK color_bar_reset_n
+NET color_bar_vsync
+NET color_bar_hsync</div>
+          <div class="code-block-header" style="margin-top:8px;"><span>Compile</span><span class="lang-tag">BASH</span></div>
+          <div class="code-block" style="font-size:11px;"><span class="fn">comp_veltriggerslist</span> constraints/trig_sig.txt</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔨 Step 2 — Trigger Description Compile</div>
+          <div class="card-body" style="margin-bottom:10px;">Compile the trigger description file:</div>
+          <div class="code-block-header"><span>veltrigcomp</span><span class="lang-tag">BASH</span></div>
+          <div class="code-block" style="font-size:11px;"><span class="fn">veltrigcomp</span> \
+  <span class="var">-partition_list</span> trig_part.txt \
+  <span class="var">-runtime_db_name</span> sync_trig_part_1
+
+<span class="cmt"># trig_part.txt contents:</span>
+TRIGPART sync_trig_part
+TRIGFILES ../src/trig_mod.sv</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🚀 Step 3 — Load at Runtime</div>
+          <div class="card-body" style="margin-bottom:10px;">Load the compiled trigger database:</div>
+          <div class="code-block-header"><span>velrun</span><span class="lang-tag">BASH</span></div>
+          <div class="code-block" style="font-size:11px;"><span class="fn">velrun</span> ... <span class="var">-veltrigger</span> sync_trig_part_1</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🐛 Step 4 — Debug</div>
+          <div class="card-body" style="margin-bottom:10px;">View trigger signals in Visualizer:</div>
+          <div class="code-block-header"><span>Visualizer</span><span class="lang-tag">TCL</span></div>
+          <div class="code-block" style="font-size:11px;"><span class="cmt"># Compile DB mode</span>
+<span class="fn">vis</span> <span class="var">-veloc</span> <span class="var">-veltrigger</span> &lt;db&gt;
+
+<span class="cmt"># With waveform data</span>
+<span class="fn">vis</span> <span class="var">-tracedir</span> &lt;dir&gt;</div>
+        </div>
+      </div>
+
+      <div class="info-box warn">
+        <span class="box-icon">⚠️</span>
+        <div><strong>StratoCS Restriction:</strong> Only single-step flow is supported. You <strong>cannot</strong> use <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">veltrigcomp</code> in StratoCS — a full design recompile is required.</div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         9.4 MISC RTL TOPICS
+    ════════════════════════════════════ -->
+    <section id="misc" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-orange">🔧</div>
+        <div>
+          <div class="section-title">Miscellaneous RTL Trigger Topics</div>
+          <div class="section-desc">Reset mechanisms, AllEdgeClk, RTLC design query tool, and advanced FSM patterns.</div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-item">
+          <div class="accordion-header open" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>🔄</span> Resetting a Trigger State Machine</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body open">
+            <div class="info-box danger" style="margin-bottom:12px;">
+              <span class="box-icon">🚫</span>
+              <div>Only <strong>synchronous reset</strong> is supported. Trigger compile logic with <strong>asynchronous reset is not allowed</strong>.</div>
+            </div>
+            <div class="code-block-header"><span>Synchronous Reset Example</span><span class="lang-tag">SYSTEMVERILOG</span></div>
+            <div class="code-block"><span class="kw">wire</span> rst; <span class="cmt">// pragma veltrigger reset rst active_high</span>
+<span class="kw">assign</span> rst = top.reset;
+<span class="kw">always</span> @(<span class="kw">posedge</span> clk) <span class="kw">begin</span>
+  <span class="kw">if</span> (rst) <span class="kw">begin</span>
+    <span class="cmt">// Reset assignments for counters and state variables</span>
+  <span class="kw">end</span>
+  <span class="kw">else begin</span>
+    <span class="kw">case</span> (state)
+      <span class="cmt">// FSM logic</span>
+    <span class="kw">endcase</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></div>
+            <div class="pills" style="margin-top:10px;">
+              <span class="pill pill-green">Active High: active_high</span>
+              <span class="pill pill-red">Active Low: active_low</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>🕐</span> AllEdgeClk — Unknown Clock Info</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:12px;">When design clock information is unknown, use <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">AllEdgeClk</code> as the clock signal:</p>
+            <div class="code-block-header"><span>Signal List with AllEdgeClk</span><span class="lang-tag">PLAINTEXT</span></div>
+            <div class="code-block">TRIGPART MYGP1
+TRIGFILES -f file_list
+GROUP TMP1
+CLOCK POS top_allEdgeClk
+NET top_counter1
+NET top_reset</div>
+            <div class="info-box warn" style="margin-top:12px;">
+              <span class="box-icon">⚠️</span>
+              <div><code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">AllEdgeClk</code> can <strong>only</strong> be used in a <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">posedge</code>-driven sensitivity list. It <strong>cannot</strong> be used in <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">negedge</code> or combinational assignments.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>🏗️</span> RTLC Design Query Tool</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:12px;">Auto-generate signal list files for families of designs using the RTLC design query tool with HDL pre-processor variables:</p>
+            <div class="code-block-header"><span>RTLC Query Script</span><span class="lang-tag">TCL</span></div>
+            <div class="code-block"><span class="kw">set</span> cpucore_debugsig_list [<span class="fn">list</span> memerror buserror protocolerror]
+<span class="kw">set</span> dmacore_debugsigList  [<span class="fn">list</span> dmawrite_error dmaread_error]
+
+<span class="kw">set</span> outfile [<span class="fn">open</span> <span class="str">"../designHier.svh"</span> w]
+<span class="kw">set</span> hierpath1 [<span class="fn">get_hier_paths</span> triggerSig_list]
+<span class="fn">puts</span> $outfile <span class="str">"`define CPUCOREINST $hierpath1"</span>
+<span class="kw">foreach</span> a $cpucore_debugsig_list {
+  <span class="fn">puts</span> $outfile <span class="str">"`define $hierpath1.$a"</span>
+}
+<span class="fn">close</span> $outfile</div>
+            <div class="code-block-header" style="margin-top:12px;"><span>Trigger Module Using Generated Header</span><span class="lang-tag">SYSTEMVERILOG</span></div>
+            <div class="code-block"><span class="str">`include "designHier.svh"</span>
+
+<span class="kw">if</span> (<span class="str">`CPUCOREINST</span>.memerror == <span class="num">1'b1</span> && <span class="str">`DMACOREINST</span>.dmawrite_error == <span class="num">1'b1</span>) <span class="kw">begin</span>
+  <span class="fn">$halt</span>();
+<span class="kw">end</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         9.5 COMMANDS & C-APIs
+    ════════════════════════════════════ -->
+    <section id="commands" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-purple">💻</div>
+        <div>
+          <div class="section-title">Veltrigger Tcl Commands & C-APIs</div>
+          <div class="section-desc">Complete reference for all veltrigger Tcl commands and their C-API equivalents.</div>
+        </div>
+      </div>
+
+      <div class="info-box note">
+        <span class="box-icon">ℹ️</span>
+        <div>C-APIs can be used alongside Tcl commands in the same environment. They work in both clock-running and clock-stopped modes. C-APIs return <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">0</code> on success. In multi-comodel mode, C-APIs are only allowed from the <strong>primary comodel channel</strong>.</div>
+      </div>
+
+      <h3 style="font-size:14px;color:var(--text);margin-bottom:12px;">📋 Command Reference</h3>
+      <div class="cmd-grid">
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -download &lt;db&gt; -pos &lt;n&gt; <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Download trigger database at position n% in the trace buffer.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -enable &lt;name|all&gt; <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Enable a specific trigger or all triggers. After download, all triggers are disabled by default.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -disable &lt;name|all&gt; <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Disable a specific trigger or all triggers.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -reset &lt;name|all&gt; <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Reset trigger FSM to its initial state. Counters also reset to initial values.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -delete <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Delete the active RTL trigger. FSM remains active but no longer contributes to stop/trace/trigger.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -reload <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Reload the trigger database.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -display &lt;name&gt; <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Show trigger status, counter values, and initial counter values.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -getmaturedtrigger <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Returns list of triggers that have matured. Cleared after call.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -gethaltedtrigger <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Returns list of triggers that caused a clock stoppage.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -getenabledtrigger <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Returns list of currently enabled triggers.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -ismatured &lt;name&gt; <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Check if a specific trigger has matured.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -ishalted &lt;name&gt; <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Check if a specific trigger is in halted state.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -isenabled &lt;name&gt; <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Check if a specific trigger is enabled.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -getval &lt;name.counter&gt; <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Get the current value of a counter in a trigger module.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -setval &lt;name.counter&gt; &lt;val&gt; <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Set the value of a counter in a trigger module.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -setinitial &lt;name.counter&gt; &lt;val&gt; <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Set the initial value for a counter (used on reset).</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -cleartriggerstate <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Clear current trigger state to allow processing of new $trigger calls.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">veltrigger -onhalt &lt;proc_name&gt; <span class="cmd-type tcl">TCL</span></div>
+          <div class="cmd-desc">Register a Tcl callback procedure that executes when a trigger stops the clock. If return value is 0, clock continues automatically.</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px;color:var(--text);margin:16px 0 12px;">🔗 C-API Mapping Table</h3>
+      <div style="overflow-x:auto;">
+        <table class="compare-table">
+          <thead><tr><th>C-API Function</th><th>Tcl Equivalent</th></tr></thead>
+          <tbody>
+            <tr><td><code style="font-size:11px;">VeltriggerDownLoad(...)</code></td><td><code style="font-size:11px;">veltrigger -download</code></td></tr>
+            <tr><td><code style="font-size:11px;">VeltriggerEnable(name)</code></td><td><code style="font-size:11px;">veltrigger -enable</code></td></tr>
+            <tr><td><code style="font-size:11px;">VeltriggerDisable(name)</code></td><td><code style="font-size:11px;">veltrigger -disable</code></td></tr>
+            <tr><td><code style="font-size:11px;">VeltriggerReset(name)</code></td><td><code style="font-size:11px;">veltrigger -reset</code></td></tr>
+            <tr><td><code style="font-size:11px;">VeltriggerDisplay(name, valfmt)</code></td><td><code style="font-size:11px;">veltrigger -display</code></td></tr>
+            <tr><td><code style="font-size:11px;">VeltriggerGetMatureTriggerList(...)</code></td><td><code style="font-size:11px;">veltrigger -getmaturedtrigger</code></td></tr>
+            <tr><td><code style="font-size:11px;">VeltriggerGetHaltedTriggerList(...)</code></td><td><code style="font-size:11px;">veltrigger -gethaltedtrigger</code></td></tr>
+            <tr><td><code style="font-size:11px;">VeltriggerIsMatured(name, *bool)</code></td><td><code style="font-size:11px;">veltrigger -ismatured</code></td></tr>
+            <tr><td><code style="font-size:11px;">VeltriggerIsHalted(name, *bool)</code></td><td><code style="font-size:11px;">veltrigger -ishalted</code></td></tr>
+            <tr><td><code style="font-size:11px;">VeltriggerGetVal(net, val, fmt)</code></td><td><code style="font-size:11px;">veltrigger -getval</code></td></tr>
+            <tr><td><code style="font-size:11px;">VeltriggerSetVal(net, val)</code></td><td><code style="font-size:11px;">veltrigger -setval</code></td></tr>
+            <tr><td><code style="font-size:11px;">VeltriggerSetInitial(net, val)</code></td><td><code style="font-size:11px;">veltrigger -setinitial</code></td></tr>
+            <tr><td><code style="font-size:11px;">VeltriggerClearTriggerState()</code></td><td><code style="font-size:11px;">veltrigger -cleartriggerstate</code></td></tr>
+            <tr><td><code style="font-size:11px;">VeltriggerRegisterHaltedCallBack(func)</code></td><td><code style="font-size:11px;">veltrigger -onhalt</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         9.6 RUNTIME TRIGGERS
+    ════════════════════════════════════ -->
+    <section id="runtime" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-yellow">🕹️</div>
+        <div>
+          <div class="section-title">Runtime Triggers</div>
+          <div class="section-desc">Create trigger files using a proprietary HDL-like language and pass them to Veloce at runtime.</div>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-title">🖥️ Trigger Editor (GUI)</div>
+          <div class="card-body">
+            <ol style="padding-left:16px;line-height:2;">
+              <li>Open: Create/Compile Triggers Dialog</li>
+              <li>Load an existing <code style="background:rgba(255,255,255,0.08);padding:1px 4px;border-radius:3px;">.trig</code> file</li>
+              <li>Add States with attributes</li>
+              <li>Define <code style="background:rgba(255,255,255,0.08);padding:1px 4px;border-radius:3px;">next</code> / <code style="background:rgba(255,255,255,0.08);padding:1px 4px;border-radius:3px;">jump</code> transitions</li>
+              <li>Edit counters, timers, conditions</li>
+              <li>Add clock domains</li>
+              <li>View compilation messages</li>
+              <li>Save trigger file</li>
+            </ol>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📝 Adding a New State (GUI Steps)</div>
+          <div class="card-body">
+            <ol style="padding-left:16px;line-height:2;">
+              <li>Click <strong>Add/Edit State</strong></li>
+              <li>Enter a unique <strong>state name</strong></li>
+              <li>Set <strong>Control</strong>: Initial or Trigger</li>
+              <li>Set <strong>Run Control</strong>: Stop / Stop If</li>
+              <li>Set <strong>Storage</strong>: Store / No Store / Store If</li>
+              <li>Set <strong>Domain</strong> (multi-domain designs)</li>
+              <li>Click <strong>OK</strong> or <strong>Apply</strong></li>
+            </ol>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔄 Trigger Variable Substitution</div>
+          <div class="card-body" style="margin-bottom:10px;">Create portable triggers across design families:</div>
+          <div class="code-block-header"><span>Tcl Setup</span><span class="lang-tag">TCL</span></div>
+          <div class="code-block" style="font-size:11px;"><span class="kw">set</span> myvar <span class="str">"i_core_0"</span>
+<span class="cmt"># Trigger file uses: $[myvar]</span></div>
+          <div style="margin-top:8px;">
+            <div class="pills">
+              <span class="pill pill-blue">$myval</span>
+              <span class="pill pill-blue">$[myval]</span>
+              <span class="pill pill-blue">$myval[3]</span>
+              <span class="pill pill-blue">$[count]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box tip">
+        <span class="box-icon">💡</span>
+        <div>When using the <strong>Questa front end</strong>, use <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">velocecmd</code> to set trigger variables and download triggers.</div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         9.7 DESCRIPTION ELEMENTS
+    ════════════════════════════════════ -->
+    <section id="elements" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-blue">🧩</div>
+        <div>
+          <div class="section-title">Trigger Description Elements</div>
+          <div class="section-desc">The four building blocks of the trigger description language: Timers, Counters, States, and Domains.</div>
+        </div>
+      </div>
+
+      <!-- FSM Diagram -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
+        <h3 style="font-size:13px;color:var(--text);margin-bottom:16px;text-align:center;">🔄 Trigger FSM — Visual Flow</h3>
+        <div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;">
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div class="fsm-state initial" style="width:100px;height:60px;border-radius:8px;">
+              <span>INITIAL</span>
+              <span class="st-label">Start State</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;padding:0 8px;">
+            <span style="font-size:9px;color:var(--yellow);margin-bottom:2px;">next(condition)</span>
+            <div style="width:50px;height:2px;background:var(--border);position:relative;">
+              <span style="position:absolute;right:-8px;top:-7px;color:var(--border);font-size:12px;">▶</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div class="fsm-state normal" style="width:100px;height:60px;border-radius:8px;">
+              <span>MIDDLE</span>
+              <span class="st-label">Normal State</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;padding:0 8px;">
+            <span style="font-size:9px;color:var(--yellow);margin-bottom:2px;">next(condition)</span>
+            <div style="width:50px;height:2px;background:var(--border);position:relative;">
+              <span style="position:absolute;right:-8px;top:-7px;color:var(--border);font-size:12px;">▶</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div class="fsm-state trigger" style="width:100px;height:60px;border-radius:8px;">
+              <span>TRIGGER</span>
+              <span class="st-label">Mature State</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;padding:0 8px;">
+            <span style="font-size:9px;color:var(--red);margin-bottom:2px;">stop if(cond)</span>
+            <div style="width:50px;height:2px;background:var(--border);position:relative;">
+              <span style="position:absolute;right:-8px;top:-7px;color:var(--border);font-size:12px;">▶</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div class="fsm-state stop-st" style="width:100px;height:60px;border-radius:8px;">
+              <span>STOP</span>
+              <span class="st-label">Clock Stops</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-item">
+          <div class="accordion-header open" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>⏱️</span> Timer Declaration</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body open">
+            <div class="code-block-header"><span>Timer Syntax</span><span class="lang-tag">PLAINTEXT</span></div>
+            <div class="code-block"><span class="kw">timer</span> TooLong
+<span class="kw">begin</span>
+  value  = <span class="num">10000</span>;    <span class="cmt">// Count at vclock rate</span>
+  target = TooLong; <span class="cmt">// State to jump to when fired</span>
+<span class="kw">end</span></div>
+            <div style="margin-top:12px;">
+              <h4 style="font-size:12px;color:var(--text);margin-bottom:8px;">Timer Actions on Transitions:</h4>
+              <div class="pills">
+                <span class="pill pill-green">enable timer &lt;name&gt;</span>
+                <span class="pill pill-red">disable timer &lt;name&gt;</span>
+                <span class="pill pill-yellow">reset timer &lt;name&gt;</span>
+              </div>
+            </div>
+            <div class="info-box tip" style="margin-top:12px;">
+              <span class="box-icon">💡</span>
+              <div>Timers count at <strong>vclock rate</strong> when enabled. When the counter matches the specified value, the FSM <strong>immediately</strong> enters the timer's target state.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>🔢</span> Counter Declaration</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <div class="code-block-header"><span>Counter Syntax</span><span class="lang-tag">PLAINTEXT</span></div>
+            <div class="code-block"><span class="cmt">// Simple counter — no properties needed</span>
+<span class="kw">counter</span> Loopy;
+
+<span class="cmt">// With pragma (for display and control):</span>
+<span class="kw">reg</span> [<span class="num">31</span>:<span class="num">0</span>] counter1; <span class="cmt">// pragma veltrigger counter counter1</span></div>
+            <div style="margin-top:12px;">
+              <h4 style="font-size:12px;color:var(--text);margin-bottom:8px;">Counter Actions on Transitions:</h4>
+              <div class="pills">
+                <span class="pill pill-green">increment counter &lt;name&gt;</span>
+                <span class="pill pill-red">reset counter &lt;name&gt;</span>
+                <span class="pill pill-blue">condition (&lt;name&gt; == &lt;value&gt;)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>📦</span> State Declaration & Attributes</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <div class="code-block-header"><span>State Syntax</span><span class="lang-tag">PLAINTEXT</span></div>
+            <div class="code-block"><span class="kw">state</span> &lt;name&gt; : &lt;attribute_list&gt;
+<span class="kw">begin</span>
+  domain &lt;domain_name&gt;;
+  <span class="kw">next</span>  (&lt;condition&gt;) [N times] [counter/timer actions];
+  <span class="kw">jump</span>  (&lt;condition&gt;) [N times] [target = &lt;state&gt;] [actions];
+<span class="kw">end</span></div>
+            <div style="margin-top:12px;">
+              <h4 style="font-size:12px;color:var(--text);margin-bottom:8px;">State Attribute Reference:</h4>
+              <table class="compare-table">
+                <thead><tr><th>Attribute</th><th>Description</th></tr></thead>
+                <tbody>
+                  <tr><td><code>initial</code></td><td>Marks the starting state. Only one allowed. Default = first state.</td></tr>
+                  <tr><td><code>trigger</code></td><td>Marks a trigger maturity state. Multiple allowed.</td></tr>
+                  <tr><td><code>store</code></td><td>Turns waveform storage <strong>ON</strong></td></tr>
+                  <tr><td><code>nostore</code></td><td>Turns waveform storage <strong>OFF</strong></td></tr>
+                  <tr><td><code>store if &lt;expr&gt;</code></td><td>Enables storage conditionally based on expression</td></tr>
+                  <tr><td><code>stop</code></td><td>Stops emulation clocks when state is reached</td></tr>
+                  <tr><td><code>stop if &lt;expr&gt;</code></td><td>Stops emulation clocks conditionally</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="info-box warn" style="margin-top:12px;">
+              <span class="box-icon">⚠️</span>
+              <div><strong>Limits:</strong> Max <strong>4 unique constants</strong> per counter (including N times). Max <strong>4 transitions</strong> (next + jump combined) per state. More than 4 transitions results in an error.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>🌐</span> Domain Declaration</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <div class="code-block-header"><span>Domain Syntax</span><span class="lang-tag">PLAINTEXT</span></div>
+            <div class="code-block"><span class="cmt">// Global domain (applies to all states without their own domain)</span>
+<span class="kw">domain</span> &lt;name&gt; @(<span class="kw">posedge</span> &lt;clk&gt;);
+<span class="kw">domain</span> &lt;name&gt; @(<span class="kw">negedge</span> &lt;clk&gt;);
+
+<span class="cmt">// Per-state domain (inside state block)</span>
+<span class="kw">state</span> MyState
+<span class="kw">begin</span>
+  <span class="kw">domain</span> myDomain @(<span class="kw">posedge</span> clk);
+  <span class="kw">next</span> (condition);
+<span class="kw">end</span></div>
+            <div class="info-box tip" style="margin-top:12px;">
+              <span class="box-icon">💡</span>
+              <div>For <strong>VHDL</strong> or mixed VHDL/Verilog designs, use the <strong>slash (/)</strong> as the hierarchy separator for signal names in trigger descriptions.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         9.8 TRIGGER POSITION
+    ════════════════════════════════════ -->
+    <section id="position" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-yellow">📍</div>
+        <div>
+          <div class="section-title">Trigger Position</div>
+          <div class="section-desc">Control where in the trace buffer the trigger event falls — from 0% (start) to 100% (end).</div>
+        </div>
+      </div>
+
+      <div class="position-demo">
+        <div class="pos-label">🎛️ Interactive Trigger Position Simulator — drag the slider to adjust:</div>
+        <div class="pos-bar-wrap" id="posBar">
+          <div class="pos-bar-pre" id="posBarPre" style="width:50%;">Pre-Trigger (50%)</div>
+          <div class="pos-bar-post" id="posBarPost" style="width:50%;">Post-Trigger (50%)</div>
+          <div class="pos-marker" id="posMarker" style="left:50%;"></div>
+        </div>
+        <input type="range" class="pos-slider" id="posSlider" min="0" max="100" value="50" oninput="updatePosition(this.value)"/>
+        <div class="pos-value" id="posValue">50%</div>
+        <div class="pos-hint" id="posHint">Trigger occurs midway — half of trace before, half after trigger matures.</div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-title">📌 Position = 0%</div>
+          <div class="card-body">Trigger occurs at the <strong>start</strong> of trace collection. The signal window includes only a few samples before the trigger.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📌 Position = 50% (Default)</div>
+          <div class="card-body">Trigger occurs <strong>midway</strong> in trace collection. Half of the waveform before the trigger, half after.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📌 Position = 100%</div>
+          <div class="card-body">Trigger occurs at the <strong>end</strong> of trace collection. The signal window includes only a few samples after the trigger.</div>
+        </div>
+      </div>
+
+      <div class="code-block-header"><span>Setting Position via Tcl</span><span class="lang-tag">TCL</span></div>
+      <div class="code-block"><span class="fn">veltrigger</span> <span class="var">-download</span> &lt;db_name&gt; <span class="var">-pos</span> <span class="num">75</span></div>
+
+      <div class="info-box note" style="margin-top:4px;">
+        <span class="box-icon">ℹ️</span>
+        <div><strong>Sample transcript message:</strong><br>
+        <code style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:3px;font-size:11px;">Info! [RTS-20065] : Trigger position: 50, Trace will turn off after 23904 cycles of master clock after trigger matures. Total trace depth: 47808 cycles of master clock.</code></div>
+      </div>
+
+      <div class="info-box warn">
+        <span class="box-icon">⚠️</span>
+        <div><strong>Edge Case:</strong> If the trigger matures <em>before</em> the trace buffer reaches the set position %, only the available data is captured. The trace buffer may not fill to 100%.</div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         9.9 TRIGGER EXAMPLES
+    ════════════════════════════════════ -->
+    <section id="examples" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-green">📋</div>
+        <div>
+          <div class="section-title">Trigger Examples</div>
+          <div class="section-desc">13 annotated examples covering all major trigger patterns. Click a tab to view each example.</div>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="showTab('ex1', this)">Ex 1: Store</button>
+        <button class="tab-btn" onclick="showTab('ex2', this)">Ex 2: Stop</button>
+        <button class="tab-btn" onclick="showTab('ex3', this)">Ex 3: Stop If</button>
+        <button class="tab-btn" onclick="showTab('ex4', this)">Ex 4: N Contiguous</button>
+        <button class="tab-btn" onclick="showTab('ex5', this)">Ex 5: Don't Care</button>
+        <button class="tab-btn" onclick="showTab('ex6', this)">Ex 6: N Clock Ticks</button>
+        <button class="tab-btn" onclick="showTab('ex7', this)">Ex 7: Timer Timeout</button>
+        <button class="tab-btn" onclick="showTab('ex8', this)">Ex 8: Counter Loop</button>
+        <button class="tab-btn" onclick="showTab('ex9', this)">Ex 9: Initial State</button>
+        <button class="tab-btn" onclick="showTab('ex10', this)">Ex 10: Abs Jump</button>
+        <button class="tab-btn" onclick="showTab('ex11', this)">Ex 11: Rel Jump</button>
+        <button class="tab-btn" onclick="showTab('ex12', this)">Ex 12: Expressions</button>
+        <button class="tab-btn" onclick="showTab('ex13', this)">Ex 13: Full Tour</button>
+      </div>
+
+      <div id="ex1" class="tab-content active">
+        <div class="info-box note"><span class="box-icon">📌</span><div><strong>Store Trigger:</strong> Captures waveforms around the trigger without stopping emulation. Trace continues running.</div></div>
+        <div class="code-block-header"><span>Example 1 — Store Trigger</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="kw">domain</span> domain0 @(<span class="kw">posedge</span> Uclock);
+<span class="kw">state</span> S0 : initial, store
+<span class="kw">begin</span>
+  <span class="kw">next</span> (top.SIM_TIME[<span class="num">63</span>:<span class="num">0</span>] == <span class="num">100</span>);
+<span class="kw">end</span>
+<span class="kw">state</span> S1 : trigger, store;</div>
+      </div>
+
+      <div id="ex2" class="tab-content">
+        <div class="info-box note"><span class="box-icon">📌</span><div><strong>Stop Trigger:</strong> Stops emulation as soon as the trigger matures. Clocks halt immediately.</div></div>
+        <div class="code-block-header"><span>Example 2 — Stop Trigger</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="kw">state</span> S0 : initial, store
+<span class="kw">begin</span>
+  <span class="kw">next</span> (top.SIM_TIME[<span class="num">63</span>:<span class="num">0</span>] == <span class="num">100</span>);
+<span class="kw">end</span>
+<span class="kw">state</span> S1 : trigger, stop;</div>
+      </div>
+
+      <div id="ex3" class="tab-content">
+        <div class="info-box note"><span class="box-icon">📌</span><div><strong>Stop If:</strong> Emulation stops when the signal takes value <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">8'h55</code> before it takes <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">8'h65</code> (after having taken <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">8'h40</code>).</div></div>
+        <div class="code-block-header"><span>Example 3 — Conditional Stop</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="kw">state</span> StartState : initial
+  <span class="kw">next</span> (counter_test.sr.data[<span class="num">7</span>:<span class="num">0</span>] == <span class="num">8'h40</span>);
+<span class="kw">state</span> ConditionStop : stop <span class="kw">if</span> (counter_test.sr.data[<span class="num">7</span>:<span class="num">0</span>] == <span class="num">8'h55</span>), store
+<span class="kw">begin</span>
+  domain Clk_dom1 @(<span class="kw">posedge</span> clk);
+  <span class="kw">next</span> (counter_test.sr.data[<span class="num">7</span>:<span class="num">0</span>] == <span class="num">8'h65</span>);
+<span class="kw">end</span>
+<span class="kw">state</span> NormalTrigger : trigger;</div>
+      </div>
+
+      <div id="ex4" class="tab-content">
+        <div class="info-box note"><span class="box-icon">📌</span><div><strong>N Contiguous Times:</strong> The jump resets the counter if the condition ever becomes false — ensuring truly contiguous matching.</div></div>
+        <div class="code-block-header"><span>Example 4 — Match N Contiguous Times</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="kw">state</span> AState
+<span class="kw">begin</span>
+  <span class="kw">next</span> (one.two.address[<span class="num">31</span>:<span class="num">0</span>] == <span class="num">32'h0A0A0A0A</span>) <span class="num">49</span> times;
+  <span class="kw">jump</span> (one.two.address[<span class="num">31</span>:<span class="num">0</span>] != <span class="num">32'h0A0A0A0A</span>)
+    target = AState;
+<span class="kw">end</span></div>
+      </div>
+
+      <div id="ex5" class="tab-content">
+        <div class="info-box note"><span class="box-icon">📌</span><div><strong>Don't Care:</strong> Use <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">X</code> or <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">x</code> in bit patterns to create don't-care conditions. Only specified bits are checked.</div></div>
+        <div class="code-block-header"><span>Example 5 — Don't Care Conditional</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="kw">state</span> First_Dont_Care_Check : initial
+  <span class="kw">next</span> (shift_test_rising.sr0.dataOut[<span class="num">3</span>:<span class="num">0</span>] == <span class="num">4'bX0x1</span>);
+<span class="kw">state</span> Second_Dont_Care_Check
+  <span class="kw">next</span> (shift_test_rising.sr0.dataOut[<span class="num">3</span>:<span class="num">0</span>] == <span class="num">4'b1x0x</span>);
+<span class="kw">state</span> Final : trigger;</div>
+      </div>
+
+      <div id="ex6" class="tab-content">
+        <div class="info-box note"><span class="box-icon">📌</span><div><strong>Wait N Clock Ticks:</strong> Use <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">next (1) N times</code> to wait for a fixed number of clock cycles.</div></div>
+        <div class="code-block-header"><span>Example 6 — Wait N Clock Ticks</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="cmt">// Simple single-domain version:</span>
+<span class="kw">state</span> WaitAround
+  <span class="kw">next</span> (<span class="num">1</span>) <span class="num">100</span> times;
+
+<span class="cmt">// Multi-domain explicit version:</span>
+<span class="kw">state</span> WaitAround
+<span class="kw">begin</span>
+  domain Simple @(<span class="kw">posedge</span> CLK);
+  <span class="kw">next</span> (<span class="num">1</span>) <span class="num">100</span> times;
+<span class="kw">end</span></div>
+      </div>
+
+      <div id="ex7" class="tab-content">
+        <div class="info-box note"><span class="box-icon">📌</span><div><strong>Timer Timeout:</strong> Use a timer and a unique timer trigger state to detect when a normal trigger does not occur within an expected period.</div></div>
+        <div class="code-block-header"><span>Example 7 — Timer-Based Timeout</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="kw">timer</span> TooLong
+<span class="kw">begin</span>
+  value  = <span class="num">10000</span>;
+  target = TooLong;
+<span class="kw">end</span>
+
+<span class="kw">state</span> Begin
+  <span class="kw">next</span> (SomethingOrOther == <span class="num">16'hABCD</span>)
+    enable <span class="kw">timer</span> TooLong;
+
+<span class="kw">state</span> NormalTrigger : trigger;
+<span class="kw">state</span> TooLong       : trigger;</div>
+      </div>
+
+      <div id="ex8" class="tab-content">
+        <div class="info-box note"><span class="box-icon">📌</span><div><strong>Counter Loop:</strong> Use a general-purpose counter to repeat a pattern exactly N times.</div></div>
+        <div class="code-block-header"><span>Example 8 — Repeat Pattern N Times</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="kw">counter</span> Loopy;
+
+<span class="kw">state</span> Start
+<span class="kw">begin</span>
+  <span class="kw">next</span> (<span class="num">1</span>) reset <span class="kw">counter</span> Loopy;
+<span class="kw">end</span>
+
+<span class="kw">state</span> StartOfLoop
+  <span class="kw">next</span> (SomethingOrOther == <span class="num">32'h1234</span>)
+    increment <span class="kw">counter</span> Loopy;
+
+<span class="kw">state</span> EndOfLoop
+<span class="kw">begin</span>
+  <span class="kw">next</span> (<span class="num">1</span>) condition (Loopy == <span class="num">17</span>);
+  <span class="kw">jump</span> (<span class="num">1</span>) target = StartOfLoop;
+<span class="kw">end</span></div>
+      </div>
+
+      <div id="ex9" class="tab-content">
+        <div class="info-box note"><span class="box-icon">📌</span><div><strong>Custom Initial State:</strong> Use the <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">initial</code> attribute to specify a starting state that is not the first state in the file.</div></div>
+        <div class="code-block-header"><span>Example 9 — Specify Initial State</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="kw">state</span> One
+  <span class="kw">next</span> (WhatHaveYou == <span class="num">0</span>);
+<span class="kw">state</span> Two
+  <span class="kw">next</span> (SomethingElse == <span class="num">1</span>);
+<span class="cmt">// ...</span>
+<span class="kw">state</span> ActuallyStartHere : initial
+<span class="cmt">// ...</span></div>
+      </div>
+
+      <div id="ex10" class="tab-content">
+        <div class="info-box note"><span class="box-icon">📌</span><div><strong>Absolute Jump:</strong> Trigger states of the jump instruction are specified by their exact state names.</div></div>
+        <div class="code-block-header"><span>Example 10 — Absolute Jump Trigger</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="kw">state</span> S1 : initial
+<span class="kw">begin</span>
+  <span class="kw">jump</span> (sr1.dataOut[<span class="num">2</span>:<span class="num">0</span>] == <span class="num">3'b111</span>) target = S1;
+  <span class="kw">jump</span> (sr1.dataOut[<span class="num">2</span>:<span class="num">0</span>] == <span class="num">3'b101</span>) target = S3;
+<span class="kw">end</span>
+<span class="kw">state</span> S2
+<span class="kw">begin</span>
+  <span class="kw">jump</span> (sr1.dataOut[<span class="num">2</span>:<span class="num">0</span>] == <span class="num">3'b000</span>) target = S1;
+  <span class="kw">jump</span> (sr1.dataOut[<span class="num">2</span>:<span class="num">0</span>] == <span class="num">3'b011</span>) target = final;
+<span class="kw">end</span>
+<span class="kw">state</span> S3
+  <span class="kw">jump</span> (sr1.dataOut[<span class="num">2</span>:<span class="num">0</span>] == <span class="num">3'b100</span>) target = S4;
+<span class="kw">state</span> S4
+  <span class="kw">jump</span> (sr1.dataOut[<span class="num">2</span>:<span class="num">0</span>] == <span class="num">3'b010</span>) target = S2;
+<span class="kw">state</span> final : trigger;</div>
+      </div>
+
+      <div id="ex11" class="tab-content">
+        <div class="info-box note"><span class="box-icon">📌</span><div><strong>Relative Jump:</strong> Target state is specified by its position relative to the current state. <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">0</code> = self, <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">-1</code> = previous, <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">+2</code> = two states forward.</div></div>
+        <div class="code-block-header"><span>Example 11 — Relative Jump Trigger</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="kw">state</span> S1 : initial
+<span class="kw">begin</span>
+  <span class="kw">jump</span> (sr1.dataOut[<span class="num">2</span>:<span class="num">0</span>] == <span class="num">3'b111</span>) target = <span class="num">0</span>;  <span class="cmt">// self</span>
+  <span class="kw">jump</span> (sr1.dataOut[<span class="num">2</span>:<span class="num">0</span>] == <span class="num">3'b101</span>) target = <span class="num">2</span>;  <span class="cmt">// +2 states forward</span>
+<span class="kw">end</span>
+<span class="kw">state</span> S2
+<span class="kw">begin</span>
+  <span class="kw">jump</span> (sr1.dataOut[<span class="num">2</span>:<span class="num">0</span>] == <span class="num">3'b000</span>) target = <span class="num">-1</span>; <span class="cmt">// previous state</span>
+  <span class="kw">jump</span> (sr1.dataOut[<span class="num">2</span>:<span class="num">0</span>] == <span class="num">3'b011</span>) target = <span class="num">3</span>;  <span class="cmt">// +3 states forward</span>
+<span class="kw">end</span>
+<span class="kw">state</span> final : trigger;</div>
+      </div>
+
+      <div id="ex12" class="tab-content">
+        <div class="info-box note"><span class="box-icon">📌</span><div><strong>Expression Types:</strong> Triggers support logical operators, array expressions, and reduction operators.</div></div>
+        <div class="code-block-header"><span>Example 12a — Logic Operators</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="kw">state</span> S0 : initial
+  <span class="kw">next</span> ((sr0.dataOut[<span class="num">3</span>:<span class="num">0</span>] == <span class="num">4'b1010</span>) &&
+        (sr1.dataOut[<span class="num">3</span>:<span class="num">0</span>] == <span class="num">4'b1100</span>) ||
+         sr1.dataOut[<span class="num">3</span>:<span class="num">0</span>] == <span class="num">4'b0101</span>) <span class="num">2</span> times;</div>
+        <div class="code-block-header" style="margin-top:12px;"><span>Example 12b — Array Expressions</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="kw">state</span> S0 : initial
+  <span class="kw">next</span> (sr0.dataOut[<span class="num">10</span>-<span class="num">3</span> : <span class="num">3</span>+<span class="num">1</span>] == <span class="num">4'b1010</span>);
+<span class="kw">state</span> S1
+  <span class="kw">next</span> (sr0.dataOut[(<span class="num">2</span>*<span class="num">5</span>+<span class="num">3</span>)/<span class="num">6</span>-<span class="num">1</span>] == <span class="num">1'b1</span>);</div>
+        <div class="code-block-header" style="margin-top:12px;"><span>Example 12c — Reduction Operators</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="kw">state</span> Start : initial
+  <span class="kw">next</span> (sr0.dataOut[<span class="num">3</span>:<span class="num">0</span>] == <span class="num">4'hF</span>);
+<span class="kw">state</span> S0
+  <span class="kw">next</span> (&sr0.dataOut[<span class="num">3</span>:<span class="num">0</span>]) <span class="num">2</span> times; <span class="cmt">// AND reduction</span></div>
+      </div>
+
+      <div id="ex13" class="tab-content">
+        <div class="info-box note"><span class="box-icon">📌</span><div><strong>Full Feature Tour:</strong> Annotated example showing domains, timers, counters, store if, nostore, conditions, and multiple trigger states.</div></div>
+        <div class="code-block-header"><span>Example 13 — Various Triggering Features</span><span class="lang-tag">PLAINTEXT</span></div>
+        <div class="code-block"><span class="cmt">// Trigger at 30% point of probe window</span>
+<span class="kw">domain</span> single @(<span class="kw">posedge</span> clk);
+
+<span class="kw">timer</span> One
+<span class="kw">begin</span>
+  value  = <span class="num">100</span>;
+  target = TimerOneExpired;
+<span class="kw">end</span>
+
+<span class="kw">counter</span> Meaningless;
+
+<span class="kw">state</span> Start : initial
+  <span class="kw">next</span> (c[<span class="num">0</span>:<span class="num">2</span>] == <span class="num">3</span>) reset <span class="kw">timer</span> One;
+
+<span class="kw">state</span> One
+  <span class="kw">next</span> (d[<span class="num">7</span>:<span class="num">8</span>] == <span class="num">2</span>);
+
+<span class="kw">state</span> Two : nostore
+<span class="kw">begin</span>
+  domain yo;
+  <span class="kw">next</span> (some == <span class="num">8'b0</span>) <span class="num">3</span> times;
+  <span class="kw">jump</span> (c[<span class="num">0</span>:<span class="num">2</span>] == <span class="num">0</span>) <span class="num">2</span> times
+  <span class="kw">begin</span>
+    target = One;
+    increment <span class="kw">counter</span> Meaningless;
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="kw">state</span> Three : store <span class="kw">if</span> (enable == <span class="num">1'b0</span>)
+<span class="kw">begin</span>
+  <span class="kw">next</span> (d == <span class="num">4'h7</span> && c[<span class="num">1</span>] == <span class="num">1'b0</span>)
+  <span class="kw">begin</span>
+    condition Meaningless == <span class="num">23</span>;
+    disable <span class="kw">timer</span> One;
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="kw">state</span> Final           : trigger;
+<span class="kw">state</span> TimerOneExpired : trigger;</div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         9.10 HW EVENTS
+    ════════════════════════════════════ -->
+    <section id="hwevents" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-red">⚡</div>
+        <div>
+          <div class="section-title">HW Events</div>
+          <div class="section-desc">Run Tcl procedures or C functions automatically when a signal reaches a specified value — without stopping emulation.</div>
+        </div>
+      </div>
+
+      <!-- Event Flow -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
+        <h3 style="font-size:13px;color:var(--text);margin-bottom:16px;text-align:center;">⚡ HW Event Flow</h3>
+        <div class="event-flow">
+          <div class="event-box">Signal Condition<br><span style="font-size:10px;color:var(--text-muted);">top.mem0.empty == 1</span></div>
+          <span class="event-arrow">→</span>
+          <div class="event-box">Event Matures<br><span style="font-size:10px;color:var(--text-muted);">hwevent fires</span></div>
+          <span class="event-arrow">→</span>
+          <div class="event-box">Callback Runs<br><span style="font-size:10px;color:var(--text-muted);">onmature -proc</span></div>
+          <span class="event-arrow">→</span>
+          <div class="event-box">Action Taken<br><span style="font-size:10px;color:var(--text-muted);">memory/reg/upload</span></div>
+          <span class="event-arrow">→</span>
+          <div class="event-box">Continue / Stop<br><span style="font-size:10px;color:var(--text-muted);">return 0 / return 1</span></div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-item">
+          <div class="accordion-header open" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>📝</span> Basic Setup</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body open">
+            <div class="code-block-header"><span>Memory Fill on Empty</span><span class="lang-tag">TCL</span></div>
+            <div class="code-block"><span class="cmt"># Add event — fires when top.mem0.empty == 1</span>
+<span class="kw">set</span> event0 [<span class="fn">hwevent</span> add top.mem0.empty <span class="num">1</span>]
+<span class="fn">hwevent</span> onmature <span class="var">-proc</span> fillmem
+
+<span class="kw">proc</span> <span class="fn">fillmem</span> {} {
+  <span class="kw">global</span> event0
+  <span class="kw">if</span> {[<span class="fn">hwevent</span> ismatured $event0]} {
+    <span class="fn">memory</span> download <span class="var">-instance</span> top.mem0.mem <span class="var">-file</span> abc.txt \
+                     <span class="var">-addr_range</span> <span class="num">0</span>:<span class="num">65535</span> <span class="var">-apply</span>
+    <span class="fn">reg</span> setvalue top.mem0.empty <span class="num">0</span> <span class="var">-apply</span>
+  }
+}</div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>🔄</span> Auto Trace On/Off with HW Events</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <div class="code-block-header"><span>Auto Trace Toggle</span><span class="lang-tag">TCL</span></div>
+            <div class="code-block"><span class="kw">set</span> event0 [<span class="fn">hwevent</span> add top.a.event0 <span class="num">1</span>]
+<span class="fn">hwevent</span> onmature <span class="var">-proc</span> autoOnTest
+
+<span class="kw">proc</span> <span class="fn">autoOnTest</span> {} {
+  <span class="kw">global</span> event0 event1
+  <span class="kw">if</span> {[<span class="fn">hwevent</span> ismatured $event0]} {
+    <span class="fn">hwetrace</span> autoupload on <span class="var">-tracedir</span> my_dir
+    <span class="fn">hwevent</span> delete $event0
+    <span class="kw">set</span> event1 [<span class="fn">hwevent</span> add top.a.event0 <span class="num">0</span>]
+    <span class="fn">hwevent</span> onmature <span class="var">-proc</span> autoOffTest
+  }
+}
+
+<span class="kw">proc</span> <span class="fn">autoOffTest</span> {} {
+  <span class="kw">global</span> event1 event0
+  <span class="kw">if</span> {[<span class="fn">hwevent</span> ismatured $event1]} {
+    <span class="fn">hwetrace</span> autoupload off
+    <span class="fn">hwevent</span> delete $event1
+    <span class="kw">set</span> event0 [<span class="fn">hwevent</span> add top.a.event0 <span class="num">1</span>]
+    <span class="fn">hwevent</span> onmature <span class="var">-proc</span> autoOnTest
+  }
+}</div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>💀</span> Fatal Event Stop (C-API)</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <div class="code-block-header"><span>Fatal Event C-API</span><span class="lang-tag">C</span></div>
+            <div class="code-block"><span class="kw">int</span> eventfatal = <span class="fn">dm_event_add</span>(<span class="str">"top.a.fatal"</span>, <span class="num">1</span>);
+<span class="kw">int</span> event0     = <span class="fn">dm_event_add</span>(<span class="str">"top.a.event0"</span>, <span class="num">1</span>);
+<span class="fn">dm_onmature_callback</span>(testMain);
+
+<span class="kw">int</span> <span class="fn">testMain</span>() {
+  <span class="kw">if</span> (<span class="fn">dm_event_ismatured</span>(eventfatal)) {
+    <span class="fn">dm_checkpoint_save</span>(<span class="str">"logcheck"</span>, <span class="kw">true</span>, <span class="kw">false</span>);
+    <span class="kw">return</span> <span class="num">1</span>; <span class="cmt">// Non-zero = STOP emulation</span>
+  }
+  <span class="kw">if</span> (<span class="fn">dm_event_ismatured</span>(event0)) {
+    <span class="fn">dm_memory_download</span>(...);
+  }
+  <span class="kw">return</span> <span class="num">0</span>; <span class="cmt">// Zero = CONTINUE emulation</span>
+}</div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title"><span>⚠️</span> HW Event Restrictions</div>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <table class="compare-table">
+              <thead><tr><th>Restriction</th><th>Detail</th></tr></thead>
+              <tbody>
+                <tr><td>Dynamic ICE models</td><td><span class="no">❌</span> Events cannot support dynamic ICE models (events stop clocks)</td></tr>
+                <tr><td>Trigger download during run</td><td>Disables events until download is complete — download when clocks are stopped</td></tr>
+                <tr><td>Non-blocking run in batch mode</td><td><span class="no">❌</span> May cause race conditions — use <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">waitfor</code> instead</td></tr>
+                <tr><td>Commands NOT allowed in callback</td><td><code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">quit</code>, <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">exit</code>, <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">run</code> (recursive calls disallowed)</td></tr>
+                <tr><td>Event auto-deactivation</td><td>Events are automatically deactivated after callback — re-activate manually if needed</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px;color:var(--text);margin-top:4px;margin-bottom:10px;">💡 Common HW Event Use Cases</h3>
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-title">💾 Memory Fill on Empty</div>
+          <div class="card-body">Detect FIFO empty condition → automatically download new data into memory. Keeps the emulation running without manual intervention.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📤 Memory Upload on Full</div>
+          <div class="card-body">Detect FIFO full condition → automatically upload memory contents to the host for analysis.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔧 Register Force/Release</div>
+          <div class="card-body">Force or release register values based on signal conditions using <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">reg setvalue</code> commands inside the callback.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🌊 Auto Waveform Upload</div>
+          <div class="card-body">Automatically upload waveforms when a specific event fires, enabling continuous waveform capture without manual steps.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔴 Fatal Error Stop</div>
+          <div class="card-body">Stop emulation immediately on a fatal signal condition. Return non-zero from the callback to halt the emulation run.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 Conditional Logic Control</div>
+          <div class="card-body">Run complex Tcl or C logic based on multiple simultaneous events using <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;">ismatured</code> checks inside the callback.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // ── Section Navigation ──
+  function showSection(id, el) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+  }
+
+  // ── Accordion ──
+  function toggleAccordion(header) {
+    const body = header.nextElementSibling;
+    const isOpen = header.classList.contains('open');
+    header.classList.toggle('open', !isOpen);
+    body.classList.toggle('open', !isOpen);
+  }
+
+  // ── Tab Examples ──
+  function showTab(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // ── Trigger Position Slider ──
+  function updatePosition(val) {
+    val = parseInt(val);
+    const pre  = document.getElementById('posBarPre');
+    const post = document.getElementById('posBarPost');
+    const mark = document.getElementById('posMarker');
+    const disp = document.getElementById('posValue');
+    const hint = document.getElementById('posHint');
+
+    pre.style.width  = val + '%';
+    post.style.width = (100 - val) + '%';
+    mark.style.left  = val + '%';
+    disp.textContent = val + '%';
+
+    pre.textContent  = val > 8  ? `Pre-Trigger (${val}%)` : '';
+    post.textContent = (100-val) > 8 ? `Post-Trigger (${100-val}%)` : '';
+
+    if (val === 0)        hint.textContent = 'Trigger at START — almost no pre-trigger data captured.';
+    else if (val === 100) hint.textContent = 'Trigger at END — almost no post-trigger data captured.';
+    else if (val === 50)  hint.textContent = 'Default: Trigger occurs midway — half before, half after trigger matures.';
+    else if (val < 50)    hint.textContent = `${val}% pre-trigger data, ${100-val}% post-trigger data captured.`;
+    else                  hint.textContent = `${val}% pre-trigger data, ${100-val}% post-trigger data captured.`;
+  }
+</script>
+</body>
+</html>
