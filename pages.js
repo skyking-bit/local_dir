@@ -49,9 +49,9 @@ const SKYDASH_PAGES = [
   },
   {
     id: 4,
-    name: 'Secret Docs',
-    url: 'select/secret.html',
-    desc: 'Confidential design documents — password required to access.',
+    name: 'Digital',
+    url: 'select/Digital.html',
+    desc: 'D',
     category: 'docs',
     icon: '🔐',
     color: '#e05252',
