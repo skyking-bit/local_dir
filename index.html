@@ -1,667 +1,565 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sky Dashboard — Navigation Hub</title>
+  <title>SkyDash — Navigation Hub</title>
   <style>
     /* ══════════════════════════════════════════
-       CSS VARIABLES & RESET
+       ROOT VARIABLES
     ══════════════════════════════════════════ */
     :root {
-      --teal:        #009999;
-      --teal-l:      #00d7be;
-      --teal-d:      #007373;
-      --teal-glow:   rgba(0,153,153,0.22);
-      --dark:        #111416;
-      --dark2:       #181b1e;
-      --card:        #1e2226;
-      --card2:       #242a30;
-      --border:      #2a3038;
-      --border-h:    #009999;
-      --text:        #eef0f2;
-      --muted:       #8a9bb0;
-      --accent-blue: #4da6ff;
-      --accent-pur:  #b46fff;
-      --accent-grn:  #4cdf8a;
-      --accent-org:  #f5a623;
-      --accent-red:  #e05252;
-      --accent-pink: #ff6eb4;
-      --radius:      14px;
-      --shadow:      0 8px 32px rgba(0,0,0,0.45);
-      --glow:        0 0 24px rgba(0,153,153,0.25);
+      --teal:      #009999;
+      --teal-l:    #00d7be;
+      --teal-d:    #007373;
+      --teal-glow: rgba(0,153,153,0.22);
+      --dark:      #0f1214;
+      --dark2:     #161a1e;
+      --card:      #1c2026;
+      --card2:     #222830;
+      --border:    #2a323c;
+      --text:      #eef0f3;
+      --muted:     #8a9bb0;
+      --grn:       #4cdf8a;
+      --org:       #f5a623;
+      --red:       #e05252;
+      --blue:      #4da6ff;
+      --pur:       #b46fff;
+      --pink:      #ff6eb4;
+      --radius:    14px;
+      --shadow:    0 10px 40px rgba(0,0,0,0.5);
+      --glow:      0 0 28px rgba(0,153,153,0.28);
     }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden}
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:#0a0c0e}
+    ::-webkit-scrollbar-thumb{background:var(--teal);border-radius:4px}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: var(--dark);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
+    /* ══ BG GRID ══ */
+    body::before{
+      content:'';position:fixed;inset:0;
+      background-image:linear-gradient(rgba(0,153,153,0.035) 1px,transparent 1px),
+                       linear-gradient(90deg,rgba(0,153,153,0.035) 1px,transparent 1px);
+      background-size:44px 44px;pointer-events:none;z-index:0
     }
+    .blob{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;animation:blobF 12s ease-in-out infinite}
+    .b1{width:550px;height:550px;background:rgba(0,153,153,0.07);top:-120px;left:-120px;animation-delay:0s}
+    .b2{width:420px;height:420px;background:rgba(77,166,255,0.05);bottom:-80px;right:-80px;animation-delay:5s}
+    .b3{width:320px;height:320px;background:rgba(180,111,255,0.04);top:45%;left:55%;animation-delay:9s}
+    @keyframes blobF{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,-18px) scale(1.06)}}
 
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: #0d0f11; }
-    ::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 4px; }
-
-    /* ══ ANIMATED BACKGROUND GRID ══ */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(0,153,153,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,153,153,0.04) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* Radial glow blobs */
-    .bg-blob {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(90px);
-      pointer-events: none;
-      z-index: 0;
-      animation: blobFloat 10s ease-in-out infinite;
-    }
-    .blob1 { width: 500px; height: 500px; background: rgba(0,153,153,0.08); top: -100px; left: -100px; animation-delay: 0s; }
-    .blob2 { width: 400px; height: 400px; background: rgba(77,166,255,0.06); bottom: -80px; right: -80px; animation-delay: 4s; }
-    .blob3 { width: 300px; height: 300px; background: rgba(180,111,255,0.05); top: 40%; left: 50%; animation-delay: 7s; }
-
-    @keyframes blobFloat {
-      0%,100% { transform: translate(0,0) scale(1); }
-      50%      { transform: translate(20px,-20px) scale(1.05); }
-    }
-
-    /* ══ EVERYTHING ABOVE Z-INDEX 0 ══ */
-    nav, .hero, .main, footer, .modal-overlay { position: relative; z-index: 1; }
+    nav,.hero,.main,footer,.overlay{position:relative;z-index:1}
 
     /* ══════════════════════════════════════════
-       TOP NAV BAR
+       NAV
     ══════════════════════════════════════════ */
-    nav {
-      position: sticky; top: 0; z-index: 500;
-      height: 60px;
-      background: rgba(17,20,22,0.92);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 1.8rem;
-      box-shadow: 0 2px 20px rgba(0,0,0,0.4);
+    nav{
+      position:sticky;top:0;z-index:500;height:62px;
+      background:rgba(15,18,20,0.94);backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border);
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 1.8rem;box-shadow:0 2px 24px rgba(0,0,0,0.45)
     }
+    .brand{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+    .brand-box{
+      width:38px;height:38px;
+      background:linear-gradient(135deg,var(--teal),var(--teal-l));
+      border-radius:10px;display:flex;align-items:center;justify-content:center;
+      font-size:1.1rem;font-weight:900;color:#fff;
+      box-shadow:0 0 16px var(--teal-glow)
+    }
+    .brand-name{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--teal);text-transform:uppercase}
+    .brand-sub{font-size:.68rem;color:var(--muted)}
 
-    .nav-brand {
-      display: flex; align-items: center; gap: 0.7rem;
-      text-decoration: none;
+    .nav-pills{display:flex;gap:.35rem}
+    .npill{
+      padding:.3rem .85rem;border-radius:20px;font-size:.74rem;font-weight:600;
+      cursor:pointer;border:1px solid transparent;color:var(--muted);
+      background:none;transition:all .2s;text-transform:uppercase;letter-spacing:.5px
     }
-    .brand-box {
-      width: 36px; height: 36px;
-      background: linear-gradient(135deg, var(--teal), var(--teal-l));
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; font-weight: 900; color: #fff;
-      box-shadow: 0 0 14px var(--teal-glow);
-    }
-    .brand-text { font-size: 1rem; font-weight: 800; letter-spacing: 2px; color: var(--teal); text-transform: uppercase; }
-    .brand-sub  { font-size: 0.7rem; color: var(--muted); font-weight: 400; letter-spacing: 0; }
+    .npill:hover,.npill.active{background:var(--teal);color:#fff;border-color:var(--teal)}
 
-    .nav-center {
-      display: flex; align-items: center; gap: 0.4rem;
+    .nav-right{display:flex;align-items:center;gap:.7rem}
+    .srch-wrap{position:relative;display:flex;align-items:center}
+    .srch-ico{position:absolute;left:.7rem;font-size:.82rem;color:var(--muted)}
+    .nav-srch{
+      background:var(--card2);border:1px solid var(--border);border-radius:20px;
+      padding:.33rem .9rem .33rem 2rem;color:var(--text);font-size:.78rem;
+      outline:none;width:195px;transition:border-color .2s,width .3s;font-family:inherit
     }
-    .nav-pill {
-      padding: 0.32rem 0.9rem; border-radius: 20px;
-      font-size: 0.75rem; font-weight: 600; cursor: pointer;
-      border: 1px solid transparent; color: var(--muted);
-      background: none; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .nav-pill:hover, .nav-pill.active {
-      background: var(--teal); color: #fff; border-color: var(--teal);
-    }
+    .nav-srch:focus{border-color:var(--teal);width:235px}
+    .nav-srch::placeholder{color:var(--muted)}
 
-    .nav-right { display: flex; align-items: center; gap: 0.8rem; }
+    /* Admin badge */
+    .admin-badge{
+      display:flex;align-items:center;gap:.4rem;
+      background:rgba(0,153,153,0.12);border:1px solid rgba(0,153,153,0.35);
+      border-radius:20px;padding:.3rem .8rem;font-size:.72rem;font-weight:700;color:var(--teal-l);
+      cursor:pointer;transition:all .2s
+    }
+    .admin-badge:hover{background:rgba(0,153,153,0.22)}
+    .admin-badge.locked{background:rgba(224,82,82,0.1);border-color:rgba(224,82,82,0.35);color:var(--red)}
 
-    .search-wrap {
-      position: relative; display: flex; align-items: center;
+    .vt-wrap{display:flex;gap:.25rem;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:.18rem}
+    .vtb{
+      width:28px;height:28px;border-radius:14px;border:none;
+      background:none;color:var(--muted);cursor:pointer;font-size:.82rem;
+      display:flex;align-items:center;justify-content:center;transition:all .2s
     }
-    .search-wrap .s-icon {
-      position: absolute; left: 0.7rem; font-size: 0.85rem; color: var(--muted);
-    }
-    .nav-search {
-      background: var(--card2); border: 1px solid var(--border);
-      border-radius: 20px; padding: 0.35rem 0.9rem 0.35rem 2rem;
-      color: var(--text); font-size: 0.8rem; outline: none; width: 200px;
-      transition: border-color 0.2s, width 0.3s;
-    }
-    .nav-search:focus { border-color: var(--teal); width: 240px; }
-    .nav-search::placeholder { color: var(--muted); }
+    .vtb.active{background:var(--teal);color:#fff}
 
-    .add-btn {
-      display: flex; align-items: center; gap: 0.4rem;
-      background: linear-gradient(135deg, var(--teal), var(--teal-l));
-      color: #fff; border: none; border-radius: 20px;
-      padding: 0.38rem 1rem; font-size: 0.78rem; font-weight: 700;
-      cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px;
-      box-shadow: 0 3px 14px var(--teal-glow);
+    .add-btn{
+      display:flex;align-items:center;gap:.4rem;
+      background:linear-gradient(135deg,var(--teal),var(--teal-l));
+      color:#fff;border:none;border-radius:20px;padding:.38rem 1rem;
+      font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s;
+      letter-spacing:.5px;box-shadow:0 3px 14px var(--teal-glow)
     }
-    .add-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 20px rgba(0,153,153,0.4); }
-    .add-btn:active { transform: translateY(0); }
-
-    .view-toggle {
-      display: flex; gap: 0.3rem;
-      background: var(--card2); border: 1px solid var(--border);
-      border-radius: 20px; padding: 0.2rem;
-    }
-    .vt-btn {
-      width: 28px; height: 28px; border-radius: 16px; border: none;
-      background: none; color: var(--muted); cursor: pointer;
-      font-size: 0.85rem; display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s;
-    }
-    .vt-btn.active { background: var(--teal); color: #fff; }
+    .add-btn:hover{transform:translateY(-1px);box-shadow:0 5px 22px rgba(0,153,153,0.42)}
+    .add-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
     /* ══════════════════════════════════════════
-       HERO SECTION
+       HERO
     ══════════════════════════════════════════ */
-    .hero {
-      padding: 3rem 2rem 2rem;
-      background: linear-gradient(160deg, #0b1416 0%, #0d1f20 50%, #0b1416 100%);
-      border-bottom: 1px solid var(--border);
-      overflow: hidden;
+    .hero{
+      padding:2.8rem 2rem 2rem;
+      background:linear-gradient(155deg,#0b1416 0%,#0d2020 50%,#0b1416 100%);
+      border-bottom:1px solid var(--border);overflow:hidden
     }
-    .hero-inner {
-      max-width: 1300px; margin: 0 auto;
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 2rem;
-    }
-    .hero-left h1 {
-      font-size: 2.2rem; font-weight: 900; line-height: 1.15;
-      letter-spacing: -0.5px;
-    }
-    .hero-left h1 .hl { color: var(--teal-l); }
-    .hero-left p {
-      color: var(--muted); margin-top: 0.6rem;
-      font-size: 0.88rem; line-height: 1.7; max-width: 500px;
-    }
-
-    .hero-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
-    .htag {
-      background: rgba(0,153,153,0.12); border: 1px solid rgba(0,153,153,0.35);
-      color: var(--teal-l); border-radius: 20px; padding: 0.22rem 0.7rem;
-      font-size: 0.72rem; font-weight: 600;
-    }
-
-    .hero-stats { display: flex; gap: 1.2rem; flex-wrap: wrap; }
-    .hstat {
-      background: rgba(0,0,0,0.3); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1rem 1.3rem;
-      text-align: center; min-width: 90px;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .hstat:hover { border-color: var(--teal); box-shadow: var(--glow); }
-    .hstat-num   { font-size: 1.8rem; font-weight: 900; color: var(--teal-l); line-height: 1; }
-    .hstat-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.25rem; }
+    .hero-in{max-width:1300px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:2rem}
+    .hero-left h1{font-size:2.1rem;font-weight:900;line-height:1.15;letter-spacing:-.5px}
+    .hero-left h1 .hl{color:var(--teal-l)}
+    .hero-left p{color:var(--muted);margin-top:.55rem;font-size:.86rem;line-height:1.7;max-width:490px}
+    .htags{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.9rem}
+    .htag{background:rgba(0,153,153,0.11);border:1px solid rgba(0,153,153,0.32);color:var(--teal-l);border-radius:20px;padding:.2rem .65rem;font-size:.7rem;font-weight:600}
+    .hstats{display:flex;gap:1.1rem;flex-wrap:wrap}
+    .hst{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem 1.2rem;text-align:center;min-width:88px;transition:border-color .2s,box-shadow .2s}
+    .hst:hover{border-color:var(--teal);box-shadow:var(--glow)}
+    .hst-n{font-size:1.75rem;font-weight:900;color:var(--teal-l);line-height:1}
+    .hst-l{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:.22rem}
 
     /* ══════════════════════════════════════════
-       MAIN CONTENT AREA
+       MAIN
     ══════════════════════════════════════════ */
-    .main {
-      max-width: 1300px; margin: 0 auto;
-      padding: 1.8rem 1.5rem 3rem;
-    }
+    .main{max-width:1300px;margin:0 auto;padding:1.8rem 1.5rem 3rem}
 
-    /* ══ SECTION HEADER ══ */
-    .sec-head {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.8rem;
-    }
-    .sec-title {
-      font-size: 1rem; font-weight: 800; color: var(--text);
-      display: flex; align-items: center; gap: 0.5rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid var(--teal);
-    }
-    .sec-count {
-      font-size: 0.72rem; color: var(--muted); font-weight: 500;
-      background: var(--card2); border: 1px solid var(--border);
-      border-radius: 20px; padding: 0.2rem 0.6rem;
-    }
+    .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;flex-wrap:wrap;gap:.7rem}
+    .sec-title{font-size:.98rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.5rem;padding-bottom:.45rem;border-bottom:2px solid var(--teal)}
+    .sec-cnt{font-size:.7rem;color:var(--muted);background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:.18rem .55rem}
 
-    /* ══ FILTER CHIPS ══ */
-    .filter-row {
-      display: flex; flex-wrap: wrap; gap: 0.5rem;
-      margin-bottom: 1.4rem;
-    }
-    .chip {
-      padding: 0.28rem 0.8rem; border-radius: 20px;
-      font-size: 0.73rem; font-weight: 600; cursor: pointer;
-      border: 1px solid var(--border); color: var(--muted);
-      background: var(--card2); transition: all 0.18s;
-    }
-    .chip:hover, .chip.active {
-      background: var(--teal); color: #fff; border-color: var(--teal);
-    }
+    .chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.3rem}
+    .chip{padding:.26rem .78rem;border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid var(--border);color:var(--muted);background:var(--card2);transition:all .18s}
+    .chip:hover,.chip.active{background:var(--teal);color:#fff;border-color:var(--teal)}
 
-    /* ══════════════════════════════════════════
-       CARD GRID — GRID VIEW
-    ══════════════════════════════════════════ */
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1.1rem;
-    }
+    /* ══ GRID ══ */
+    .cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:1.1rem}
 
     /* ══ PAGE CARD ══ */
-    .page-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      position: relative;
-      display: flex; flex-direction: column;
-      text-decoration: none; color: inherit;
-      animation: cardIn 0.4s ease both;
+    .pc{
+      background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+      overflow:hidden;cursor:pointer;transition:all .25s;position:relative;
+      display:flex;flex-direction:column;text-decoration:none;color:inherit;
+      animation:cIn .4s ease both
     }
-    .page-card:hover {
-      border-color: var(--border-h);
-      transform: translateY(-5px);
-      box-shadow: var(--glow), var(--shadow);
-    }
-    .page-card.hidden { display: none; }
+    .pc:hover{border-color:var(--teal);transform:translateY(-5px);box-shadow:var(--glow),var(--shadow)}
+    .pc.hidden{display:none}
+    @keyframes cIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-    @keyframes cardIn {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
+    /* Edit overlay buttons — only visible in admin mode */
+    .pc-edit-btns{
+      position:absolute;top:.6rem;right:.6rem;
+      display:flex;gap:.3rem;z-index:10;
+      opacity:0;pointer-events:none;transition:opacity .2s
     }
+    .pc:hover .pc-edit-btns.admin-on{opacity:1;pointer-events:all}
+    .peb{
+      width:26px;height:26px;border-radius:7px;border:none;cursor:pointer;
+      font-size:.75rem;display:flex;align-items:center;justify-content:center;
+      transition:all .15s;backdrop-filter:blur(6px)
+    }
+    .peb-edit{background:rgba(0,153,153,0.8);color:#fff}
+    .peb-edit:hover{background:var(--teal)}
+    .peb-del{background:rgba(224,82,82,0.8);color:#fff}
+    .peb-del:hover{background:var(--red)}
+    .peb-pin{background:rgba(77,166,255,0.8);color:#fff}
+    .peb-pin:hover{background:var(--blue)}
 
-    /* Stagger animation */
-    .page-card:nth-child(1)  { animation-delay: 0.03s; }
-    .page-card:nth-child(2)  { animation-delay: 0.06s; }
-    .page-card:nth-child(3)  { animation-delay: 0.09s; }
-    .page-card:nth-child(4)  { animation-delay: 0.12s; }
-    .page-card:nth-child(5)  { animation-delay: 0.15s; }
-    .page-card:nth-child(6)  { animation-delay: 0.18s; }
-    .page-card:nth-child(7)  { animation-delay: 0.21s; }
-    .page-card:nth-child(8)  { animation-delay: 0.24s; }
+    .c-accent{height:4px;width:100%}
+    .c-head{padding:1.1rem 1.1rem .55rem;display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem}
+    .c-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+    .c-badges{display:flex;flex-direction:column;align-items:flex-end;gap:.28rem}
+    .badge{font-size:.6rem;font-weight:700;padding:.13rem .48rem;border-radius:8px;text-transform:uppercase;letter-spacing:.5px}
+    .b-new{background:rgba(76,223,138,.18);color:var(--grn);border:1px solid rgba(76,223,138,.4)}
+    .b-hot{background:rgba(245,166,35,.18);color:var(--org);border:1px solid rgba(245,166,35,.4)}
+    .b-pin{background:rgba(77,166,255,.18);color:var(--blue);border:1px solid rgba(77,166,255,.4)}
+    .b-done{background:rgba(0,153,153,.18);color:var(--teal-l);border:1px solid rgba(0,153,153,.4)}
+    .b-doc{background:rgba(180,111,255,.18);color:var(--pur);border:1px solid rgba(180,111,255,.4)}
+    .c-body{padding:0 1.1rem .75rem;flex:1}
+    .c-name{font-size:.93rem;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:.3rem}
+    .c-desc{font-size:.74rem;color:var(--muted);line-height:1.65}
+    .c-tags{display:flex;flex-wrap:wrap;gap:.28rem;padding:0 1.1rem .75rem}
+    .ctag{font-size:.63rem;padding:.1rem .42rem;border-radius:6px;background:rgba(255,255,255,0.04);color:var(--muted);border:1px solid var(--border)}
+    .c-foot{padding:.65rem 1.1rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .c-cat{font-size:.66rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+    .c-arr{width:27px;height:27px;border-radius:8px;background:rgba(0,153,153,0.12);border:1px solid rgba(0,153,153,0.3);display:flex;align-items:center;justify-content:center;font-size:.82rem;color:var(--teal);transition:all .2s}
+    .pc:hover .c-arr{background:var(--teal);color:#fff;transform:translateX(2px)}
 
-    /* Colored top accent bar */
-    .card-accent {
-      height: 4px;
-      width: 100%;
+    /* ══ LIST VIEW ══ */
+    .cl-wrap{display:flex;flex-direction:column;gap:.6rem}
+    .lc{
+      background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+      padding:.85rem 1.2rem;display:flex;align-items:center;gap:1rem;
+      text-decoration:none;color:inherit;transition:all .2s;position:relative;overflow:hidden;
+      animation:cIn .35s ease both
     }
+    .lc:hover{border-color:var(--teal);transform:translateX(5px);box-shadow:var(--glow)}
+    .lc.hidden{display:none}
+    .lc-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0}
+    .lc-body{flex:1;min-width:0}
+    .lc-name{font-size:.86rem;font-weight:700;color:var(--text)}
+    .lc-desc{font-size:.72rem;color:var(--muted);margin-top:.12rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .lc-meta{display:flex;align-items:center;gap:.55rem;flex-shrink:0}
+    .lc-cat{font-size:.66rem;color:var(--muted);font-weight:600;text-transform:uppercase}
+    .lc-arr{font-size:.95rem;color:var(--teal);transition:transform .2s}
+    .lc:hover .lc-arr{transform:translateX(3px)}
+    /* list edit btns */
+    .lc-ebtns{display:flex;gap:.25rem;opacity:0;pointer-events:none;transition:opacity .2s}
+    .lc:hover .lc-ebtns.admin-on{opacity:1;pointer-events:all}
 
-    /* Card header */
-    .card-head {
-      padding: 1.1rem 1.1rem 0.6rem;
-      display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;
+    /* ══ PINNED ROW ══ */
+    .feat-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1rem;margin-bottom:2rem}
+    .fc{
+      background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid var(--border);
+      border-radius:var(--radius);padding:1.25rem;display:flex;align-items:center;gap:1rem;
+      text-decoration:none;color:inherit;transition:all .25s;position:relative;overflow:hidden
     }
-    .card-icon-wrap {
-      width: 46px; height: 46px; border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem; flex-shrink: 0;
-    }
-    .card-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; }
-    .badge {
-      font-size: 0.62rem; font-weight: 700; padding: 0.15rem 0.5rem;
-      border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .badge-new  { background: rgba(76,223,138,0.18); color: var(--accent-grn); border: 1px solid rgba(76,223,138,0.4); }
-    .badge-hot  { background: rgba(245,166,35,0.18);  color: var(--accent-org); border: 1px solid rgba(245,166,35,0.4); }
-    .badge-pin  { background: rgba(77,166,255,0.18);  color: var(--accent-blue); border: 1px solid rgba(77,166,255,0.4); }
-    .badge-done { background: rgba(0,153,153,0.18);   color: var(--teal-l); border: 1px solid rgba(0,153,153,0.4); }
+    .fc::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,153,153,0.06),transparent);opacity:0;transition:opacity .25s}
+    .fc:hover{border-color:var(--teal);transform:translateY(-3px);box-shadow:var(--glow)}
+    .fc:hover::after{opacity:1}
+    .fc-icon{width:54px;height:54px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.65rem;flex-shrink:0}
+    .fc-body{flex:1}
+    .fc-lbl{font-size:.63rem;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:.22rem}
+    .fc-name{font-size:.98rem;font-weight:800;color:var(--text)}
+    .fc-desc{font-size:.73rem;color:var(--muted);margin-top:.18rem;line-height:1.5}
+    .fc-arr{font-size:1.15rem;color:var(--teal);transition:transform .2s;flex-shrink:0}
+    .fc:hover .fc-arr{transform:translateX(4px)}
 
-    /* Card body */
-    .card-body { padding: 0 1.1rem 0.8rem; flex: 1; }
-    .card-name {
-      font-size: 0.95rem; font-weight: 800; color: var(--text);
-      line-height: 1.3; margin-bottom: 0.35rem;
-    }
-    .card-desc {
-      font-size: 0.76rem; color: var(--muted); line-height: 1.65;
-    }
-
-    /* Card tags */
-    .card-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; padding: 0 1.1rem 0.8rem; }
-    .ctag {
-      font-size: 0.65rem; padding: 0.12rem 0.45rem; border-radius: 6px;
-      background: rgba(255,255,255,0.05); color: var(--muted);
-      border: 1px solid var(--border);
-    }
-
-    /* Card footer */
-    .card-foot {
-      padding: 0.7rem 1.1rem;
-      border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .card-cat {
-      font-size: 0.68rem; color: var(--muted); font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .card-arrow {
-      width: 28px; height: 28px; border-radius: 8px;
-      background: rgba(0,153,153,0.12); border: 1px solid rgba(0,153,153,0.3);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem; color: var(--teal);
-      transition: all 0.2s;
-    }
-    .page-card:hover .card-arrow {
-      background: var(--teal); color: #fff; transform: translateX(2px);
-    }
+    /* ══ EMPTY STATE ══ */
+    .empty{text-align:center;padding:4rem 2rem;display:none}
+    .empty.show{display:block}
+    .empty-ico{font-size:3rem;margin-bottom:.9rem}
+    .empty-t{font-size:.98rem;font-weight:700;color:var(--text);margin-bottom:.35rem}
+    .empty-s{font-size:.78rem;color:var(--muted)}
 
     /* ══════════════════════════════════════════
-       LIST VIEW
+       ADMIN PASSWORD MODAL
     ══════════════════════════════════════════ */
-    .cards-list { display: flex; flex-direction: column; gap: 0.65rem; }
+    .overlay{
+      position:fixed;inset:0;z-index:900;
+      background:rgba(0,0,0,0.78);backdrop-filter:blur(8px);
+      display:flex;align-items:center;justify-content:center;
+      opacity:0;pointer-events:none;transition:opacity .3s
+    }
+    .overlay.open{opacity:1;pointer-events:all}
 
-    .list-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 0.9rem 1.2rem;
-      display: flex; align-items: center; gap: 1rem;
-      text-decoration: none; color: inherit;
-      transition: all 0.2s; position: relative; overflow: hidden;
-      animation: cardIn 0.35s ease both;
+    /* Admin lock modal */
+    .admin-modal{
+      background:var(--card);border:1px solid var(--border);border-radius:20px;
+      width:100%;max-width:400px;padding:2rem;
+      box-shadow:0 24px 64px rgba(0,0,0,0.65);
+      transform:translateY(28px) scale(.97);transition:transform .3s ease
     }
-    .list-card::before {
-      content: '';
-      position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-      opacity: 0; transition: opacity 0.2s;
-    }
-    .list-card:hover { border-color: var(--teal); transform: translateX(5px); box-shadow: var(--glow); }
-    .list-card:hover::before { opacity: 1; }
-    .list-card.hidden { display: none; }
+    .overlay.open .admin-modal{transform:translateY(0) scale(1)}
 
-    .lc-icon {
-      width: 42px; height: 42px; border-radius: 11px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem; flex-shrink: 0;
+    .am-head{text-align:center;margin-bottom:1.5rem}
+    .am-lock-ico{font-size:3rem;animation:lockPulse 2.5s ease-in-out infinite;display:block;margin-bottom:.6rem}
+    @keyframes lockPulse{0%,100%{filter:drop-shadow(0 0 8px rgba(0,153,153,.4));transform:scale(1)}50%{filter:drop-shadow(0 0 20px rgba(0,215,190,.7));transform:scale(1.08)}}
+    .am-title{font-size:1.1rem;font-weight:900;color:var(--text)}
+    .am-sub{font-size:.76rem;color:var(--muted);margin-top:.3rem;line-height:1.6}
+
+    .pw-wrap{position:relative;margin-bottom:.8rem}
+    .pw-input{
+      width:100%;background:var(--dark2);border:2px solid var(--border);border-radius:11px;
+      padding:.8rem 2.8rem .8rem 1rem;color:var(--text);font-size:.95rem;
+      outline:none;letter-spacing:.12em;transition:border-color .25s,box-shadow .25s;font-family:inherit
     }
-    .lc-body { flex: 1; min-width: 0; }
-    .lc-name { font-size: 0.88rem; font-weight: 700; color: var(--text); }
-    .lc-desc { font-size: 0.74rem; color: var(--muted); margin-top: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .lc-meta { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
-    .lc-cat  { font-size: 0.68rem; color: var(--muted); font-weight: 600; text-transform: uppercase; }
-    .lc-arr  { font-size: 1rem; color: var(--teal); transition: transform 0.2s; }
-    .list-card:hover .lc-arr { transform: translateX(3px); }
+    .pw-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,153,153,0.18)}
+    .pw-input.err{border-color:var(--red);box-shadow:0 0 0 3px rgba(224,82,82,0.15);animation:shake .4s ease}
+    @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+    .pw-eye{position:absolute;right:.85rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted);transition:color .2s}
+    .pw-eye:hover{color:var(--teal)}
+    .pw-err{font-size:.74rem;color:var(--red);min-height:1rem;font-weight:600;margin-bottom:.6rem;opacity:0;transition:opacity .3s}
+    .pw-err.show{opacity:1}
+    .pw-attempts{font-size:.7rem;color:var(--muted);text-align:center;margin-bottom:.6rem}
+    .pw-attempts span{color:var(--org);font-weight:700}
+
+    .am-btn{
+      width:100%;background:linear-gradient(135deg,var(--teal),var(--teal-l));
+      color:#fff;border:none;border-radius:11px;padding:.85rem;
+      font-size:.92rem;font-weight:800;cursor:pointer;transition:all .2s;
+      letter-spacing:.5px;box-shadow:0 4px 16px var(--teal-glow)
+    }
+    .am-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 22px rgba(0,153,153,0.45)}
+    .am-btn:disabled{cursor:not-allowed;opacity:.5}
+    .am-cancel{
+      width:100%;margin-top:.6rem;background:none;border:1px solid var(--border);
+      border-radius:11px;padding:.65rem;font-size:.82rem;color:var(--muted);
+      cursor:pointer;transition:all .2s
+    }
+    .am-cancel:hover{border-color:var(--teal);color:var(--text)}
 
     /* ══════════════════════════════════════════
-       PINNED / FEATURED ROW
+       ADD/EDIT PAGE MODAL
     ══════════════════════════════════════════ */
-    .featured-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
+    .modal{
+      background:var(--card);border:1px solid var(--border);border-radius:20px;
+      width:100%;max-width:530px;padding:2rem;
+      box-shadow:0 20px 60px rgba(0,0,0,0.65);
+      transform:translateY(30px) scale(.97);transition:transform .3s ease;
+      max-height:90vh;overflow-y:auto
     }
-    .feat-card {
-      background: linear-gradient(135deg, var(--card2), var(--card));
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.3rem;
-      display: flex; align-items: center; gap: 1rem;
-      text-decoration: none; color: inherit;
-      transition: all 0.25s; position: relative; overflow: hidden;
+    .overlay.open .modal{transform:translateY(0) scale(1)}
+    .m-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;padding-bottom:.9rem;border-bottom:1px solid var(--border)}
+    .m-title{font-size:1.02rem;font-weight:800;color:var(--text)}
+    .m-close{width:32px;height:32px;border-radius:8px;background:var(--card2);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .m-close:hover{background:var(--red);color:#fff;border-color:var(--red)}
+
+    .fg{margin-bottom:1rem}
+    .fl{font-size:.75rem;font-weight:700;color:var(--muted);margin-bottom:.38rem;display:block;text-transform:uppercase;letter-spacing:.5px}
+    .fi,.fs,.fta{
+      width:100%;background:var(--dark2);border:1px solid var(--border);border-radius:10px;
+      padding:.68rem .9rem;color:var(--text);font-size:.83rem;outline:none;
+      transition:border-color .2s,box-shadow .2s;font-family:inherit
     }
-    .feat-card::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(0,153,153,0.06), transparent);
-      opacity: 0; transition: opacity 0.25s;
-    }
-    .feat-card:hover { border-color: var(--teal); transform: translateY(-3px); box-shadow: var(--glow); }
-    .feat-card:hover::after { opacity: 1; }
-    .feat-icon {
-      width: 56px; height: 56px; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.7rem; flex-shrink: 0;
-    }
-    .feat-body { flex: 1; }
-    .feat-label { font-size: 0.65rem; color: var(--teal); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.25rem; }
-    .feat-name  { font-size: 1rem; font-weight: 800; color: var(--text); }
-    .feat-desc  { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; line-height: 1.5; }
-    .feat-arr   { font-size: 1.2rem; color: var(--teal); transition: transform 0.2s; flex-shrink: 0; }
-    .feat-card:hover .feat-arr { transform: translateX(4px); }
+    .fi:focus,.fs:focus,.fta:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,153,153,0.14)}
+    .fta{resize:vertical;min-height:65px}
+    .fs option{background:var(--dark2)}
+
+    /* Emoji grid */
+    .eg{display:grid;grid-template-columns:repeat(8,1fr);gap:.28rem;margin-top:.45rem}
+    .eb{width:35px;height:35px;border-radius:8px;border:1px solid var(--border);background:var(--dark2);cursor:pointer;font-size:1.05rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .eb:hover,.eb.sel{background:var(--teal);border-color:var(--teal);transform:scale(1.1)}
+
+    /* Color row */
+    .cr{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.45rem}
+    .cd{width:27px;height:27px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s}
+    .cd:hover,.cd.sel{border-color:#fff;transform:scale(1.18)}
+
+    /* Badge row */
+    .br{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.45rem}
+    .bp{padding:.22rem .6rem;border-radius:8px;cursor:pointer;font-size:.7rem;font-weight:700;border:1px solid var(--border);background:var(--dark2);color:var(--muted);transition:all .15s}
+    .bp:hover,.bp.sel{border-color:var(--teal);color:var(--teal-l);background:rgba(0,153,153,0.1)}
+
+    /* Preview */
+    .prev-box{background:var(--dark2);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;margin-top:.4rem}
+    .prev-mini{display:flex;align-items:center;gap:.65rem;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:.65rem .85rem}
+    .pm-ico{font-size:1.25rem}
+    .pm-name{font-size:.83rem;font-weight:700;color:var(--text)}
+    .pm-desc{font-size:.7rem;color:var(--muted)}
+
+    .m-actions{display:flex;gap:.65rem;margin-top:1.4rem}
+    .btn-p{flex:1;background:linear-gradient(135deg,var(--teal),var(--teal-l));color:#fff;border:none;border-radius:10px;padding:.72rem;font-size:.86rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px var(--teal-glow)}
+    .btn-p:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,153,153,0.42)}
+    .btn-s{padding:.72rem 1.1rem;background:var(--card2);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:.86rem;font-weight:600;cursor:pointer;transition:all .2s}
+    .btn-s:hover{border-color:var(--teal);color:var(--text)}
 
     /* ══════════════════════════════════════════
-       EMPTY STATE
+       DOCUMENT UPLOAD MODAL
     ══════════════════════════════════════════ */
-    .empty-state {
-      text-align: center; padding: 4rem 2rem;
-      display: none;
+    .doc-modal{
+      background:var(--card);border:1px solid var(--border);border-radius:20px;
+      width:100%;max-width:580px;padding:2rem;
+      box-shadow:0 20px 60px rgba(0,0,0,0.65);
+      transform:translateY(30px) scale(.97);transition:transform .3s ease;
+      max-height:90vh;overflow-y:auto
     }
-    .empty-state.show { display: block; }
-    .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
-    .empty-title { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; }
-    .empty-sub   { font-size: 0.8rem; color: var(--muted); }
+    .overlay.open .doc-modal{transform:translateY(0) scale(1)}
 
-    /* ══════════════════════════════════════════
-       ADD PAGE MODAL
-    ══════════════════════════════════════════ */
-    .modal-overlay {
-      position: fixed; inset: 0; z-index: 900;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(6px);
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.3s;
+    /* Drop zone */
+    .drop-zone{
+      border:2px dashed var(--border);border-radius:14px;padding:2.5rem 1.5rem;
+      text-align:center;cursor:pointer;transition:all .25s;position:relative;
+      background:var(--dark2)
     }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .drop-zone:hover,.drop-zone.drag-over{border-color:var(--teal);background:rgba(0,153,153,0.06)}
+    .drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .dz-ico{font-size:2.8rem;margin-bottom:.7rem;display:block}
+    .dz-title{font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.3rem}
+    .dz-sub{font-size:.76rem;color:var(--muted);line-height:1.6}
+    .dz-types{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+    .dz-type{font-size:.65rem;padding:.15rem .5rem;border-radius:6px;background:rgba(0,153,153,0.12);color:var(--teal-l);border:1px solid rgba(0,153,153,0.3);font-weight:600}
 
-    .modal {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      width: 100%; max-width: 520px;
-      padding: 2rem;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-      transform: translateY(30px) scale(0.97);
-      transition: transform 0.3s ease;
-      max-height: 90vh; overflow-y: auto;
+    /* File preview list */
+    .file-list{margin-top:1rem;display:flex;flex-direction:column;gap:.5rem}
+    .file-item{
+      background:var(--card2);border:1px solid var(--border);border-radius:10px;
+      padding:.65rem .9rem;display:flex;align-items:center;gap:.75rem
     }
-    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+    .fi-ico{font-size:1.3rem;flex-shrink:0}
+    .fi-body{flex:1;min-width:0}
+    .fi-name{font-size:.8rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .fi-size{font-size:.68rem;color:var(--muted);margin-top:.1rem}
+    .fi-remove{background:rgba(224,82,82,0.15);border:1px solid rgba(224,82,82,0.35);color:var(--red);border-radius:7px;padding:.2rem .5rem;font-size:.7rem;cursor:pointer;transition:all .15s;flex-shrink:0}
+    .fi-remove:hover{background:var(--red);color:#fff}
 
-    .modal-head {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);
-    }
-    .modal-title { font-size: 1.05rem; font-weight: 800; color: var(--text); }
-    .modal-close {
-      width: 32px; height: 32px; border-radius: 8px;
-      background: var(--card2); border: 1px solid var(--border);
-      color: var(--muted); cursor: pointer; font-size: 1rem;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s;
-    }
-    .modal-close:hover { background: var(--accent-red); color: #fff; border-color: var(--accent-red); }
+    /* Parse options */
+    .parse-opts{background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:1rem}
+    .po-title{font-size:.78rem;font-weight:700;color:var(--teal-l);margin-bottom:.7rem;text-transform:uppercase;letter-spacing:.5px}
+    .po-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+    .po-item{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--muted);cursor:pointer}
+    .po-item input{accent-color:var(--teal);width:14px;height:14px}
 
-    .form-group { margin-bottom: 1.1rem; }
-    .form-label { font-size: 0.78rem; font-weight: 700; color: var(--muted); margin-bottom: 0.4rem; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
-    .form-input, .form-select, .form-textarea {
-      width: 100%; background: var(--dark2);
-      border: 1px solid var(--border); border-radius: 10px;
-      padding: 0.7rem 0.9rem; color: var(--text);
-      font-size: 0.85rem; outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      font-family: inherit;
+    /* Import result */
+    .import-result{
+      background:var(--dark2);border:1px solid var(--border);border-radius:12px;
+      padding:1rem;margin-top:1rem;display:none
     }
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      border-color: var(--teal);
-      box-shadow: 0 0 0 3px rgba(0,153,153,0.15);
+    .import-result.show{display:block}
+    .ir-title{font-size:.8rem;font-weight:700;color:var(--teal-l);margin-bottom:.6rem}
+    .ir-cards{display:flex;flex-direction:column;gap:.4rem;max-height:200px;overflow-y:auto}
+    .ir-card{
+      background:var(--card);border:1px solid var(--border);border-radius:9px;
+      padding:.55rem .8rem;display:flex;align-items:center;gap:.6rem;
+      font-size:.76rem
     }
-    .form-textarea { resize: vertical; min-height: 70px; }
-    .form-select option { background: var(--dark2); }
+    .ir-card input[type=checkbox]{accent-color:var(--teal)}
+    .ir-ico{font-size:1rem}
+    .ir-info{flex:1}
+    .ir-name{font-weight:700;color:var(--text)}
+    .ir-url{color:var(--muted);font-size:.68rem;margin-top:.1rem}
 
-    /* Emoji picker */
-    .emoji-grid {
-      display: grid; grid-template-columns: repeat(8,1fr); gap: 0.3rem; margin-top: 0.5rem;
-    }
-    .emoji-btn {
-      width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border);
-      background: var(--dark2); cursor: pointer; font-size: 1.1rem;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s;
-    }
-    .emoji-btn:hover, .emoji-btn.selected { background: var(--teal); border-color: var(--teal); transform: scale(1.1); }
+    /* Progress bar */
+    .parse-progress{margin-top:.8rem;display:none}
+    .parse-progress.show{display:block}
+    .pp-bar-wrap{height:6px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:.4rem}
+    .pp-bar{height:100%;background:linear-gradient(to right,var(--teal),var(--teal-l));width:0;transition:width .3s;border-radius:4px}
+    .pp-label{font-size:.72rem;color:var(--muted)}
 
-    /* Color picker */
-    .color-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
-    .color-dot {
-      width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
-      border: 2px solid transparent; transition: all 0.15s;
+    /* ══ CONTEXT MENU ══ */
+    .ctx{
+      position:fixed;z-index:800;background:var(--card2);border:1px solid var(--border);
+      border-radius:12px;padding:.4rem;box-shadow:0 12px 32px rgba(0,0,0,0.55);
+      min-width:165px;opacity:0;pointer-events:none;transform:scale(.95);transition:all .15s
     }
-    .color-dot:hover, .color-dot.selected { border-color: #fff; transform: scale(1.15); }
+    .ctx.open{opacity:1;pointer-events:all;transform:scale(1)}
+    .ci{display:flex;align-items:center;gap:.55rem;padding:.48rem .78rem;border-radius:8px;font-size:.78rem;color:var(--muted);cursor:pointer;transition:all .15s}
+    .ci:hover{background:rgba(0,153,153,0.12);color:var(--text)}
+    .ci.danger:hover{background:rgba(224,82,82,0.12);color:var(--red)}
+    .cd-sep{height:1px;background:var(--border);margin:.28rem 0}
 
-    /* Badge picker */
-    .badge-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
-    .badge-pick {
-      padding: 0.25rem 0.65rem; border-radius: 8px; cursor: pointer;
-      font-size: 0.72rem; font-weight: 700; border: 1px solid var(--border);
-      background: var(--dark2); color: var(--muted); transition: all 0.15s;
+    /* ══ TOAST ══ */
+    .toast-wrap{position:fixed;bottom:1.4rem;right:1.4rem;z-index:1000;display:flex;flex-direction:column;gap:.45rem}
+    .toast{
+      background:var(--card2);border:1px solid var(--border);border-radius:12px;
+      padding:.65rem 1rem;font-size:.78rem;color:var(--text);
+      display:flex;align-items:center;gap:.55rem;box-shadow:0 8px 26px rgba(0,0,0,0.45);
+      animation:tIn .3s ease,tOut .3s ease 2.7s forwards;min-width:215px
     }
-    .badge-pick:hover, .badge-pick.selected { border-color: var(--teal); color: var(--teal-l); background: rgba(0,153,153,0.1); }
+    .toast.success{border-color:var(--grn)}
+    .toast.error{border-color:var(--red)}
+    .toast.info{border-color:var(--teal)}
+    .toast.warn{border-color:var(--org)}
+    @keyframes tIn{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes tOut{from{opacity:1}to{opacity:0;transform:translateX(28px)}}
 
-    .modal-actions { display: flex; gap: 0.7rem; margin-top: 1.5rem; }
-    .btn-primary {
-      flex: 1; background: linear-gradient(135deg, var(--teal), var(--teal-l));
-      color: #fff; border: none; border-radius: 10px;
-      padding: 0.75rem; font-size: 0.88rem; font-weight: 700;
-      cursor: pointer; transition: all 0.2s;
-      box-shadow: 0 4px 14px var(--teal-glow);
+    /* ══ ADMIN INDICATOR BAR ══ */
+    .admin-bar{
+      background:linear-gradient(90deg,rgba(0,153,153,0.15),rgba(0,215,190,0.08),rgba(0,153,153,0.15));
+      border-bottom:1px solid rgba(0,153,153,0.35);
+      padding:.45rem 1.8rem;display:none;align-items:center;justify-content:space-between;
+      font-size:.75rem;position:sticky;top:62px;z-index:490;backdrop-filter:blur(10px)
     }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,153,153,0.4); }
-    .btn-secondary {
-      padding: 0.75rem 1.2rem; background: var(--card2);
-      border: 1px solid var(--border); border-radius: 10px;
-      color: var(--muted); font-size: 0.88rem; font-weight: 600;
-      cursor: pointer; transition: all 0.2s;
+    .admin-bar.show{display:flex}
+    .ab-left{display:flex;align-items:center;gap:.6rem;color:var(--teal-l);font-weight:600}
+    .ab-dot{width:7px;height:7px;border-radius:50%;background:var(--grn);animation:abPulse 1.5s ease-in-out infinite}
+    @keyframes abPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
+    .ab-right{display:flex;gap:.5rem}
+    .ab-btn{
+      padding:.25rem .7rem;border-radius:8px;font-size:.7rem;font-weight:700;
+      cursor:pointer;border:1px solid;transition:all .15s
     }
-    .btn-secondary:hover { border-color: var(--teal); color: var(--text); }
+    .ab-btn-teal{background:rgba(0,153,153,0.15);border-color:rgba(0,153,153,0.4);color:var(--teal-l)}
+    .ab-btn-teal:hover{background:var(--teal);color:#fff}
+    .ab-btn-pur{background:rgba(180,111,255,0.15);border-color:rgba(180,111,255,0.4);color:var(--pur)}
+    .ab-btn-pur:hover{background:var(--pur);color:#fff}
+    .ab-btn-red{background:rgba(224,82,82,0.12);border-color:rgba(224,82,82,0.35);color:var(--red)}
+    .ab-btn-red:hover{background:var(--red);color:#fff}
 
-    /* ══ PREVIEW BOX IN MODAL ══ */
-    .preview-box {
-      background: var(--dark2); border: 1px solid var(--border);
-      border-radius: 10px; padding: 0.8rem 1rem;
-      margin-top: 0.5rem; font-size: 0.8rem; color: var(--muted);
-    }
-    .preview-card-mini {
-      display: flex; align-items: center; gap: 0.7rem;
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 10px; padding: 0.7rem 0.9rem;
-    }
-    .pcm-icon { font-size: 1.3rem; }
-    .pcm-name { font-size: 0.85rem; font-weight: 700; color: var(--text); }
-    .pcm-desc { font-size: 0.72rem; color: var(--muted); }
+    footer{text-align:center;padding:1.4rem;font-size:.7rem;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem}
+    footer span{color:var(--teal)}
 
-    /* ══ CONTEXT MENU (right-click) ══ */
-    .ctx-menu {
-      position: fixed; z-index: 800;
-      background: var(--card2); border: 1px solid var(--border);
-      border-radius: 12px; padding: 0.4rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      min-width: 160px;
-      opacity: 0; pointer-events: none; transform: scale(0.95);
-      transition: all 0.15s;
+    @media(max-width:768px){
+      .nav-pills{display:none}
+      .hero-left h1{font-size:1.5rem}
+      .hstats{gap:.7rem}
+      .hst{padding:.7rem .9rem;min-width:72px}
+      .hst-n{font-size:1.4rem}
+      .nav-srch{width:130px}
     }
-    .ctx-menu.open { opacity: 1; pointer-events: all; transform: scale(1); }
-    .ctx-item {
-      display: flex; align-items: center; gap: 0.6rem;
-      padding: 0.5rem 0.8rem; border-radius: 8px;
-      font-size: 0.8rem; color: var(--muted); cursor: pointer;
-      transition: all 0.15s;
-    }
-    .ctx-item:hover { background: rgba(0,153,153,0.12); color: var(--text); }
-    .ctx-item.danger:hover { background: rgba(224,82,82,0.12); color: var(--accent-red); }
-    .ctx-divider { height: 1px; background: var(--border); margin: 0.3rem 0; }
-
-    /* ══ TOAST NOTIFICATION ══ */
-    .toast-wrap {
-      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1000;
-      display: flex; flex-direction: column; gap: 0.5rem;
-    }
-    .toast {
-      background: var(--card2); border: 1px solid var(--border);
-      border-radius: 12px; padding: 0.7rem 1rem;
-      font-size: 0.8rem; color: var(--text);
-      display: flex; align-items: center; gap: 0.6rem;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-      animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
-      min-width: 220px;
-    }
-    .toast.success { border-color: var(--accent-grn); }
-    .toast.error   { border-color: var(--accent-red); }
-    .toast.info    { border-color: var(--teal); }
-    @keyframes toastIn  { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
-    @keyframes toastOut { from { opacity:1; } to { opacity:0; transform:translateX(30px); } }
-
-    /* ══ FOOTER ══ */
-    footer {
-      text-align: center; padding: 1.5rem;
-      font-size: 0.72rem; color: var(--muted);
-      border-top: 1px solid var(--border);
-    }
-    footer span { color: var(--teal); }
-
-    /* ══ RESPONSIVE ══ */
-    @media (max-width: 768px) {
-      .nav-center { display: none; }
-      .hero-left h1 { font-size: 1.5rem; }
-      .hero-stats { gap: 0.8rem; }
-      .hstat { padding: 0.7rem 0.9rem; min-width: 70px; }
-      .hstat-num { font-size: 1.4rem; }
-      .nav-search { width: 140px; }
-      .nav-search:focus { width: 160px; }
-    }
-    @media (max-width: 500px) {
-      nav { padding: 0 1rem; }
-      .main { padding: 1.2rem 1rem 2rem; }
-      .brand-sub { display: none; }
+    @media(max-width:500px){
+      nav{padding:0 1rem}
+      .main{padding:1.2rem 1rem 2rem}
     }
   </style>
 </head>
 <body>
 
 <!-- Background blobs -->
-<div class="bg-blob blob1"></div>
-<div class="bg-blob blob2"></div>
-<div class="bg-blob blob3"></div>
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<div class="blob b3"></div>
+
+<!-- ══════════════════════════════════════════
+     ADMIN MODE INDICATOR BAR
+══════════════════════════════════════════ -->
+<div class="admin-bar" id="admin-bar">
+  <div class="ab-left">
+    <div class="ab-dot"></div>
+    🛡️ Admin Mode Active — You can edit, add, delete and pin pages
+  </div>
+  <div class="ab-right">
+    <button class="ab-btn ab-btn-teal" onclick="openAddModal()">➕ Add Page</button>
+    <button class="ab-btn ab-btn-pur"  onclick="openDocModal()">📂 Import Doc</button>
+    <button class="ab-btn ab-btn-red"  onclick="lockAdmin()">🔒 Lock</button>
+  </div>
+</div>
 
 <!-- ══════════════════════════════════════════
      TOP NAV
 ══════════════════════════════════════════ -->
 <nav>
-  <a href="#" class="nav-brand">
+  <a href="#" class="brand">
     <div class="brand-box">S</div>
     <div>
-      <div class="brand-text">SkyDash</div>
+      <div class="brand-name">SkyDash</div>
       <div class="brand-sub">Navigation Hub</div>
     </div>
   </a>
 
-  <div class="nav-center">
-    <button class="nav-pill active" onclick="filterCategory('all',this)">All</button>
-    <button class="nav-pill" onclick="filterCategory('design',this)">Design</button>
-    <button class="nav-pill" onclick="filterCategory('tools',this)">Tools</button>
-    <button class="nav-pill" onclick="filterCategory('docs',this)">Docs</button>
-    <button class="nav-pill" onclick="filterCategory('misc',this)">Misc</button>
+  <div class="nav-pills">
+    <button class="npill active" onclick="filterCat('all',this)">All</button>
+    <button class="npill" onclick="filterCat('design',this)">Design</button>
+    <button class="npill" onclick="filterCat('tools',this)">Tools</button>
+    <button class="npill" onclick="filterCat('docs',this)">Docs</button>
+    <button class="npill" onclick="filterCat('misc',this)">Misc</button>
   </div>
 
   <div class="nav-right">
-    <div class="search-wrap">
-      <span class="s-icon">🔍</span>
-      <input class="nav-search" type="text" placeholder="Search pages..." oninput="searchCards(this.value)" />
+    <div class="srch-wrap">
+      <span class="srch-ico">🔍</span>
+      <input class="nav-srch" type="text" placeholder="Search… (Ctrl+K)" oninput="doSearch(this.value)"/>
     </div>
-    <div class="view-toggle">
-      <button class="vt-btn active" id="vt-grid" onclick="setView('grid')" title="Grid View">⊞</button>
-      <button class="vt-btn"        id="vt-list" onclick="setView('list')" title="List View">☰</button>
+    <div class="vt-wrap">
+      <button class="vtb active" id="vt-g" onclick="setView('grid')" title="Grid">⊞</button>
+      <button class="vtb"        id="vt-l" onclick="setView('list')" title="List">☰</button>
     </div>
-    <button class="add-btn" onclick="openModal()">＋ Add Page</button>
+    <!-- Admin toggle button -->
+    <div class="admin-badge locked" id="admin-badge" onclick="handleAdminClick()" title="Click to unlock editing">
+      🔒 <span id="admin-badge-txt">Admin</span>
+    </div>
+    <button class="add-btn" id="add-btn" onclick="guardedAdd()" disabled title="Unlock admin to add pages">➕ Add Page</button>
   </div>
 </nav>
 
@@ -669,22 +567,24 @@
      HERO
 ══════════════════════════════════════════ -->
 <div class="hero">
-  <div class="hero-inner">
+  <div class="hero-in">
     <div class="hero-left">
       <h1>Your <span class="hl">Interactive</span><br/>Navigation Hub</h1>
-      <p>All your pages in one place. Click any card to navigate, right-click for options, or add new pages with the button above.</p>
-      <div class="hero-tags">
+      <p>All your pages in one place. Click any card to navigate. 🔒 Admin-protected editing — only you can add, edit or delete pages.</p>
+      <div class="htags">
+        <span class="htag">🔒 Edit Protected</span>
+        <span class="htag">📂 Doc Import</span>
         <span class="htag">🔍 Searchable</span>
         <span class="htag">📌 Pinnable</span>
         <span class="htag">🎨 Customizable</span>
-        <span class="htag">➕ Expandable</span>
         <span class="htag">💾 Auto-Saved</span>
       </div>
     </div>
-    <div class="hero-stats">
-      <div class="hstat"><div class="hstat-num" id="stat-total">3</div><div class="hstat-label">Total Pages</div></div>
-      <div class="hstat"><div class="hstat-num" id="stat-pinned">1</div><div class="hstat-label">Pinned</div></div>
-      <div class="hstat"><div class="hstat-num" id="stat-cats">3</div><div class="hstat-label">Categories</div></div>
+    <div class="hstats">
+      <div class="hst"><div class="hst-n" id="st-total">3</div><div class="hst-l">Pages</div></div>
+      <div class="hst"><div class="hst-n" id="st-pinned">1</div><div class="hst-l">Pinned</div></div>
+      <div class="hst"><div class="hst-n" id="st-cats">3</div><div class="hst-l">Categories</div></div>
+      <div class="hst"><div class="hst-n" id="st-docs">0</div><div class="hst-l">Imported</div></div>
     </div>
   </div>
 </div>
@@ -694,24 +594,19 @@
 ══════════════════════════════════════════ -->
 <div class="main">
 
-  <!-- ══ PINNED / FEATURED ══ -->
-  <section id="pinned-section">
+  <!-- Pinned -->
+  <section id="pin-sec">
     <div class="sec-head">
       <div class="sec-title">📌 Pinned Pages</div>
     </div>
-    <div class="featured-row" id="featured-row">
-      <!-- Populated by JS -->
-    </div>
+    <div class="feat-row" id="feat-row"></div>
   </section>
 
-  <!-- ══ ALL PAGES ══ -->
+  <!-- All pages -->
   <section>
     <div class="sec-head">
-      <div class="sec-title">
-        🗂️ All Pages
-        <span class="sec-count" id="visible-count">3 pages</span>
-      </div>
-      <div class="filter-row" style="margin-bottom:0;">
+      <div class="sec-title">🗂️ All Pages <span class="sec-cnt" id="vis-cnt">3 pages</span></div>
+      <div class="chips" style="margin-bottom:0">
         <span class="chip active" onclick="filterTag('all',this)">All</span>
         <span class="chip" onclick="filterTag('design',this)">Design</span>
         <span class="chip" onclick="filterTag('tools',this)">Tools</span>
@@ -719,136 +614,202 @@
         <span class="chip" onclick="filterTag('misc',this)">Misc</span>
       </div>
     </div>
-
-    <!-- GRID VIEW -->
-    <div class="cards-grid" id="cards-grid"></div>
-
-    <!-- LIST VIEW -->
-    <div class="cards-list" id="cards-list" style="display:none;"></div>
-
-    <!-- EMPTY STATE -->
-    <div class="empty-state" id="empty-state">
-      <div class="empty-icon">🔍</div>
-      <div class="empty-title">No pages found</div>
-      <div class="empty-sub">Try a different search or category, or add a new page!</div>
+    <div class="cg"      id="cards-grid"></div>
+    <div class="cl-wrap" id="cards-list" style="display:none"></div>
+    <div class="empty"   id="empty-state">
+      <div class="empty-ico">🔍</div>
+      <div class="empty-t">No pages found</div>
+      <div class="empty-s">Try a different search or category, or add a new page!</div>
     </div>
   </section>
-
 </div>
 
-<!-- ══════════════════════════════════════════
-     FOOTER
-══════════════════════════════════════════ -->
 <footer>
   <span>SkyDash</span> · Interactive Navigation Hub ·
-  Right-click any card for options · All data saved locally in your browser
+  🔒 Edit protected · 📂 Document import supported · 💾 Auto-saved locally
 </footer>
+
+<!-- ══════════════════════════════════════════
+     ADMIN PASSWORD MODAL
+══════════════════════════════════════════ -->
+<div class="overlay" id="pw-overlay" onclick="handlePwOverlay(event)">
+  <div class="admin-modal">
+    <div class="am-head">
+      <span class="am-lock-ico" id="pw-lock-ico">🔐</span>
+      <div class="am-title" id="pw-modal-title">Admin Access</div>
+      <div class="am-sub" id="pw-modal-sub">Enter your admin password to unlock editing features.</div>
+    </div>
+    <div class="pw-wrap">
+      <input class="pw-input" id="pw-input" type="password" placeholder="Enter admin password…"
+             maxlength="32" autocomplete="off" onkeydown="if(event.key==='Enter')tryUnlock()"/>
+      <button class="pw-eye" onclick="togglePwEye()">👁</button>
+    </div>
+    <div class="pw-err" id="pw-err">Incorrect password. Please try again.</div>
+    <div class="pw-attempts" id="pw-attempts" style="display:none">
+      Failed attempts: <span id="pw-att-cnt">0</span> / 5
+    </div>
+    <button class="am-btn" id="pw-btn" onclick="tryUnlock()">🔓 Unlock Admin</button>
+    <button class="am-cancel" onclick="closePwModal()">Cancel</button>
+  </div>
+</div>
 
 <!-- ══════════════════════════════════════════
      ADD / EDIT PAGE MODAL
 ══════════════════════════════════════════ -->
-<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
-  <div class="modal" id="modal">
-    <div class="modal-head">
-      <div class="modal-title" id="modal-title">➕ Add New Page</div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+<div class="overlay" id="edit-overlay" onclick="handleEditOverlay(event)">
+  <div class="modal">
+    <div class="m-head">
+      <div class="m-title" id="edit-title">➕ Add New Page</div>
+      <button class="m-close" onclick="closeEditModal()">✕</button>
     </div>
 
-    <!-- Page Name -->
-    <div class="form-group">
-      <label class="form-label">Page Name *</label>
-      <input class="form-input" id="f-name" type="text" placeholder="e.g. Memory Module" oninput="updatePreview()" />
+    <div class="fg">
+      <label class="fl">Page Name *</label>
+      <input class="fi" id="f-name" type="text" placeholder="e.g. Memory Module" oninput="updatePrev()"/>
     </div>
-
-    <!-- URL -->
-    <div class="form-group">
-      <label class="form-label">Page URL / Path *</label>
-      <input class="form-input" id="f-url" type="text" placeholder="e.g. select/mem.html or https://..." oninput="updatePreview()" />
+    <div class="fg">
+      <label class="fl">Page URL / Path *</label>
+      <input class="fi" id="f-url" type="text" placeholder="e.g. select/mem.html or https://…" oninput="updatePrev()"/>
     </div>
-
-    <!-- Description -->
-    <div class="form-group">
-      <label class="form-label">Description</label>
-      <textarea class="form-textarea" id="f-desc" placeholder="Short description of this page..." oninput="updatePreview()"></textarea>
+    <div class="fg">
+      <label class="fl">Description</label>
+      <textarea class="fta" id="f-desc" placeholder="Short description…" oninput="updatePrev()"></textarea>
     </div>
-
-    <!-- Category -->
-    <div class="form-group">
-      <label class="form-label">Category</label>
-      <select class="form-select" id="f-cat">
+    <div class="fg">
+      <label class="fl">Category</label>
+      <select class="fs" id="f-cat">
         <option value="design">Design</option>
         <option value="tools">Tools</option>
         <option value="docs">Docs</option>
         <option value="misc">Misc</option>
       </select>
     </div>
-
-    <!-- Icon Picker -->
-    <div class="form-group">
-      <label class="form-label">Icon</label>
-      <div class="emoji-grid" id="emoji-grid">
-        <!-- Populated by JS -->
+    <div class="fg">
+      <label class="fl">Icon</label>
+      <div class="eg" id="emoji-grid"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">Accent Color</label>
+      <div class="cr" id="color-row"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">Badge</label>
+      <div class="br">
+        <div class="bp sel" data-b="" onclick="selBadge(this)">None</div>
+        <div class="bp" data-b="new"  onclick="selBadge(this)">🟢 New</div>
+        <div class="bp" data-b="hot"  onclick="selBadge(this)">🔥 Hot</div>
+        <div class="bp" data-b="pin"  onclick="selBadge(this)">📌 Pin</div>
+        <div class="bp" data-b="done" onclick="selBadge(this)">✅ Done</div>
+        <div class="bp" data-b="doc"  onclick="selBadge(this)">📄 Doc</div>
       </div>
     </div>
-
-    <!-- Color Picker -->
-    <div class="form-group">
-      <label class="form-label">Accent Color</label>
-      <div class="color-row" id="color-row">
-        <!-- Populated by JS -->
-      </div>
+    <div class="fg" style="display:flex;align-items:center;gap:.7rem">
+      <input type="checkbox" id="f-newtab" style="width:15px;height:15px;accent-color:var(--teal)"/>
+      <label for="f-newtab" class="fl" style="margin:0;cursor:pointer">Open in new tab</label>
     </div>
-
-    <!-- Badge -->
-    <div class="form-group">
-      <label class="form-label">Badge (optional)</label>
-      <div class="badge-row">
-        <div class="badge-pick selected" data-badge="" onclick="selectBadge(this)">None</div>
-        <div class="badge-pick" data-badge="new"  onclick="selectBadge(this)">🟢 New</div>
-        <div class="badge-pick" data-badge="hot"  onclick="selectBadge(this)">🔥 Hot</div>
-        <div class="badge-pick" data-badge="pin"  onclick="selectBadge(this)">📌 Pin</div>
-        <div class="badge-pick" data-badge="done" onclick="selectBadge(this)">✅ Done</div>
-      </div>
-    </div>
-
-    <!-- Open in new tab -->
-    <div class="form-group" style="display:flex;align-items:center;gap:.7rem;">
-      <input type="checkbox" id="f-newtab" style="width:16px;height:16px;accent-color:var(--teal);" />
-      <label for="f-newtab" class="form-label" style="margin:0;cursor:pointer;">Open in new tab</label>
-    </div>
-
-    <!-- Live Preview -->
-    <div class="form-group">
-      <label class="form-label">Live Preview</label>
-      <div class="preview-box">
-        <div class="preview-card-mini" id="preview-mini">
-          <div class="pcm-icon" id="prev-icon">📄</div>
+    <div class="fg">
+      <label class="fl">Live Preview</label>
+      <div class="prev-box">
+        <div class="prev-mini" id="prev-mini">
+          <div class="pm-ico" id="pv-ico">📄</div>
           <div>
-            <div class="pcm-name" id="prev-name">Page Name</div>
-            <div class="pcm-desc" id="prev-desc">Description will appear here</div>
+            <div class="pm-name" id="pv-name">Page Name</div>
+            <div class="pm-desc" id="pv-desc">Description here</div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="modal-actions">
-      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
-      <button class="btn-primary"   id="modal-save-btn" onclick="savePage()">✓ Add Page</button>
+    <div class="m-actions">
+      <button class="btn-s" onclick="closeEditModal()">Cancel</button>
+      <button class="btn-p" id="edit-save-btn" onclick="savePage()">✓ Add Page</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DOCUMENT UPLOAD / IMPORT MODAL
+══════════════════════════════════════════ -->
+<div class="overlay" id="doc-overlay" onclick="handleDocOverlay(event)">
+  <div class="doc-modal">
+    <div class="m-head">
+      <div class="m-title">📂 Import Document as Dashboard Card</div>
+      <button class="m-close" onclick="closeDocModal()">✕</button>
+    </div>
+
+    <!-- Drop Zone -->
+    <div class="drop-zone" id="drop-zone"
+         ondragover="dzDragOver(event)" ondragleave="dzDragLeave(event)" ondrop="dzDrop(event)">
+      <input type="file" id="doc-file-input" multiple
+             accept=".html,.htm,.txt,.md,.json,.csv,.pdf,.js,.css,.verilog,.v,.sv"
+             onchange="handleFiles(this.files)"/>
+      <span class="dz-ico">📁</span>
+      <div class="dz-title">Drop files here or click to browse</div>
+      <div class="dz-sub">Each file becomes a dashboard card automatically.<br/>Supports HTML, text, markdown, JSON, CSV and more.</div>
+      <div class="dz-types">
+        <span class="dz-type">.html</span>
+        <span class="dz-type">.htm</span>
+        <span class="dz-type">.txt</span>
+        <span class="dz-type">.md</span>
+        <span class="dz-type">.json</span>
+        <span class="dz-type">.csv</span>
+        <span class="dz-type">.v / .sv</span>
+        <span class="dz-type">.js</span>
+        <span class="dz-type">.css</span>
+      </div>
+    </div>
+
+    <!-- File list -->
+    <div class="file-list" id="file-list"></div>
+
+    <!-- Parse options -->
+    <div class="parse-opts" id="parse-opts" style="display:none">
+      <div class="po-title">⚙️ Import Options</div>
+      <div class="po-row">
+        <label class="po-item"><input type="checkbox" id="opt-title" checked/> Auto-detect title</label>
+        <label class="po-item"><input type="checkbox" id="opt-desc"  checked/> Auto-detect description</label>
+        <label class="po-item"><input type="checkbox" id="opt-icon"  checked/> Auto-assign icon</label>
+        <label class="po-item"><input type="checkbox" id="opt-color" checked/> Auto-assign color</label>
+        <label class="po-item"><input type="checkbox" id="opt-newtab"/>        Open in new tab</label>
+        <label class="po-item"><input type="checkbox" id="opt-pin"/>           Pin imported cards</label>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="parse-progress" id="parse-prog">
+      <div class="pp-label" id="pp-label">Parsing files…</div>
+      <div class="pp-bar-wrap"><div class="pp-bar" id="pp-bar"></div></div>
+    </div>
+
+    <!-- Import result preview -->
+    <div class="import-result" id="import-result">
+      <div class="ir-title">✅ Ready to Import — Select which cards to add:</div>
+      <div class="ir-cards" id="ir-cards"></div>
+    </div>
+
+    <div class="m-actions" style="margin-top:1.2rem">
+      <button class="btn-s" onclick="closeDocModal()">Cancel</button>
+      <button class="btn-p" id="doc-import-btn" onclick="doImport()" style="display:none">
+        ✓ Import Selected Cards
+      </button>
+      <button class="btn-p" id="doc-parse-btn" onclick="parseFiles()">
+        🔍 Analyse Files
+      </button>
     </div>
   </div>
 </div>
 
 <!-- ══ CONTEXT MENU ══ -->
-<div class="ctx-menu" id="ctx-menu">
-  <div class="ctx-item" onclick="ctxOpen()">🔗 Open Page</div>
-  <div class="ctx-item" onclick="ctxOpenNew()">↗️ Open in New Tab</div>
-  <div class="ctx-item" onclick="ctxEdit()">✏️ Edit Card</div>
-  <div class="ctx-item" onclick="ctxPin()">📌 Toggle Pin</div>
-  <div class="ctx-divider"></div>
-  <div class="ctx-item danger" onclick="ctxDelete()">🗑️ Delete Card</div>
+<div class="ctx" id="ctx">
+  <div class="ci" onclick="ctxOpen()">🔗 Open Page</div>
+  <div class="ci" onclick="ctxOpenNew()">↗️ Open in New Tab</div>
+  <div class="ci" id="ctx-edit" onclick="ctxEdit()" style="display:none">✏️ Edit Card</div>
+  <div class="ci" id="ctx-pin"  onclick="ctxPin()"  style="display:none">📌 Toggle Pin</div>
+  <div class="cd-sep" id="ctx-sep" style="display:none"></div>
+  <div class="ci danger" id="ctx-del" onclick="ctxDel()" style="display:none">🗑️ Delete Card</div>
 </div>
 
-<!-- ══ TOAST CONTAINER ══ -->
+<!-- ══ TOAST ══ -->
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <!-- ══════════════════════════════════════════
@@ -856,494 +817,684 @@
 ══════════════════════════════════════════ -->
 <script>
 /* ════════════════════════════════════════
-   DATA — DEFAULT PAGES
-   ➕ TO ADD MORE: just add objects to this array!
+   CONFIG — CHANGE YOUR PASSWORD HERE ↓
+════════════════════════════════════════ */
+const ADMIN_PASSWORD  = 'sky@2024';   // ← Change this to your password
+const MAX_FAILS       = 5;
+const LOCKOUT_MS      = 2 * 60 * 1000; // 2 minutes
+const STORAGE_KEY     = 'skydash_v2';
+const ADMIN_SESS_KEY  = 'skydash_admin';
+const FAIL_KEY        = 'skydash_fails';
+const LOCKOUT_KEY     = 'skydash_lockout';
+
+/* ════════════════════════════════════════
+   DEFAULT PAGES
 ════════════════════════════════════════ */
 const DEFAULT_PAGES = [
-  {
-    id: 1,
-    name: 'Memory',
-    url: 'select/mem.html',
-    desc: 'Access memory design modules, BRAM configurations and reference guides.',
-    category: 'design',
-    icon: '🧠',
-    color: '#009999',
-    badge: 'pin',
-    pinned: true,
-    newTab: false,
-    tags: ['BRAM', 'RAM', 'Memory']
-  },
-  {
-    id: 2,
-    name: 'Trigger',
-    url: 'select/trig.html',
-    desc: 'Configure and explore trigger logic, signal capture and event detection.',
-    category: 'design',
-    icon: '⚡',
-    color: '#f5a623',
-    badge: 'hot',
-    pinned: false,
-    newTab: false,
-    tags: ['Trigger', 'Signal', 'Events']
-  },
-  {
-    id: 3,
-    name: 'Veloce',
-    url: 'select/vel.html',
-    desc: 'High-speed emulation, hardware verification and Veloce platform tools.',
-    category: 'tools',
-    icon: '🚀',
-    color: '#b46fff',
-    badge: 'new',
-    pinned: false,
-    newTab: false,
-    tags: ['Emulation', 'Verification', 'FPGA']
-  }
+  { id:1, name:'Memory',  url:'select/mem.html',  desc:'Access memory design modules, BRAM configurations and reference guides.', category:'design', icon:'🧠', color:'#009999', badge:'pin',  pinned:true,  newTab:false, tags:['BRAM','RAM','Memory'],   imported:false },
+  { id:2, name:'Trigger', url:'select/trig.html', desc:'Configure and explore trigger logic, signal capture and event detection.',  category:'design', icon:'⚡', color:'#f5a623', badge:'hot',  pinned:false, newTab:false, tags:['Trigger','Signal'],      imported:false },
+  { id:3, name:'Veloce',  url:'select/vel.html',  desc:'High-speed emulation, hardware verification and Veloce platform tools.',   category:'tools',  icon:'🚀', color:'#b46fff', badge:'new',  pinned:false, newTab:false, tags:['Emulation','FPGA'],      imported:false },
 ];
 
 /* ════════════════════════════════════════
    STATE
 ════════════════════════════════════════ */
-const STORAGE_KEY = 'skydash_pages';
-let pages         = [];
-let currentView   = 'grid';
-let activeFilter  = 'all';
-let searchQuery   = '';
-let editingId     = null;
-let ctxTargetId   = null;
+let pages       = [];
+let isAdmin     = false;
+let curView     = 'grid';
+let activeFilter= 'all';
+let searchQ     = '';
+let editingId   = null;
+let ctxId       = null;
+let pendingFiles= [];
+let parsedCards = [];
 
-/* Selected modal values */
-let selIcon  = '📄';
-let selColor = '#009999';
-let selBadge = '';
+/* Modal icon/color/badge selections */
+let selIco   = '📄';
+let selClr   = '#009999';
+let selBadgeV= '';
 
 /* ════════════════════════════════════════
-   INIT
+   BOOT
 ════════════════════════════════════════ */
 function init() {
   const saved = localStorage.getItem(STORAGE_KEY);
   pages = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_PAGES));
+  /* Restore admin session */
+  if (sessionStorage.getItem(ADMIN_SESS_KEY) === 'true') activateAdmin(false);
   buildEmojiGrid();
   buildColorRow();
   render();
 }
 
-function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(pages));
-}
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(pages)); }
 
 /* ════════════════════════════════════════
    RENDER
 ════════════════════════════════════════ */
-function render() {
-  renderFeatured();
-  renderCards();
-  updateStats();
-}
+function render() { renderPinned(); renderCards(); updateStats(); }
 
-/* Filtered pages */
-function getFiltered() {
+function filtered() {
   return pages.filter(p => {
-    const matchCat = activeFilter === 'all' || p.category === activeFilter;
-    const q = searchQuery.toLowerCase();
-    const matchSearch = !q ||
-      p.name.toLowerCase().includes(q) ||
-      (p.desc || '').toLowerCase().includes(q) ||
-      (p.tags || []).some(t => t.toLowerCase().includes(q));
-    return matchCat && matchSearch;
+    const mc = activeFilter === 'all' || p.category === activeFilter;
+    const q  = searchQ.toLowerCase();
+    const ms = !q || p.name.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q) || (p.tags||[]).some(t=>t.toLowerCase().includes(q));
+    return mc && ms;
   });
 }
 
-/* ── Featured / Pinned ── */
-function renderFeatured() {
-  const pinned = pages.filter(p => p.pinned);
-  const sec    = document.getElementById('pinned-section');
-  const row    = document.getElementById('featured-row');
-  if (!pinned.length) { sec.style.display = 'none'; return; }
+/* Pinned */
+function renderPinned() {
+  const pins = pages.filter(p => p.pinned);
+  const sec  = document.getElementById('pin-sec');
+  const row  = document.getElementById('feat-row');
+  if (!pins.length) { sec.style.display = 'none'; return; }
   sec.style.display = '';
-  row.innerHTML = pinned.map(p => `
-    <a href="${p.url}" class="feat-card" ${p.newTab ? 'target="_blank"' : ''}
-       oncontextmenu="showCtx(event,${p.id})">
-      <div class="feat-icon" style="background:${p.color}22;">${p.icon}</div>
-      <div class="feat-body">
-        <div class="feat-label">📌 Pinned · ${cap(p.category)}</div>
-        <div class="feat-name">${p.name}</div>
-        <div class="feat-desc">${p.desc || ''}</div>
+  row.innerHTML = pins.map(p => `
+    <a href="${p.url}" class="fc" ${p.newTab?'target="_blank"':''} oncontextmenu="showCtx(event,${p.id})">
+      <div class="fc-icon" style="background:${p.color}22">${p.icon}</div>
+      <div class="fc-body">
+        <div class="fc-lbl">📌 Pinned · ${cap(p.category)}</div>
+        <div class="fc-name">${p.name}</div>
+        <div class="fc-desc">${p.desc||''}</div>
       </div>
-      <div class="feat-arr">→</div>
-    </a>
-  `).join('');
+      <div class="fc-arr">→</div>
+    </a>`).join('');
 }
 
-/* ── Cards ── */
+/* Cards */
 function renderCards() {
-  const filtered = getFiltered();
-  const grid     = document.getElementById('cards-grid');
-  const list     = document.getElementById('cards-list');
-  const empty    = document.getElementById('empty-state');
-  const cnt      = document.getElementById('visible-count');
+  const f    = filtered();
+  const grid = document.getElementById('cards-grid');
+  const list = document.getElementById('cards-list');
+  const emp  = document.getElementById('empty-state');
+  const cnt  = document.getElementById('vis-cnt');
+  cnt.textContent = `${f.length} page${f.length!==1?'s':''}`;
+  if (!f.length) { grid.innerHTML=''; list.innerHTML=''; emp.classList.add('show'); return; }
+  emp.classList.remove('show');
 
-  cnt.textContent = `${filtered.length} page${filtered.length !== 1 ? 's' : ''}`;
-
-  if (!filtered.length) {
-    grid.innerHTML = '';
-    list.innerHTML = '';
-    empty.classList.add('show');
-    return;
-  }
-  empty.classList.remove('show');
+  const adminClass = isAdmin ? 'admin-on' : '';
 
   /* Grid */
-  grid.innerHTML = filtered.map((p, i) => `
-    <a href="${p.url}" class="page-card" ${p.newTab ? 'target="_blank"' : ''}
-       oncontextmenu="showCtx(event,${p.id})"
-       style="animation-delay:${i * 0.05}s;">
-      <div class="card-accent" style="background:linear-gradient(to right,${p.color},${p.color}88);"></div>
-      <div class="card-head">
-        <div class="card-icon-wrap" style="background:${p.color}20;">${p.icon}</div>
-        <div class="card-badges">
-          ${p.badge ? `<span class="badge badge-${p.badge}">${badgeLabel(p.badge)}</span>` : ''}
-          ${p.pinned ? `<span class="badge badge-pin">📌</span>` : ''}
+  grid.innerHTML = f.map((p,i) => `
+    <a href="${p.url}" class="pc" ${p.newTab?'target="_blank"':''} oncontextmenu="showCtx(event,${p.id})" style="animation-delay:${i*.05}s">
+      <div class="pc-edit-btns ${adminClass}">
+        <button class="peb peb-pin"  onclick="quickPin(event,${p.id})"  title="Toggle Pin">📌</button>
+        <button class="peb peb-edit" onclick="quickEdit(event,${p.id})" title="Edit">✏️</button>
+        <button class="peb peb-del"  onclick="quickDel(event,${p.id})"  title="Delete">🗑️</button>
+      </div>
+      <div class="c-accent" style="background:linear-gradient(to right,${p.color},${p.color}88)"></div>
+      <div class="c-head">
+        <div class="c-icon" style="background:${p.color}20">${p.icon}</div>
+        <div class="c-badges">
+          ${p.badge?`<span class="badge b-${p.badge}">${bLabel(p.badge)}</span>`:''}
+          ${p.pinned?`<span class="badge b-pin">📌</span>`:''}
+          ${p.imported?`<span class="badge b-doc">📄 Imported</span>`:''}
         </div>
       </div>
-      <div class="card-body">
-        <div class="card-name">${p.name}</div>
-        <div class="card-desc">${p.desc || 'Click to open this page.'}</div>
+      <div class="c-body">
+        <div class="c-name">${p.name}</div>
+        <div class="c-desc">${p.desc||'Click to open this page.'}</div>
       </div>
-      ${p.tags && p.tags.length ? `
-      <div class="card-tags">
-        ${p.tags.slice(0,3).map(t => `<span class="ctag">${t}</span>`).join('')}
-      </div>` : ''}
-      <div class="card-foot">
-        <div class="card-cat">${cap(p.category)}</div>
-        <div class="card-arrow">→</div>
+      ${p.tags&&p.tags.length?`<div class="c-tags">${p.tags.slice(0,3).map(t=>`<span class="ctag">${t}</span>`).join('')}</div>`:''}
+      <div class="c-foot">
+        <div class="c-cat">${cap(p.category)}</div>
+        <div class="c-arr">→</div>
       </div>
-    </a>
-  `).join('');
+    </a>`).join('');
 
   /* List */
-  list.innerHTML = filtered.map((p, i) => `
-    <a href="${p.url}" class="list-card" ${p.newTab ? 'target="_blank"' : ''}
-       oncontextmenu="showCtx(event,${p.id})"
-       style="animation-delay:${i * 0.04}s;">
-      <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${p.color};border-radius:3px 0 0 3px;"></div>
-      <div class="lc-icon" style="background:${p.color}20;">${p.icon}</div>
+  list.innerHTML = f.map((p,i) => `
+    <a href="${p.url}" class="lc" ${p.newTab?'target="_blank"':''} oncontextmenu="showCtx(event,${p.id})" style="animation-delay:${i*.04}s">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${p.color};border-radius:3px 0 0 3px"></div>
+      <div class="lc-icon" style="background:${p.color}20">${p.icon}</div>
       <div class="lc-body">
-        <div class="lc-name">${p.name} ${p.badge ? `<span class="badge badge-${p.badge}" style="margin-left:.4rem;">${badgeLabel(p.badge)}</span>` : ''}</div>
-        <div class="lc-desc">${p.desc || p.url}</div>
+        <div class="lc-name">${p.name} ${p.badge?`<span class="badge b-${p.badge}" style="margin-left:.35rem">${bLabel(p.badge)}</span>`:''}</div>
+        <div class="lc-desc">${p.desc||p.url}</div>
       </div>
       <div class="lc-meta">
+        <div class="lc-ebtns ${adminClass}">
+          <button class="peb peb-pin"  onclick="quickPin(event,${p.id})"  title="Pin">📌</button>
+          <button class="peb peb-edit" onclick="quickEdit(event,${p.id})" title="Edit">✏️</button>
+          <button class="peb peb-del"  onclick="quickDel(event,${p.id})"  title="Delete">🗑️</button>
+        </div>
         <div class="lc-cat">${cap(p.category)}</div>
         <div class="lc-arr">→</div>
       </div>
-    </a>
-  `).join('');
+    </a>`).join('');
 }
 
-/* ── Stats ── */
+/* Stats */
 function updateStats() {
-  document.getElementById('stat-total').textContent  = pages.length;
-  document.getElementById('stat-pinned').textContent = pages.filter(p => p.pinned).length;
-  const cats = new Set(pages.map(p => p.category));
-  document.getElementById('stat-cats').textContent   = cats.size;
+  document.getElementById('st-total').textContent  = pages.length;
+  document.getElementById('st-pinned').textContent = pages.filter(p=>p.pinned).length;
+  document.getElementById('st-cats').textContent   = new Set(pages.map(p=>p.category)).size;
+  document.getElementById('st-docs').textContent   = pages.filter(p=>p.imported).length;
 }
 
 /* ════════════════════════════════════════
    FILTERS & SEARCH
 ════════════════════════════════════════ */
-function filterCategory(cat, btn) {
-  activeFilter = cat;
-  document.querySelectorAll('.nav-pill').forEach(b => b.classList.remove('active'));
+function filterCat(c, btn) {
+  activeFilter = c;
+  document.querySelectorAll('.npill').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderCards();
 }
-
-function filterTag(cat, chip) {
-  activeFilter = cat;
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+function filterTag(c, chip) {
+  activeFilter = c;
+  document.querySelectorAll('.chip').forEach(b=>b.classList.remove('active'));
   chip.classList.add('active');
-  /* Sync nav pills */
-  document.querySelectorAll('.nav-pill').forEach(b => {
-    b.classList.toggle('active', b.textContent.toLowerCase().trim() === cat);
-  });
+  document.querySelectorAll('.npill').forEach(b=>b.classList.toggle('active', b.textContent.toLowerCase().trim()===c));
   renderCards();
 }
-
-function searchCards(q) {
-  searchQuery = q;
-  renderCards();
-}
+function doSearch(q) { searchQ=q; renderCards(); }
 
 /* ════════════════════════════════════════
    VIEW TOGGLE
 ════════════════════════════════════════ */
 function setView(v) {
-  currentView = v;
-  document.getElementById('cards-grid').style.display = v === 'grid' ? '' : 'none';
-  document.getElementById('cards-list').style.display = v === 'list' ? '' : 'none';
-  document.getElementById('vt-grid').classList.toggle('active', v === 'grid');
-  document.getElementById('vt-list').classList.toggle('active', v === 'list');
+  curView = v;
+  document.getElementById('cards-grid').style.display = v==='grid' ? '' : 'none';
+  document.getElementById('cards-list').style.display = v==='list' ? '' : 'none';
+  document.getElementById('vt-g').classList.toggle('active', v==='grid');
+  document.getElementById('vt-l').classList.toggle('active', v==='list');
 }
 
 /* ════════════════════════════════════════
-   MODAL — ADD / EDIT
+   ADMIN PASSWORD SYSTEM
 ════════════════════════════════════════ */
-function openModal(id = null) {
-  editingId = id;
-  const modal = document.getElementById('modal-overlay');
-  const title = document.getElementById('modal-title');
-  const saveBtn = document.getElementById('modal-save-btn');
-
-  if (id) {
-    /* Edit mode */
-    const p = pages.find(x => x.id === id);
-    if (!p) return;
-    title.textContent   = '✏️ Edit Page';
-    saveBtn.textContent = '✓ Save Changes';
-    document.getElementById('f-name').value   = p.name;
-    document.getElementById('f-url').value    = p.url;
-    document.getElementById('f-desc').value   = p.desc || '';
-    document.getElementById('f-cat').value    = p.category;
-    document.getElementById('f-newtab').checked = p.newTab || false;
-    selIcon  = p.icon;
-    selColor = p.color;
-    selBadge = p.badge || '';
-  } else {
-    /* Add mode */
-    title.textContent   = '➕ Add New Page';
-    saveBtn.textContent = '✓ Add Page';
-    document.getElementById('f-name').value   = '';
-    document.getElementById('f-url').value    = '';
-    document.getElementById('f-desc').value   = '';
-    document.getElementById('f-cat').value    = 'design';
-    document.getElementById('f-newtab').checked = false;
-    selIcon  = '📄';
-    selColor = '#009999';
-    selBadge = '';
-  }
-
-  syncEmojiGrid();
-  syncColorRow();
-  syncBadgeRow();
-  updatePreview();
-  modal.classList.add('open');
+function handleAdminClick() {
+  if (isAdmin) { lockAdmin(); return; }
+  openPwModal();
 }
 
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
+function openPwModal() {
+  if (isLockedOut()) { showLockoutMsg(); return; }
+  document.getElementById('pw-overlay').classList.add('open');
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-err').classList.remove('show');
+  setTimeout(()=>document.getElementById('pw-input').focus(), 200);
+}
+
+function closePwModal() {
+  document.getElementById('pw-overlay').classList.remove('open');
+}
+
+function handlePwOverlay(e) {
+  if (e.target === document.getElementById('pw-overlay')) closePwModal();
+}
+
+function togglePwEye() {
+  const inp = document.getElementById('pw-input');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  inp.focus();
+}
+
+function tryUnlock() {
+  if (isLockedOut()) { showLockoutMsg(); return; }
+  const val = document.getElementById('pw-input').value;
+  const btn = document.getElementById('pw-btn');
+  btn.disabled = true;
+  btn.textContent = '🔓 Verifying…';
+
+  setTimeout(() => {
+    if (val === ADMIN_PASSWORD) {
+      /* ✅ Correct */
+      localStorage.removeItem(FAIL_KEY);
+      localStorage.removeItem(LOCKOUT_KEY);
+      closePwModal();
+      activateAdmin(true);
+      toast('🛡️ Admin mode activated!', 'success');
+    } else {
+      /* ❌ Wrong */
+      const fails = (parseInt(localStorage.getItem(FAIL_KEY)||'0')) + 1;
+      localStorage.setItem(FAIL_KEY, fails);
+      const inp = document.getElementById('pw-input');
+      inp.classList.add('err');
+      document.getElementById('pw-err').classList.add('show');
+      const attDiv = document.getElementById('pw-attempts');
+      attDiv.style.display = 'block';
+      document.getElementById('pw-att-cnt').textContent = fails;
+      inp.value = '';
+      btn.disabled = false;
+      btn.textContent = '🔓 Unlock Admin';
+      if (fails >= MAX_FAILS) {
+        localStorage.setItem(LOCKOUT_KEY, Date.now() + LOCKOUT_MS);
+        localStorage.setItem(FAIL_KEY, '0');
+        showLockoutMsg();
+      }
+      setTimeout(()=>{ inp.classList.remove('err'); inp.focus(); }, 500);
+    }
+  }, 450);
+}
+
+function isLockedOut() {
+  const until = parseInt(localStorage.getItem(LOCKOUT_KEY)||'0');
+  return Date.now() < until;
+}
+
+function showLockoutMsg() {
+  const btn = document.getElementById('pw-btn');
+  const err = document.getElementById('pw-err');
+  const inp = document.getElementById('pw-input');
+  inp.disabled = true; btn.disabled = true; btn.style.opacity = '.45';
+  btn.textContent = '🔒 Temporarily Locked';
+  err.classList.add('show');
+  const iv = setInterval(()=>{
+    const rem = Math.max(0, Math.ceil((parseInt(localStorage.getItem(LOCKOUT_KEY)||'0') - Date.now())/1000));
+    const m = Math.floor(rem/60), s = rem%60;
+    err.textContent = `Too many attempts. Try again in ${m}:${String(s).padStart(2,'0')}`;
+    if (rem <= 0) {
+      clearInterval(iv);
+      inp.disabled=false; btn.disabled=false; btn.style.opacity='1';
+      btn.textContent='🔓 Unlock Admin';
+      err.textContent='Incorrect password. Please try again.';
+      err.classList.remove('show');
+      inp.focus();
+    }
+  }, 1000);
+}
+
+function activateAdmin(saveSession=true) {
+  isAdmin = true;
+  if (saveSession) sessionStorage.setItem(ADMIN_SESS_KEY, 'true');
+  document.getElementById('admin-badge').classList.remove('locked');
+  document.getElementById('admin-badge-txt').textContent = 'Admin ✓';
+  document.getElementById('add-btn').disabled = false;
+  document.getElementById('admin-bar').classList.add('show');
+  render(); /* Re-render to show edit buttons */
+}
+
+function lockAdmin() {
+  isAdmin = false;
+  sessionStorage.removeItem(ADMIN_SESS_KEY);
+  document.getElementById('admin-badge').classList.add('locked');
+  document.getElementById('admin-badge-txt').textContent = 'Admin';
+  document.getElementById('add-btn').disabled = true;
+  document.getElementById('admin-bar').classList.remove('show');
+  toast('🔒 Admin mode locked.', 'info');
+  render();
+}
+
+function guardedAdd() {
+  if (!isAdmin) { openPwModal(); return; }
+  openAddModal();
+}
+
+/* ════════════════════════════════════════
+   ADD / EDIT MODAL
+════════════════════════════════════════ */
+function openAddModal() {
+  if (!isAdmin) { openPwModal(); return; }
   editingId = null;
+  document.getElementById('edit-title').textContent    = '➕ Add New Page';
+  document.getElementById('edit-save-btn').textContent = '✓ Add Page';
+  document.getElementById('f-name').value   = '';
+  document.getElementById('f-url').value    = '';
+  document.getElementById('f-desc').value   = '';
+  document.getElementById('f-cat').value    = 'design';
+  document.getElementById('f-newtab').checked = false;
+  selIco='📄'; selClr='#009999'; selBadgeV='';
+  syncEmojiGrid(); syncColorRow(); syncBadgeRow();
+  updatePrev();
+  document.getElementById('edit-overlay').classList.add('open');
 }
 
-function handleOverlayClick(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeModal();
+function openEditModal(id) {
+  if (!isAdmin) { openPwModal(); return; }
+  const p = pages.find(x=>x.id===id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('edit-title').textContent    = '✏️ Edit Page';
+  document.getElementById('edit-save-btn').textContent = '✓ Save Changes';
+  document.getElementById('f-name').value   = p.name;
+  document.getElementById('f-url').value    = p.url;
+  document.getElementById('f-desc').value   = p.desc||'';
+  document.getElementById('f-cat').value    = p.category;
+  document.getElementById('f-newtab').checked = p.newTab||false;
+  selIco=p.icon; selClr=p.color; selBadgeV=p.badge||'';
+  syncEmojiGrid(); syncColorRow(); syncBadgeRow();
+  updatePrev();
+  document.getElementById('edit-overlay').classList.add('open');
 }
+
+function closeEditModal() { document.getElementById('edit-overlay').classList.remove('open'); editingId=null; }
+function handleEditOverlay(e) { if (e.target===document.getElementById('edit-overlay')) closeEditModal(); }
 
 function savePage() {
-  const name = document.getElementById('f-name').value.trim();
-  const url  = document.getElementById('f-url').value.trim();
-  if (!name) { toast('⚠️ Please enter a page name.', 'error'); return; }
-  if (!url)  { toast('⚠️ Please enter a page URL.',  'error'); return; }
-
+  const name   = document.getElementById('f-name').value.trim();
+  const url    = document.getElementById('f-url').value.trim();
+  if (!name) { toast('⚠️ Page name is required.','error'); return; }
+  if (!url)  { toast('⚠️ Page URL is required.','error');  return; }
   const cat    = document.getElementById('f-cat').value;
   const desc   = document.getElementById('f-desc').value.trim();
   const newTab = document.getElementById('f-newtab').checked;
 
   if (editingId) {
-    /* Update */
-    const idx = pages.findIndex(p => p.id === editingId);
-    if (idx !== -1) {
-      pages[idx] = { ...pages[idx], name, url, desc, category: cat, icon: selIcon, color: selColor, badge: selBadge, newTab };
-    }
-    toast('✅ Page updated successfully!', 'success');
+    const i = pages.findIndex(p=>p.id===editingId);
+    if (i!==-1) pages[i] = {...pages[i], name, url, desc, category:cat, icon:selIco, color:selClr, badge:selBadgeV, newTab};
+    toast('✅ Page updated!','success');
   } else {
-    /* Add */
-    const newId = pages.length ? Math.max(...pages.map(p => p.id)) + 1 : 1;
-    pages.push({ id: newId, name, url, desc, category: cat, icon: selIcon, color: selColor, badge: selBadge, pinned: false, newTab, tags: [] });
-    toast('✅ Page added successfully!', 'success');
+    const nid = pages.length ? Math.max(...pages.map(p=>p.id))+1 : 1;
+    pages.push({id:nid, name, url, desc, category:cat, icon:selIco, color:selClr, badge:selBadgeV, pinned:false, newTab, tags:[], imported:false});
+    toast('✅ Page added!','success');
   }
+  save(); render(); closeEditModal();
+}
 
-  save();
-  render();
-  closeModal();
+/* Quick action buttons on cards */
+function quickPin(e, id)  { e.preventDefault(); e.stopPropagation(); if(!isAdmin){openPwModal();return;} togglePin(id); }
+function quickEdit(e, id) { e.preventDefault(); e.stopPropagation(); if(!isAdmin){openPwModal();return;} openEditModal(id); }
+function quickDel(e, id)  { e.preventDefault(); e.stopPropagation(); if(!isAdmin){openPwModal();return;} deletePage(id); }
+
+function togglePin(id) {
+  const p = pages.find(x=>x.id===id);
+  if (!p) return;
+  p.pinned = !p.pinned;
+  save(); render();
+  toast(p.pinned ? '📌 Page pinned!' : '📌 Page unpinned!','info');
+}
+
+function deletePage(id) {
+  const p = pages.find(x=>x.id===id);
+  if (!p) return;
+  if (!confirm(`Delete "${p.name}"? This cannot be undone.`)) return;
+  pages = pages.filter(x=>x.id!==id);
+  save(); render();
+  toast('🗑️ Page deleted.','info');
 }
 
 /* ════════════════════════════════════════
-   EMOJI PICKER
+   EMOJI / COLOR / BADGE PICKERS
 ════════════════════════════════════════ */
-const EMOJIS = [
-  '📄','🧠','⚡','🚀','🔌','📦','🔄','💻',
-  '🏠','⚙️','🔧','📊','🗂️','🔍','🛠️','📡',
-  '🎯','🔐','💾','🖥️','📱','🌐','🔬','⚗️',
-  '📋','🗃️','📁','🔑','🛡️','⚖️','🧩','🎛️'
-];
+const EMOJIS = ['📄','🧠','⚡','🚀','🔌','📦','🔄','💻','🏠','⚙️','🔧','📊','🗂️','🔍','🛠️','📡','🎯','🔐','💾','🖥️','📱','🌐','🔬','⚗️','📋','🗃️','📁','🔑','🛡️','⚖️','🧩','🎛️'];
+const COLORS  = ['#009999','#00d7be','#4da6ff','#b46fff','#f5a623','#e05252','#4cdf8a','#ff6eb4','#ff8c42','#7ec8e3','#c9f0a8','#ffd166'];
 
 function buildEmojiGrid() {
-  const grid = document.getElementById('emoji-grid');
-  grid.innerHTML = EMOJIS.map(e => `
-    <button class="emoji-btn ${e === selIcon ? 'selected' : ''}"
-            onclick="selectEmoji('${e}',this)">${e}</button>
-  `).join('');
+  document.getElementById('emoji-grid').innerHTML = EMOJIS.map(e=>`<button class="eb" onclick="pickEmoji('${e}',this)">${e}</button>`).join('');
 }
-
-function selectEmoji(e, btn) {
-  selIcon = e;
-  document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  updatePreview();
-}
-
-function syncEmojiGrid() {
-  document.querySelectorAll('.emoji-btn').forEach(b => {
-    b.classList.toggle('selected', b.textContent === selIcon);
-  });
-}
-
-/* ════════════════════════════════════════
-   COLOR PICKER
-════════════════════════════════════════ */
-const COLORS = [
-  '#009999','#00d7be','#4da6ff','#b46fff',
-  '#f5a623','#e05252','#4cdf8a','#ff6eb4',
-  '#ff8c42','#7ec8e3','#c9f0a8','#ffd166'
-];
-
 function buildColorRow() {
-  const row = document.getElementById('color-row');
-  row.innerHTML = COLORS.map(c => `
-    <div class="color-dot ${c === selColor ? 'selected' : ''}"
-         style="background:${c};"
-         onclick="selectColor('${c}',this)"
-         title="${c}"></div>
-  `).join('');
+  document.getElementById('color-row').innerHTML = COLORS.map(c=>`<div class="cd" style="background:${c}" onclick="pickColor('${c}',this)" title="${c}"></div>`).join('');
 }
+function pickEmoji(e,btn) { selIco=e; document.querySelectorAll('.eb').forEach(b=>b.classList.remove('sel')); btn.classList.add('sel'); updatePrev(); }
+function pickColor(c,dot) { selClr=c; document.querySelectorAll('.cd').forEach(d=>d.classList.remove('sel')); dot.classList.add('sel'); updatePrev(); }
+function selBadge(el)     { selBadgeV=el.dataset.b; document.querySelectorAll('.bp').forEach(b=>b.classList.remove('sel')); el.classList.add('sel'); }
+function syncEmojiGrid()  { document.querySelectorAll('.eb').forEach(b=>b.classList.toggle('sel', b.textContent===selIco)); }
+function syncColorRow()   { document.querySelectorAll('.cd').forEach(d=>d.classList.toggle('sel', d.title===selClr)); }
+function syncBadgeRow()   { document.querySelectorAll('.bp').forEach(b=>b.classList.toggle('sel', b.dataset.b===selBadgeV)); }
 
-function selectColor(c, dot) {
-  selColor = c;
-  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
-  dot.classList.add('selected');
-  updatePreview();
-}
-
-function syncColorRow() {
-  document.querySelectorAll('.color-dot').forEach(d => {
-    d.classList.toggle('selected', d.style.background === selColor || d.title === selColor);
-  });
-}
-
-/* ════════════════════════════════════════
-   BADGE PICKER
-════════════════════════════════════════ */
-function selectBadge(el) {
-  selBadge = el.dataset.badge;
-  document.querySelectorAll('.badge-pick').forEach(b => b.classList.remove('selected'));
-  el.classList.add('selected');
-}
-
-function syncBadgeRow() {
-  document.querySelectorAll('.badge-pick').forEach(b => {
-    b.classList.toggle('selected', b.dataset.badge === selBadge);
-  });
-}
-
-/* ════════════════════════════════════════
-   LIVE PREVIEW
-════════════════════════════════════════ */
-function updatePreview() {
+function updatePrev() {
   const name = document.getElementById('f-name').value || 'Page Name';
-  const desc = document.getElementById('f-desc').value || 'Description will appear here';
-  document.getElementById('prev-icon').textContent = selIcon;
-  document.getElementById('prev-name').textContent = name;
-  document.getElementById('prev-desc').textContent = desc;
-  document.getElementById('preview-mini').style.borderLeft = `3px solid ${selColor}`;
+  const desc = document.getElementById('f-desc').value || 'Description here';
+  document.getElementById('pv-ico').textContent  = selIco;
+  document.getElementById('pv-name').textContent = name;
+  document.getElementById('pv-desc').textContent = desc;
+  document.getElementById('prev-mini').style.borderLeft = `3px solid ${selClr}`;
+}
+
+/* ════════════════════════════════════════
+   DOCUMENT UPLOAD / IMPORT SYSTEM
+════════════════════════════════════════ */
+function openDocModal() {
+  if (!isAdmin) { openPwModal(); return; }
+  pendingFiles = []; parsedCards = [];
+  document.getElementById('file-list').innerHTML = '';
+  document.getElementById('parse-opts').style.display = 'none';
+  document.getElementById('parse-prog').classList.remove('show');
+  document.getElementById('import-result').classList.remove('show');
+  document.getElementById('doc-import-btn').style.display = 'none';
+  document.getElementById('doc-parse-btn').style.display  = '';
+  document.getElementById('doc-file-input').value = '';
+  document.getElementById('doc-overlay').classList.add('open');
+}
+
+function closeDocModal() { document.getElementById('doc-overlay').classList.remove('open'); }
+function handleDocOverlay(e) { if (e.target===document.getElementById('doc-overlay')) closeDocModal(); }
+
+/* Drag & Drop */
+function dzDragOver(e)  { e.preventDefault(); document.getElementById('drop-zone').classList.add('drag-over'); }
+function dzDragLeave(e) { document.getElementById('drop-zone').classList.remove('drag-over'); }
+function dzDrop(e)      { e.preventDefault(); document.getElementById('drop-zone').classList.remove('drag-over'); handleFiles(e.dataTransfer.files); }
+
+function handleFiles(files) {
+  if (!files || !files.length) return;
+  Array.from(files).forEach(f => {
+    if (!pendingFiles.find(x=>x.name===f.name)) pendingFiles.push(f);
+  });
+  renderFileList();
+  document.getElementById('parse-opts').style.display = pendingFiles.length ? '' : 'none';
+}
+
+function renderFileList() {
+  const list = document.getElementById('file-list');
+  list.innerHTML = pendingFiles.map((f,i) => `
+    <div class="file-item">
+      <div class="fi-ico">${fileIcon(f.name)}</div>
+      <div class="fi-body">
+        <div class="fi-name">${f.name}</div>
+        <div class="fi-size">${fileExt(f.name).toUpperCase()} · ${fmtSize(f.size)}</div>
+      </div>
+      <button class="fi-remove" onclick="removeFile(${i})">✕ Remove</button>
+    </div>`).join('');
+}
+
+function removeFile(i) {
+  pendingFiles.splice(i,1);
+  renderFileList();
+  if (!pendingFiles.length) {
+    document.getElementById('parse-opts').style.display = 'none';
+    document.getElementById('import-result').classList.remove('show');
+    document.getElementById('doc-import-btn').style.display = 'none';
+    document.getElementById('doc-parse-btn').style.display  = '';
+  }
+}
+
+/* Parse files → generate card data */
+async function parseFiles() {
+  if (!pendingFiles.length) { toast('⚠️ Please select at least one file.','warn'); return; }
+  parsedCards = [];
+  const prog  = document.getElementById('parse-prog');
+  const bar   = document.getElementById('pp-bar');
+  const lbl   = document.getElementById('pp-label');
+  prog.classList.add('show');
+  document.getElementById('import-result').classList.remove('show');
+  document.getElementById('doc-parse-btn').style.display = 'none';
+
+  for (let i = 0; i < pendingFiles.length; i++) {
+    const f    = pendingFiles[i];
+    const pct  = Math.round(((i+1)/pendingFiles.length)*100);
+    lbl.textContent = `Parsing ${f.name}… (${i+1}/${pendingFiles.length})`;
+    bar.style.width = pct + '%';
+
+    const card = await parseOneFile(f);
+    parsedCards.push(card);
+    await sleep(120); /* Small delay for visual feedback */
+  }
+
+  lbl.textContent = '✅ Parsing complete!';
+  bar.style.width = '100%';
+  await sleep(400);
+  prog.classList.remove('show');
+
+  renderImportResult();
+  document.getElementById('import-result').classList.add('show');
+  document.getElementById('doc-import-btn').style.display = '';
+}
+
+async function parseOneFile(file) {
+  const ext     = fileExt(file.name);
+  const useTitle= document.getElementById('opt-title').checked;
+  const useDesc = document.getElementById('opt-desc').checked;
+  const useIcon = document.getElementById('opt-icon').checked;
+  const useClr  = document.getElementById('opt-color').checked;
+  const newTab  = document.getElementById('opt-newtab').checked;
+  const pin     = document.getElementById('opt-pin').checked;
+
+  let name  = file.name.replace(/\.[^/.]+$/,'').replace(/[-_]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  let desc  = `Imported from ${file.name}`;
+  let icon  = fileIcon(file.name);
+  let color = fileColor(ext);
+  let url   = file.name; /* Relative path — user can edit later */
+  let tags  = [ext.toUpperCase(), 'Imported'];
+
+  /* Try to read text content for smarter parsing */
+  try {
+    const text = await readFileText(file);
+
+    if (useTitle) {
+      /* HTML: grab <title> or first <h1> */
+      if (ext==='html'||ext==='htm') {
+        const tm = text.match(/<title[^>]*>([^<]+)<\/title>/i);
+        const hm = text.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+        if (tm) name = tm[1].trim();
+        else if (hm) name = hm[1].replace(/<[^>]+>/g,'').trim();
+      }
+      /* Markdown: grab first # heading */
+      if (ext==='md') {
+        const mm = text.match(/^#\s+(.+)/m);
+        if (mm) name = mm[1].trim();
+      }
+      /* JSON: try title/name key */
+      if (ext==='json') {
+        try {
+          const j = JSON.parse(text);
+          if (j.title) name = j.title;
+          else if (j.name) name = j.name;
+        } catch(e){}
+      }
+    }
+
+    if (useDesc) {
+      /* HTML: grab first <meta description> or first <p> */
+      if (ext==='html'||ext==='htm') {
+        const dm = text.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
+        const pm = text.match(/<p[^>]*>([^<]{20,200})<\/p>/i);
+        if (dm) desc = dm[1].trim();
+        else if (pm) desc = pm[1].replace(/<[^>]+>/g,'').trim().substring(0,120)+'…';
+      }
+      /* Markdown: grab first paragraph */
+      if (ext==='md') {
+        const lines = text.split('\n').filter(l=>l.trim()&&!l.startsWith('#'));
+        if (lines.length) desc = lines[0].trim().substring(0,120)+'…';
+      }
+      /* TXT: first non-empty line */
+      if (ext==='txt') {
+        const lines = text.split('\n').filter(l=>l.trim());
+        if (lines.length) desc = lines[0].trim().substring(0,120);
+      }
+      /* JSON: description key */
+      if (ext==='json') {
+        try {
+          const j = JSON.parse(text);
+          if (j.description) desc = j.description.substring(0,120);
+        } catch(e){}
+      }
+    }
+  } catch(e) { /* Binary file or read error — use defaults */ }
+
+  return { name, url, desc, icon, color, tags, newTab, pinned:pin, badge:'doc', imported:true };
+}
+
+function readFileText(file) {
+  return new Promise((res,rej) => {
+    const r = new FileReader();
+    r.onload  = e => res(e.target.result);
+    r.onerror = () => rej(new Error('Read error'));
+    r.readAsText(file);
+  });
+}
+
+function renderImportResult() {
+  const cont = document.getElementById('ir-cards');
+  cont.innerHTML = parsedCards.map((c,i) => `
+    <div class="ir-card">
+      <input type="checkbox" id="irc-${i}" checked/>
+      <div class="ir-ico">${c.icon}</div>
+      <div class="ir-info">
+        <div class="ir-name">${c.name}</div>
+        <div class="ir-url">${c.url} · ${c.desc.substring(0,60)}…</div>
+      </div>
+    </div>`).join('');
+}
+
+function doImport() {
+  let added = 0;
+  parsedCards.forEach((c,i) => {
+    const cb = document.getElementById(`irc-${i}`);
+    if (!cb || !cb.checked) return;
+    const nid = pages.length ? Math.max(...pages.map(p=>p.id))+1 : 1;
+    pages.push({ id:nid, name:c.name, url:c.url, desc:c.desc, category:'docs',
+                 icon:c.icon, color:c.color, badge:c.badge, pinned:c.pinned,
+                 newTab:c.newTab, tags:c.tags, imported:true });
+    added++;
+  });
+  if (!added) { toast('⚠️ No cards selected.','warn'); return; }
+  save(); render(); closeDocModal();
+  toast(`✅ ${added} card${added!==1?'s':''} imported successfully!`,'success');
 }
 
 /* ════════════════════════════════════════
    CONTEXT MENU
 ════════════════════════════════════════ */
 function showCtx(e, id) {
-  e.preventDefault();
-  e.stopPropagation();
-  ctxTargetId = id;
-  const menu = document.getElementById('ctx-menu');
-  menu.style.left = Math.min(e.clientX, window.innerWidth  - 180) + 'px';
-  menu.style.top  = Math.min(e.clientY, window.innerHeight - 200) + 'px';
-  menu.classList.add('open');
+  e.preventDefault(); e.stopPropagation();
+  ctxId = id;
+  const m = document.getElementById('ctx');
+  m.style.left = Math.min(e.clientX, window.innerWidth-180)+'px';
+  m.style.top  = Math.min(e.clientY, window.innerHeight-200)+'px';
+  /* Show admin options only if admin */
+  ['ctx-edit','ctx-pin','ctx-sep','ctx-del'].forEach(id=>{
+    document.getElementById(id).style.display = isAdmin ? '' : 'none';
+  });
+  m.classList.add('open');
 }
-
-function hideCtx() {
-  document.getElementById('ctx-menu').classList.remove('open');
-}
-
-function ctxOpen() {
-  const p = pages.find(x => x.id === ctxTargetId);
-  if (p) window.location.href = p.url;
-  hideCtx();
-}
-
-function ctxOpenNew() {
-  const p = pages.find(x => x.id === ctxTargetId);
-  if (p) window.open(p.url, '_blank');
-  hideCtx();
-}
-
-function ctxEdit() {
-  openModal(ctxTargetId);
-  hideCtx();
-}
-
-function ctxPin() {
-  const p = pages.find(x => x.id === ctxTargetId);
-  if (p) {
-    p.pinned = !p.pinned;
-    save(); render();
-    toast(p.pinned ? '📌 Page pinned!' : '📌 Page unpinned!', 'info');
-  }
-  hideCtx();
-}
-
-function ctxDelete() {
-  const p = pages.find(x => x.id === ctxTargetId);
-  if (!p) return;
-  if (confirm(`Delete "${p.name}"? This cannot be undone.`)) {
-    pages = pages.filter(x => x.id !== ctxTargetId);
-    save(); render();
-    toast('🗑️ Page deleted.', 'info');
-  }
-  hideCtx();
-}
+function hideCtx() { document.getElementById('ctx').classList.remove('open'); }
+function ctxOpen()    { const p=pages.find(x=>x.id===ctxId); if(p) window.location.href=p.url; hideCtx(); }
+function ctxOpenNew() { const p=pages.find(x=>x.id===ctxId); if(p) window.open(p.url,'_blank'); hideCtx(); }
+function ctxEdit()    { if(!isAdmin){openPwModal();return;} openEditModal(ctxId); hideCtx(); }
+function ctxPin()     { if(!isAdmin){openPwModal();return;} togglePin(ctxId); hideCtx(); }
+function ctxDel()     { if(!isAdmin){openPwModal();return;} deletePage(ctxId); hideCtx(); }
 
 document.addEventListener('click', hideCtx);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); hideCtx(); } });
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') { closeEditModal(); closePwModal(); closeDocModal(); hideCtx(); }
+  if ((e.ctrlKey||e.metaKey)&&e.key==='k') { e.preventDefault(); document.querySelector('.nav-srch').focus(); }
+});
 
 /* ════════════════════════════════════════
    TOAST
 ════════════════════════════════════════ */
-function toast(msg, type = 'info') {
-  const wrap = document.getElementById('toast-wrap');
-  const el   = document.createElement('div');
+function toast(msg, type='info') {
+  const w  = document.getElementById('toast-wrap');
+  const el = document.createElement('div');
   el.className = `toast ${type}`;
   el.innerHTML = `<span>${msg}</span>`;
-  wrap.appendChild(el);
-  setTimeout(() => el.remove(), 3100);
+  w.appendChild(el);
+  setTimeout(()=>el.remove(), 3200);
 }
 
 /* ════════════════════════════════════════
    HELPERS
 ════════════════════════════════════════ */
-function cap(s)         { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
-function badgeLabel(b)  {
-  return { new:'🟢 New', hot:'🔥 Hot', pin:'📌 Pin', done:'✅ Done' }[b] || '';
-}
+function cap(s)    { return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+function bLabel(b) { return {new:'🟢 New',hot:'🔥 Hot',pin:'📌 Pin',done:'✅ Done',doc:'📄 Doc'}[b]||''; }
+function fileExt(n){ return (n.split('.').pop()||'').toLowerCase(); }
+function fmtSize(b){ return b<1024?b+'B':b<1048576?(b/1024).toFixed(1)+'KB':(b/1048576).toFixed(1)+'MB'; }
 
-/* ════════════════════════════════════════
-   KEYBOARD SHORTCUT — Ctrl+K = focus search
-════════════════════════════════════════ */
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-    e.preventDefault();
-    document.querySelector('.nav-search').focus();
-  }
-});
+function fileIcon(name) {
+  const ext = fileExt(name);
+  const map = { html:'🌐', htm:'🌐', md:'📝', txt:'📄', json:'📋', csv:'📊',
+                js:'⚙️', css:'🎨', v:'🔌', sv:'🔌', verilog:'🔌', pdf:'📕' };
+  return map[ext] || '📄';
+}
+function fileColor(ext) {
+  const map = { html:'#4da6ff', htm:'#4da6ff', md:'#4cdf8a', txt:'#009999',
+                json:'#f5a623', csv:'#00d7be', js:'#f5a623', css:'#ff6eb4',
+                v:'#b46fff', sv:'#b46fff', verilog:'#b46fff', pdf:'#e05252' };
+  return map[ext] || '#009999';
+}
 
 /* ════════════════════════════════════════
    BOOT
