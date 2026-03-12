@@ -51,7 +51,7 @@ const SKYDASH_PAGES = [
     id: 4,
     name: 'Digital',
     url: 'select/Digital.html',
-    desc: 'D',
+    desc: 'Digital interview questions',
     category: 'docs',
     icon: '🔐',
     color: '#e05252',
