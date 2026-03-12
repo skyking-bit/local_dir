@@ -59,7 +59,8 @@ const SKYDASH_PAGES = [
     pinned: false,
     newTab: false,
     tags: ['Confidential', 'Docs'],
-    passwordProtected: true    
+    passwordProtected: true   
+    password: 'coolsky' 
   }
   // ─────────────────────────────────────────────────────
   // ADD MORE PAGES BELOW — push to Git and everyone sees!
