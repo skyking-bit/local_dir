@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Digital Design Interview Guide — Satyam Theme</title>
+  <style>
+    /* ══ SIEMENS DESIGN SYSTEM ══ */
+    :root {
+      --s-teal:      #009999;
+      --s-teal-d:    #007373;
+      --s-teal-l:    #00c8c8;
+      --s-petrol:    #005159;
+      --s-sand:      #e8e3d3;
+      --s-dark:      #1b1b1b;
+      --s-card:      #242424;
+      --s-card2:     #2e2e2e;
+      --s-border:    #3a3a3a;
+      --s-text:      #f0f0f0;
+      --s-muted:     #a0a0a0;
+      --s-accent:    #00d7be;
+      --s-warn:      #f5a623;
+      --s-red:       #e05252;
+      --s-green:     #4caf7d;
+      --s-blue:      #4da6ff;
+      --s-purple:    #b46fff;
+      --glow:        0 0 20px rgba(0,153,153,0.3);
+      --radius:      12px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 15px; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--s-dark);
+      color: var(--s-text);
+      min-height: 100vh;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #111; }
+    ::-webkit-scrollbar-thumb { background: var(--s-teal); border-radius: 3px; }
+
+    /* ══ PASSWORD LOCK SCREEN ══ */
+    #lock-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: linear-gradient(135deg, #0a1a1a 0%, #003333 45%, #001a1a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    #lock-screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 25% 40%, rgba(0,153,153,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 70%, rgba(0,215,190,0.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .lock-card {
+      position: relative;
+      z-index: 1;
+      background: rgba(36,36,36,0.95);
+      border: 1px solid #3a3a3a;
+      border-radius: 20px;
+      padding: 2.8rem 2.5rem 2.2rem;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 0 60px rgba(0,153,153,0.18), 0 8px 40px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.1rem;
+      animation: lockFadeIn 0.6s ease;
+    }
+    @keyframes lockFadeIn {
+      from { opacity: 0; transform: translateY(30px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .lock-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1.1rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #009999;
+      text-transform: uppercase;
+    }
+    .lock-logo-box {
+      width: 34px; height: 34px;
+      background: #009999;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; color: #fff; font-weight: 900;
+    }
+    .lock-icon {
+      font-size: 3.2rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 12px rgba(0,153,153,0.5));
+      animation: lockPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes lockPulse {
+      0%,100% { filter: drop-shadow(0 0 10px rgba(0,153,153,0.4)); transform: scale(1); }
+      50%     { filter: drop-shadow(0 0 24px rgba(0,215,190,0.75)); transform: scale(1.08); }
+    }
+    .lock-title {
+      font-size: 1.3rem; font-weight: 900;
+      color: #f0f0f0; text-align: center; letter-spacing: 0.5px;
+    }
+    .lock-subtitle {
+      font-size: 0.8rem; color: #a0a0a0;
+      text-align: center; line-height: 1.65;
+      margin-top: -0.5rem;
+    }
+    .lock-input-wrap { position: relative; width: 100%; }
+    .lock-input {
+      width: 100%;
+      background: #1b1b1b;
+      border: 2px solid #3a3a3a;
+      border-radius: 12px;
+      padding: 0.85rem 3rem 0.85rem 1.1rem;
+      color: #f0f0f0;
+      font-size: 1rem;
+      outline: none;
+      letter-spacing: 0.1em;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .lock-input:focus {
+      border-color: #009999;
+      box-shadow: 0 0 0 3px rgba(0,153,153,0.18);
+    }
+    .lock-input.error {
+      border-color: #e05252;
+      box-shadow: 0 0 0 3px rgba(224,82,82,0.15);
+      animation: shake 0.4s ease;
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-8px); }
+      40%     { transform: translateX(8px); }
+      60%     { transform: translateX(-5px); }
+      80%     { transform: translateX(5px); }
+    }
+    .lock-eye-btn {
+      position: absolute; right: 0.9rem; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      font-size: 1.1rem; color: #a0a0a0; padding: 0; line-height: 1;
+      transition: color 0.2s;
+    }
+    .lock-eye-btn:hover { color: #009999; }
+    .lock-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #009999, #00c8c8);
+      color: #fff; border: none; border-radius: 12px;
+      padding: 0.9rem; font-size: 1rem; font-weight: 800;
+      letter-spacing: 1px; cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      text-transform: uppercase;
+      box-shadow: 0 4px 18px rgba(0,153,153,0.35);
+    }
+    .lock-btn:hover:not(:disabled) {
+      opacity: 0.92; transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(0,153,153,0.5);
+    }
+    .lock-btn:active:not(:disabled) { transform: translateY(0); }
+    .lock-btn:disabled { cursor: not-allowed; }
+    .lock-error-msg {
+      font-size: 0.78rem; color: #e05252;
+      text-align: center; min-height: 1.1rem;
+      font-weight: 600; letter-spacing: 0.3px;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .lock-error-msg.visible { opacity: 1; }
+    .lock-attempts {
+      font-size: 0.73rem; color: #a0a0a0; text-align: center;
+    }
+    .lock-attempts span { color: #f5a623; font-weight: 700; }
+    .lock-footer { font-size: 0.7rem; color: #555; text-align: center; }
+    .lock-footer b { color: #009999; }
+    @keyframes unlockFlash {
+      0%   { background: rgba(36,36,36,0.95); }
+      40%  { background: rgba(0,153,153,0.22); border-color: #009999; }
+      100% { background: rgba(36,36,36,0.95); }
+    }
+    .lock-card.unlocking { animation: unlockFlash 0.65s ease forwards; }
+
+    /* ══ TOP NAV ══ */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      height: 58px;
+      background: rgba(27,27,27,0.97);
+      backdrop-filter: blur(14px);
+      border-bottom: 2px solid var(--s-teal);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1.5rem;
+    }
+    .nav-left { display: flex; align-items: center; gap: 1rem; }
+    .siemens-logo {
+      display: flex; align-items: center; gap: .5rem;
+      font-size: 1.15rem; font-weight: 800; letter-spacing: 2px;
+      color: var(--s-teal); text-transform: uppercase;
+    }
+    .logo-box {
+      width: 32px; height: 32px; background: var(--s-teal);
+      border-radius: 6px; display: flex; align-items: center;
+      justify-content: center; font-size: 1rem; color: #fff; font-weight: 900;
+    }
+    .nav-title { font-size: .8rem; color: var(--s-muted); font-weight: 500; }
+    .nav-tabs { display: flex; gap: .3rem; }
+    .nav-tab {
+      padding: .35rem .85rem; border-radius: 20px; font-size: .78rem;
+      font-weight: 600; cursor: pointer; border: 1px solid transparent;
+      color: var(--s-muted); transition: all .2s; background: none;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .nav-tab:hover, .nav-tab.active {
+      background: var(--s-teal); color: #fff; border-color: var(--s-teal);
+    }
+    .nav-right { display: flex; align-items: center; gap: .8rem; }
+    .search-box {
+      background: var(--s-card2); border: 1px solid var(--s-border);
+      border-radius: 20px; padding: .3rem .9rem;
+      color: var(--s-text); font-size: .8rem; outline: none; width: 180px;
+      transition: border-color .2s;
+    }
+    .search-box:focus { border-color: var(--s-teal); }
+    .search-box::placeholder { color: var(--s-muted); }
+    .progress-badge {
+      background: var(--s-teal); color: #fff;
+      border-radius: 20px; padding: .3rem .8rem;
+      font-size: .75rem; font-weight: 700;
+    }
+    .logout-btn {
+      background: rgba(224,82,82,0.15);
+      border: 1px solid rgba(224,82,82,0.4);
+      color: #e05252; border-radius: 20px;
+      padding: .3rem .8rem; font-size: .72rem;
+      font-weight: 700; cursor: pointer;
+      transition: all .2s; letter-spacing: .5px;
+    }
+    .logout-btn:hover {
+      background: #e05252; color: #fff;
+    }
+
+    /* ══ HERO BANNER ══ */
+    .hero {
+      background: linear-gradient(135deg, #0a1a1a 0%, #003333 40%, #001a1a 100%);
+      padding: 3rem 2rem 2.5rem;
+      position: relative; overflow: hidden;
+      border-bottom: 1px solid var(--s-border);
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(0,153,153,.18) 0%, transparent 65%),
+                  radial-gradient(ellipse at 80% 20%, rgba(0,215,190,.08) 0%, transparent 50%);
+    }
+    .hero-inner {
+      max-width: 1300px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 2rem; position: relative; z-index: 1;
+    }
+    .hero-text h1 {
+      font-size: 2rem; font-weight: 900; line-height: 1.2; letter-spacing: .5px;
+    }
+    .hero-text h1 span { color: var(--s-teal-l); }
+    .hero-text p { color: var(--s-muted); margin-top: .5rem; font-size: .9rem; line-height: 1.6; max-width: 480px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+    .hero-tag {
+      background: rgba(0,153,153,.15); border: 1px solid rgba(0,153,153,.4);
+      color: var(--s-teal-l); border-radius: 20px; padding: .25rem .75rem;
+      font-size: .75rem; font-weight: 600;
+    }
+    .hero-stats { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    .h-stat {
+      text-align: center;
+      background: rgba(0,0,0,.3); border: 1px solid var(--s-border);
+      border-radius: var(--radius); padding: 1rem 1.4rem; min-width: 100px;
+    }
+    .h-stat-num { font-size: 1.9rem; font-weight: 900; color: var(--s-teal-l); }
+    .h-stat-label { font-size: .7rem; color: var(--s-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: .2rem; }
+
+    /* ══ MAIN LAYOUT ══ */
+    .main { max-width: 1300px; margin: 0 auto; padding: 1.5rem; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ══ SECTION TITLE ══ */
+    .sec-title {
+      font-size: 1.2rem; font-weight: 800; margin-bottom: 1.2rem;
+      color: var(--s-text); display: flex; align-items: center; gap: .6rem;
+      padding-bottom: .6rem; border-bottom: 2px solid var(--s-teal);
+    }
+
+    /* ══ GRID ══ */
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .g3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; }
+    .g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
+    @media(max-width:1000px) { .g3,.g4 { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:700px)  { .g2,.g3,.g4 { grid-template-columns: 1fr; } }
+
+    /* ══ CARD ══ */
+    .card {
+      background: var(--s-card); border: 1px solid var(--s-border);
+      border-radius: var(--radius); padding: 1.3rem;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .card:hover { border-color: var(--s-teal); box-shadow: var(--glow); }
+
+    /* ══ TOPIC CARDS ══ */
+    .topic-card {
+      background: var(--s-card2); border: 1px solid var(--s-border);
+      border-radius: var(--radius); padding: 1rem 1.1rem;
+      cursor: pointer; transition: all .2s;
+      display: flex; flex-direction: column; gap: .4rem;
+    }
+    .topic-card:hover { border-color: var(--s-teal); transform: translateY(-3px); box-shadow: var(--glow); }
+    .topic-card .t-icon { font-size: 1.5rem; }
+    .topic-card .t-name { font-size: .88rem; font-weight: 700; }
+    .topic-card .t-count { font-size: .72rem; color: var(--s-muted); }
+    .topic-card .t-bar { height: 3px; border-radius: 2px; background: var(--s-border); margin-top: .4rem; overflow: hidden; }
+    .topic-card .t-fill { height: 100%; background: linear-gradient(to right, var(--s-teal), var(--s-accent)); width: 0; transition: width 1s ease; }
+    .difficulty-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: .3rem; }
+    .diff-easy { background: var(--s-green); }
+    .diff-med  { background: var(--s-warn); }
+    .diff-hard { background: var(--s-red); }
+
+    /* ══ ACCORDION Q&A ══ */
+    .qa-item {
+      background: var(--s-card2); border: 1px solid var(--s-border);
+      border-radius: var(--radius); margin-bottom: .8rem; overflow: hidden;
+      transition: border-color .2s;
+    }
+    .qa-item:hover { border-color: var(--s-teal); }
+    .qa-q {
+      padding: 1rem 1.2rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      user-select: none;
+    }
+    .qa-q-left { display: flex; align-items: center; gap: .8rem; }
+    .qa-num {
+      min-width: 30px; height: 30px; border-radius: 8px;
+      background: var(--s-teal); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 800; flex-shrink: 0;
+    }
+    .qa-q-text { font-size: .88rem; font-weight: 600; }
+    .qa-meta { display: flex; align-items: center; gap: .6rem; flex-shrink: 0; }
+    .qa-badge { font-size: .68rem; padding: .15rem .5rem; border-radius: 10px; font-weight: 700; }
+    .badge-hard  { background: rgba(224,82,82,.2);  color: var(--s-red);   border: 1px solid var(--s-red); }
+    .badge-med   { background: rgba(245,166,35,.2); color: var(--s-warn);  border: 1px solid var(--s-warn); }
+    .badge-easy  { background: rgba(76,175,125,.2); color: var(--s-green); border: 1px solid var(--s-green); }
+    .badge-company {
+      font-size: .65rem; padding: .15rem .45rem; border-radius: 10px; font-weight: 700;
+      background: rgba(0,153,153,.15); color: var(--s-teal-l); border: 1px solid rgba(0,153,153,.4);
+    }
+    .qa-chevron { color: var(--s-muted); transition: transform .3s; font-size: 1rem; }
+    .qa-item.open .qa-chevron { transform: rotate(180deg); }
+    .qa-body { max-height: 0; overflow: hidden; transition: max-height .4s ease; border-top: 1px solid transparent; }
+    .qa-item.open .qa-body { max-height: 1400px; border-top-color: var(--s-border); }
+    .qa-body-inner { padding: 1.2rem; }
+    .qa-body-inner p { font-size: .85rem; color: var(--s-muted); line-height: 1.8; margin-bottom: .8rem; }
+    .qa-body-inner strong { color: var(--s-text); }
+    .qa-body-inner ul { list-style: none; padding: 0; }
+    .qa-body-inner ul li {
+      font-size: .83rem; color: var(--s-muted); padding: .3rem 0;
+      border-bottom: 1px dashed var(--s-border);
+      display: flex; gap: .5rem;
+    }
+    .qa-body-inner ul li::before { content: '▸'; color: var(--s-teal); flex-shrink: 0; }
+    .qa-body-inner ul li:last-child { border-bottom: none; }
+
+    /* ══ CODE BLOCK ══ */
+    .code-block {
+      background: #111; border: 1px solid var(--s-border);
+      border-left: 3px solid var(--s-teal);
+      border-radius: 8px; padding: .9rem 1rem;
+      font-family: 'Consolas','Courier New', monospace;
+      font-size: .78rem; color: #a8d8a8; line-height: 1.7;
+      overflow-x: auto; margin: .8rem 0; white-space: pre;
+    }
+    .code-label {
+      font-size: .7rem; color: var(--s-teal); font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: .3rem;
+    }
+
+    /* ══ INFO BOX ══ */
+    .info-box {
+      border-radius: 8px; padding: .8rem 1rem; margin: .8rem 0;
+      font-size: .82rem; line-height: 1.7;
+    }
+    .info-teal  { background: rgba(0,153,153,.1);  border-left: 3px solid var(--s-teal);  color: var(--s-muted); }
+    .info-warn  { background: rgba(245,166,35,.1); border-left: 3px solid var(--s-warn);  color: var(--s-muted); }
+    .info-red   { background: rgba(224,82,82,.1);  border-left: 3px solid var(--s-red);   color: var(--s-muted); }
+    .info-green { background: rgba(76,175,125,.1); border-left: 3px solid var(--s-green); color: var(--s-muted); }
+    .info-box strong { color: var(--s-text); }
+
+    /* ══ TABLE ══ */
+    .s-table { width: 100%; border-collapse: collapse; font-size: .8rem; margin: .8rem 0; }
+    .s-table th {
+      background: var(--s-teal); color: #fff; padding: .6rem .8rem;
+      text-align: left; font-weight: 700; font-size: .75rem; text-transform: uppercase;
+    }
+    .s-table td { padding: .55rem .8rem; border-bottom: 1px solid var(--s-border); color: var(--s-muted); }
+    .s-table tr:hover td { background: rgba(0,153,153,.06); color: var(--s-text); }
+    .s-table tr:last-child td { border-bottom: none; }
+
+    /* ══ CHEAT SHEET ══ */
+    .cheat-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 1rem; }
+    .cheat-card {
+      background: var(--s-card2); border: 1px solid var(--s-border);
+      border-radius: var(--radius); padding: 1rem;
+      transition: border-color .2s, transform .2s;
+    }
+    .cheat-card:hover { border-color: var(--s-teal); transform: translateY(-2px); }
+    .cheat-title { font-size: .82rem; font-weight: 800; color: var(--s-teal-l); margin-bottom: .6rem; }
+    .cheat-item {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: .35rem 0; border-bottom: 1px dashed var(--s-border); font-size: .78rem; gap: .5rem;
+    }
+    .cheat-item:last-child { border-bottom: none; }
+    .cheat-key { color: var(--s-muted); flex: 1; }
+    .cheat-val { color: var(--s-teal-l); font-weight: 700; text-align: right; flex: 1; }
+
+    /* ══ PROGRESS TRACKER ══ */
+    .progress-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap: .8rem; }
+    .prog-item {
+      background: var(--s-card2); border: 1px solid var(--s-border);
+      border-radius: 10px; padding: .8rem 1rem;
+      display: flex; align-items: center; gap: .8rem;
+      cursor: pointer; transition: all .2s;
+    }
+    .prog-item:hover { border-color: var(--s-teal); }
+    .prog-item.done { border-color: var(--s-green); background: rgba(76,175,125,.06); }
+    .prog-check {
+      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+      border: 2px solid var(--s-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; transition: all .2s;
+    }
+    .prog-item.done .prog-check { background: var(--s-green); border-color: var(--s-green); }
+    .prog-label { font-size: .8rem; color: var(--s-muted); font-weight: 600; }
+    .prog-item.done .prog-label { color: var(--s-green); }
+
+    /* ══ SKILL BARS ══ */
+    .skill-row { margin-bottom: 1rem; }
+    .skill-top { display: flex; justify-content: space-between; font-size: .8rem; margin-bottom: .3rem; }
+    .skill-top span:last-child { color: var(--s-teal-l); font-weight: 700; }
+    .skill-track { height: 8px; background: var(--s-border); border-radius: 10px; overflow: hidden; }
+    .skill-fill {
+      height: 100%; border-radius: 10px; width: 0;
+      background: linear-gradient(to right, var(--s-teal), var(--s-accent));
+      transition: width 1.2s ease;
+    }
+
+    /* ══ FILTER CHIPS ══ */
+    .filter-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.2rem; }
+    .filter-chip {
+      padding: .3rem .85rem; border-radius: 20px; font-size: .75rem;
+      font-weight: 600; cursor: pointer; border: 1px solid var(--s-border);
+      color: var(--s-muted); background: var(--s-card2); transition: all .2s;
+    }
+    .filter-chip:hover, .filter-chip.active {
+      background: var(--s-teal); color: #fff; border-color: var(--s-teal);
+    }
+
+    /* ══ FORMULA BOX ══ */
+    .formula-box {
+      background: linear-gradient(135deg, rgba(0,153,153,.15), rgba(0,215,190,.08));
+      border: 1px solid var(--s-teal); border-radius: 10px;
+      padding: .8rem 1.2rem; text-align: center; margin: .8rem 0;
+      font-size: .88rem; color: var(--s-teal-l); font-weight: 700; letter-spacing: .5px;
+    }
+
+    section { margin-bottom: 2rem; }
+
+    /* ══ FOOTER ══ */
+    footer {
+      text-align: center; padding: 1.5rem;
+      font-size: .75rem; color: var(--s-muted);
+      border-top: 1px solid var(--s-border); margin-top: 2rem;
+    }
+    footer span { color: var(--s-teal); }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     PASSWORD LOCK SCREEN
+══════════════════════════════════════ -->
+<div id="lock-screen">
+  <div class="lock-card" id="lock-card">
+
+    <div class="lock-logo">
+      <div class="lock-logo-box">S</div>
+      SIEMENS
+    </div>
+
+    <div class="lock-icon">🔐</div>
+
+    <div class="lock-title">Protected Dashboard</div>
+    <div class="lock-subtitle">
+      This resource is access-controlled.<br/>
+      Enter your password to continue.
+    </div>
+
+    <div class="lock-input-wrap">
+      <input
+        class="lock-input"
+        id="lock-input"
+        type="password"
+        placeholder="Enter password..."
+        maxlength="32"
+        autocomplete="off"
+        onkeydown="if(event.key==='Enter') attemptUnlock()"
+      />
+      <button class="lock-eye-btn" id="eye-btn" onclick="toggleEye()" title="Show/Hide">👁</button>
+    </div>
+
+    <div class="lock-error-msg" id="lock-error">Incorrect password. Please try again.</div>
+
+    <button class="lock-btn" id="lock-btn" onclick="attemptUnlock()">
+      🔓 Unlock Dashboard
+    </button>
+
+    <div class="lock-attempts" id="lock-attempts" style="display:none;">
+      ⚠️ Failed attempts: <span id="attempt-count">0</span> / 5
+    </div>
+
+    <div class="lock-footer">
+      <b>Digital Design Interview Guide</b> &nbsp;·&nbsp; Siemens Internal Tool
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TOP NAV
+══════════════════════════════════════ -->
+<nav>
+  <div class="nav-left">
+    <div class="siemens-logo">
+      <div class="logo-box">S</div>
+      SATYAM
+    </div>
+    <div class="nav-title">  </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('overview',this)">🏠 Overview</button>
+    <button class="nav-tab" onclick="showPage('protocols',this)">🔌 Protocols</button>
+    <button class="nav-tab" onclick="showPage('timing',this)">⏱ Timing</button>
+    <button class="nav-tab" onclick="showPage('fifo',this)">📦 FIFO & CDC</button>
+    <button class="nav-tab" onclick="showPage('fsm',this)">🔄 FSM</button>
+    <button class="nav-tab" onclick="showPage('verilog',this)">💻 Verilog/SV</button>
+    <button class="nav-tab" onclick="showPage('cheatsheet',this)">📋 Cheat Sheet</button>
+    <button class="nav-tab" onclick="showPage('tracker',this)">✅ Tracker</button>
+  </div>
+  <div class="nav-right">
+    <input class="search-box" type="text" placeholder="🔍 Search topics..." oninput="searchTopics(this.value)"/>
+    <div class="progress-badge" id="progress-badge">0 / 30</div>
+    <button class="logout-btn" onclick="lockDashboard()">🔒 Lock</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════
+     HERO BANNER
+══════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <h1>Digital Design<br/><span>Interview Preparation</span> Guide</h1>
+      <p>Complete Q&A with examples, Verilog code & deep explanations. Covering topics asked at Keysight · IBM · Siemens · Synopsys · Qualcomm</p>
+      <div class="hero-tags">
+        <span class="hero-tag">CXL Protocol</span>
+        <span class="hero-tag">PCIe Gen5/6</span>
+        <span class="hero-tag">FIFO Design</span>
+        <span class="hero-tag">CDC Techniques</span>
+        <span class="hero-tag">FSM Design</span>
+        <span class="hero-tag">SystemVerilog</span>
+        <span class="hero-tag">Timing Analysis</span>
+        <span class="hero-tag">AXI Handshake</span>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="h-stat"><div class="h-stat-num">30</div><div class="h-stat-label">Questions</div></div>
+      <div class="h-stat"><div class="h-stat-num">9</div><div class="h-stat-label">Chapters</div></div>
+      <div class="h-stat"><div class="h-stat-num">5</div><div class="h-stat-label">Companies</div></div>
+      <div class="h-stat"><div class="h-stat-num">∞</div><div class="h-stat-label">Prep Value</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════ -->
+<div class="main">
+
+  <!-- ════ PAGE: OVERVIEW ════ -->
+  <div class="page active" id="page-overview">
+    <section>
+      <div class="sec-title">📚 All Topics at a Glance</div>
+      <div class="g4">
+        <div class="topic-card" onclick="showPage('protocols',document.querySelectorAll('.nav-tab')[1])">
+          <div class="t-icon">🔌</div>
+          <div class="t-name">CXL Protocol</div>
+          <div class="t-count"><span class="difficulty-dot diff-hard"></span>Hard · 2 Questions</div>
+          <div class="t-bar"><div class="t-fill" data-w="90"></div></div>
+        </div>
+        <div class="topic-card" onclick="showPage('protocols',document.querySelectorAll('.nav-tab')[1])">
+          <div class="t-icon">⚡</div>
+          <div class="t-name">PCIe Gen5 & Gen6</div>
+          <div class="t-count"><span class="difficulty-dot diff-hard"></span>Hard · 4 Questions</div>
+          <div class="t-bar"><div class="t-fill" data-w="85"></div></div>
+        </div>
+        <div class="topic-card" onclick="showPage('timing',document.querySelectorAll('.nav-tab')[2])">
+          <div class="t-icon">⏱</div>
+          <div class="t-name">Setup & Hold Timing</div>
+          <div class="t-count"><span class="difficulty-dot diff-hard"></span>Hard · 2 Questions</div>
+          <div class="t-bar"><div class="t-fill" data-w="80"></div></div>
+        </div>
+        <div class="topic-card" onclick="showPage('fifo',document.querySelectorAll('.nav-tab')[3])">
+          <div class="t-icon">📦</div>
+          <div class="t-name">FIFO Design & Depth</div>
+          <div class="t-count"><span class="difficulty-dot diff-med"></span>Medium · 3 Questions</div>
+          <div class="t-bar"><div class="t-fill" data-w="75"></div></div>
+        </div>
+        <div class="topic-card" onclick="showPage('fifo',document.querySelectorAll('.nav-tab')[3])">
+          <div class="t-icon">🔀</div>
+          <div class="t-name">Clock Domain Crossing</div>
+          <div class="t-count"><span class="difficulty-dot diff-hard"></span>Hard · 2 Questions</div>
+          <div class="t-bar"><div class="t-fill" data-w="88"></div></div>
+        </div>
+        <div class="topic-card" onclick="showPage('fsm',document.querySelectorAll('.nav-tab')[4])">
+          <div class="t-icon">🔄</div>
+          <div class="t-name">FSM Design</div>
+          <div class="t-count"><span class="difficulty-dot diff-med"></span>Medium · 4 Questions</div>
+          <div class="t-bar"><div class="t-fill" data-w="70"></div></div>
+        </div>
+        <div class="topic-card" onclick="showPage('verilog',document.querySelectorAll('.nav-tab')[5])">
+          <div class="t-icon">💻</div>
+          <div class="t-name">Verilog / SystemVerilog</div>
+          <div class="t-count"><span class="difficulty-dot diff-med"></span>Medium · 8 Questions</div>
+          <div class="t-bar"><div class="t-fill" data-w="78"></div></div>
+        </div>
+        <div class="topic-card" onclick="showPage('verilog',document.querySelectorAll('.nav-tab')[5])">
+          <div class="t-icon">🤝</div>
+          <div class="t-name">AXI Valid-Ready</div>
+          <div class="t-count"><span class="difficulty-dot diff-med"></span>Medium · 1 Question</div>
+          <div class="t-bar"><div class="t-fill" data-w="65"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="g2">
+      <section>
+        <div class="sec-title">📊 Topic Coverage by Difficulty</div>
+        <div class="card">
+          <div class="skill-row">
+            <div class="skill-top"><span>PCIe / CXL Protocols</span><span>90%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-width="90"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-top"><span>Clock Domain Crossing (CDC)</span><span>88%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-width="88"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-top"><span>Timing Analysis</span><span>82%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-width="82"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-top"><span>FIFO Design</span><span>80%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-width="80"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-top"><span>FSM Design</span><span>75%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-width="75"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-top"><span>Verilog / SystemVerilog</span><span>78%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-width="78"></div></div>
+          </div>
+          <div class="skill-row">
+            <div class="skill-top"><span>AXI / Handshake Protocol</span><span>70%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-width="70"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="sec-title">🏢 Company-Wise Coverage</div>
+        <div class="card">
+          <table class="s-table">
+            <thead><tr><th>Company</th><th>Key Topics</th><th>Difficulty</th></tr></thead>
+            <tbody>
+              <tr><td>🔵 Siemens</td><td>PCIe Gen5 vs Gen6, CDC, FSM</td><td><span class="qa-badge badge-hard">Hard</span></td></tr>
+              <tr><td>🟢 Keysight</td><td>CXL, Flow Control, Timing</td><td><span class="qa-badge badge-hard">Hard</span></td></tr>
+              <tr><td>🔴 IBM</td><td>FIFO Depth, Encoding, Reset</td><td><span class="qa-badge badge-med">Medium</span></td></tr>
+              <tr><td>🟡 Synopsys</td><td>Blocking/Non-blocking, FIFO Tricky</td><td><span class="qa-badge badge-hard">Hard</span></td></tr>
+              <tr><td>🟠 Qualcomm</td><td>AXI, Moore/Mealy, Glitch</td><td><span class="qa-badge badge-med">Medium</span></td></tr>
+            </tbody>
+          </table>
+          <div class="info-box info-teal" style="margin-top:.8rem;">
+            <strong>💡 Pro Tip:</strong> Siemens specifically asked about PCIe Gen5 vs Gen6 — NRZ vs PAM4, 128b/130b vs FLIT mode. Master this!
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section>
+      <div class="sec-title">⚡ Must-Know Quick Facts</div>
+      <div class="g3">
+        <div class="card">
+          <div style="font-size:.8rem;font-weight:800;color:var(--s-teal-l);margin-bottom:.8rem;">🔌 PCIe Data Rates</div>
+          <table class="s-table">
+            <thead><tr><th>Gen</th><th>Rate/Lane</th><th>Encoding</th></tr></thead>
+            <tbody>
+              <tr><td>Gen1</td><td>2.5 GT/s</td><td>8b/10b</td></tr>
+              <tr><td>Gen2</td><td>5 GT/s</td><td>8b/10b</td></tr>
+              <tr><td>Gen3</td><td>8 GT/s</td><td>128b/130b</td></tr>
+              <tr><td>Gen4</td><td>16 GT/s</td><td>128b/130b</td></tr>
+              <tr><td style="color:var(--s-teal-l);font-weight:700;">Gen5</td><td style="color:var(--s-teal-l);">32 GT/s</td><td>128b/130b</td></tr>
+              <tr><td style="color:var(--s-warn);font-weight:700;">Gen6</td><td style="color:var(--s-warn);">64 GT/s</td><td>PAM4+FLIT</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div style="font-size:.8rem;font-weight:800;color:var(--s-teal-l);margin-bottom:.8rem;">📦 FIFO Formula</div>
+          <div class="formula-box">Depth = Write_words − Read_words<br/>during burst window</div>
+          <div class="info-box info-warn">
+            <strong>Example:</strong> Wr=400MHz, Rd=100MHz, 20 packets × 8 bytes<br/>
+            → Depth = 160 − 5 = <strong>155 bytes ≈ 160 (round up)</strong>
+          </div>
+          <div class="info-box info-teal">
+            <strong>PCIe Gen5 x16 BW:</strong> 32GT/s × 16 × 128/130 ≈ <strong>63 GB/s</strong>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:.8rem;font-weight:800;color:var(--s-teal-l);margin-bottom:.8rem;">🔑 Golden Rules</div>
+          <ul>
+            <li>Blocking <code style="color:#a8d8a8;">=</code> → Combinational blocks only</li>
+            <li>Non-Blocking <code style="color:#a8d8a8;"><=</code> → Sequential (clocked) blocks</li>
+            <li>Async FIFO → Gray code pointers ONLY</li>
+            <li>CDC single-bit → 2-FF synchronizer</li>
+            <li>Reset → Async assert, Sync de-assert</li>
+            <li>One-hot: N≠0 AND (N & N−1)==0</li>
+            <li>InitFC=0 for Cpl → INFINITE credits!</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ════ PAGE: PROTOCOLS ════ -->
+  <div class="page" id="page-protocols">
+    <section>
+      <div class="sec-title">🔌 CXL & PCIe Protocol Questions</div>
+      <div class="filter-row">
+        <span class="filter-chip active" onclick="filterQA(this,'all','protocols')">All</span>
+        <span class="filter-chip" onclick="filterQA(this,'hard','protocols')">🔴 Hard</span>
+        <span class="filter-chip" onclick="filterQA(this,'med','protocols')">🟡 Medium</span>
+      </div>
+
+      <div class="qa-item" data-diff="hard" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q1</div><div class="qa-q-text">What is CXL (Compute Express Link)? Explain device types.</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-hard">Hard</span><span class="badge-company">Keysight</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <p>CXL is an <strong>open industry-standard, cache-coherent interconnect protocol</strong> built on top of PCIe's physical layer. It solves how CPUs and accelerators (GPUs, FPGAs, AI chips) can efficiently share memory with low latency and coherency.</p>
+          <div class="info-box info-teal"><strong>Analogy:</strong> PCIe is a highway for data transport. CXL adds traffic rules (coherency protocols) so devices share memory like teammates, not strangers.</div>
+          <p><strong>3 Sub-protocols:</strong></p>
+          <ul>
+            <li><strong>CXL.io</strong> — Based on PCIe. Device discovery, config, interrupts, DMA. Required for ALL types.</li>
+            <li><strong>CXL.cache</strong> — Device caches host CPU memory. Ensures cache coherency.</li>
+            <li><strong>CXL.mem</strong> — CPU accesses device-attached memory (HBM on FPGA) with byte-granularity.</li>
+          </ul>
+          <table class="s-table" style="margin-top:.8rem;">
+            <thead><tr><th>Type</th><th>Protocols</th><th>Use Case</th><th>Local Memory</th></tr></thead>
+            <tbody>
+              <tr><td>Type 1</td><td>CXL.io + CXL.cache</td><td>Smart NICs, Accelerators</td><td>❌ No</td></tr>
+              <tr><td>Type 2</td><td>CXL.io + CXL.cache + CXL.mem</td><td>GPUs, FPGAs, ASICs</td><td>✅ Yes (DDR/HBM)</td></tr>
+              <tr><td>Type 3</td><td>CXL.io + CXL.mem</td><td>Memory Expanders</td><td>✅ DRAM/NVRAM</td></tr>
+            </tbody>
+          </table>
+          <div class="info-box info-warn"><strong>Interview Trick:</strong> Type 1=cache only, Type 2=cache+mem, Type 3=mem only. CXL.io is ALWAYS required! PCIe latency ~500ns vs CXL ~20–40ns.</div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="hard" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q2</div><div class="qa-q-text">What is InitFC1/FC2 and what happens when credits = ZERO?</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-hard">Hard</span><span class="badge-company">Keysight</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <p><strong>PCIe Flow Control</strong> prevents a transmitter from sending more data than the receiver can buffer.</p>
+          <ul>
+            <li><strong>InitFC1:</strong> Each side advertises available buffer space for Posted (P), Non-Posted (NP), Completions (Cpl).</li>
+            <li><strong>InitFC2:</strong> Response acknowledging InitFC1. Both sides echo credit values. DL_Up state reached.</li>
+            <li><strong>UpdateFC:</strong> Sent periodically to return credits as buffers are consumed.</li>
+          </ul>
+          <p><strong>6 Credit Types:</strong> PHC, PDC (Posted), NPHC, NPDC (Non-Posted), CpHC, CpDC (Completion)</p>
+          <div class="info-box info-red">
+            <strong>⚠️ EXAM TRAP:</strong><br/>
+            Credit = 0 for <strong>Completions</strong> → <strong>INFINITE credits</strong> (endpoints MUST advertise 0)<br/>
+            Credit = 0 for <strong>Posted/Non-Posted</strong> → <strong>STALL!</strong> Transmitter cannot send.
+          </div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="med" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q3</div><div class="qa-q-text">What is Encoding in PCIe? 8b/10b vs 128b/130b?</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-med">Medium</span><span class="badge-company">IBM</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <table class="s-table">
+            <thead><tr><th>Encoding</th><th>Used In</th><th>Overhead</th><th>DC Balance</th></tr></thead>
+            <tbody>
+              <tr><td>8b/10b</td><td>Gen1, Gen2</td><td>25% (20% effective)</td><td>Built-in</td></tr>
+              <tr><td>128b/130b</td><td>Gen3, Gen4, Gen5</td><td>~1.5%</td><td>Via Scrambling</td></tr>
+            </tbody>
+          </table>
+          <ul>
+            <li>DC Balance — prevents baseline wander in AC-coupled links</li>
+            <li>Clock Recovery — guarantees minimum transition density</li>
+            <li>Error Detection — K28.5 comma characters for byte alignment</li>
+            <li>Link Training — TS1/TS2 ordered sets use comma patterns</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="med" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q4</div><div class="qa-q-text">What is Scrambling in PCIe and why is it needed?</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-med">Medium</span><span class="badge-company">Siemens</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <p>Scrambling XORs the data stream with a <strong>pseudo-random binary sequence (PRBS)</strong> before transmission.</p>
+          <ul>
+            <li><strong>EMI Reduction:</strong> Spreads energy across frequencies, reducing EMI peaks</li>
+            <li><strong>DC Balance:</strong> For 128b/130b (Gen3+), replaces the role 8b/10b played in Gen1/2</li>
+            <li><strong>Clock Recovery:</strong> Regular transitions help CDR circuits at the receiver</li>
+            <li><strong>Better BER:</strong> Spreading spectrum improves signal integrity</li>
+          </ul>
+          <div class="info-box info-teal"><strong>Implementation:</strong> PRBS-7 or PRBS-23 sequences via LFSR. TX and RX reset LFSRs simultaneously using sync markers.</div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="hard" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q5</div><div class="qa-q-text">PCIe Gen5 vs Gen6 — Data rates, link widths, key differences?</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-hard">Hard</span><span class="badge-company">Siemens</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <table class="s-table">
+            <thead><tr><th>Feature</th><th>Gen5</th><th>Gen6</th></tr></thead>
+            <tbody>
+              <tr><td>Speed/Lane</td><td>32 GT/s</td><td>64 GT/s</td></tr>
+              <tr><td>Signaling</td><td>NRZ</td><td>PAM4 (4 voltage levels)</td></tr>
+              <tr><td>Encoding</td><td>128b/130b</td><td>FLIT mode (256-byte container)</td></tr>
+              <tr><td>FEC</td><td>Optional</td><td>Mandatory</td></tr>
+              <tr><td>Retimer</td><td>Optional</td><td>Required for long traces</td></tr>
+              <tr><td>BW (x16)</td><td>~64 GB/s</td><td>~128 GB/s</td></tr>
+            </tbody>
+          </table>
+          <div class="info-box info-warn"><strong>Key Insight:</strong> Gen5→Gen6 is more architectural, not just doubling speed. FLIT mode packages TLPs differently — no more TLP/DLLP distinction inside flit.</div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="med" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q6</div><div class="qa-q-text">What is PCIe Bifurcation?</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-med">Medium</span><span class="badge-company">IBM</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <p>PCIe Bifurcation splits a single physical PCIe slot into multiple independent links.</p>
+          <ul>
+            <li>x16 → 2× x8 (most common for dual NVMe)</li>
+            <li>x16 → 4× x4 (quad NVMe)</li>
+            <li>x16 → 1× x8 + 2× x4 (mixed)</li>
+          </ul>
+          <div class="info-box info-teal"><strong>Use Case:</strong> M.2 NVMe SSDs in a PCIe x16 slot. Configured in BIOS/UEFI or via PCIe switches.</div>
+        </div></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ════ PAGE: TIMING ════ -->
+  <div class="page" id="page-timing">
+    <section>
+      <div class="sec-title">⏱ Timing Analysis Questions</div>
+
+      <div class="qa-item" data-diff="hard" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q7</div><div class="qa-q-text">Explain Setup and Hold Time Violations and how to resolve them.</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-hard">Hard</span><span class="badge-company">Siemens</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <div class="info-box info-red"><strong>Metastability:</strong> Violating setup/hold causes output to be neither 0 nor 1 — it can oscillate unpredictably!</div>
+          <p><strong>Setup Time (Ts):</strong> Data must be stable BEFORE clock edge by at least Ts.</p>
+          <div class="formula-box">Tclk &gt; Tcq + Tcomb + Tsetup + Tskew<br/><small>Slack = Tclk − (Tcq + Tcomb + Tsetup + Tskew)</small></div>
+          <p><strong>Hold Time (Th):</strong> Data must remain stable AFTER clock edge for at least Th.</p>
+          <div class="formula-box">Tcq + Tcomb &gt; Thold + Tskew<br/><small>Slack = Tcq + Tcomb − Thold − Tskew</small></div>
+          <div class="g2" style="gap:.8rem;margin-top:.8rem;">
+            <div class="info-box info-warn">
+              <strong>Fix Setup Violation:</strong><br/>
+              • Reduce combinational logic depth<br/>
+              • Increase clock period<br/>
+              • Insert pipeline registers<br/>
+              • Use faster standard cells<br/>
+              • Reduce clock skew<br/>
+              • Use retiming
+            </div>
+            <div class="info-box info-green">
+              <strong>Fix Hold Violation:</strong><br/>
+              • Add buffer/delay cells on data path<br/>
+              • Use larger cells with more delay<br/>
+              • Increase clock skew intentionally<br/>
+              • Cannot fix by changing frequency!<br/>
+              • Hold is clock-period-independent
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="med" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q8</div><div class="qa-q-text">Fanout Reduction in Digital Circuits — why and how?</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-med">Medium</span><span class="badge-company">IBM</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <p>High fanout means one signal drives many loads → increased capacitance → slower transitions → timing violations.</p>
+          <ul>
+            <li>Use <strong>buffer trees</strong> — insert buffers to split the load</li>
+            <li><strong>Clock tree synthesis (CTS)</strong> for clock signals</li>
+            <li>Use <strong>higher drive strength cells</strong> for critical nets</li>
+            <li><strong>Replicate logic</strong> — duplicate the driving gate for different load groups</li>
+            <li>Set <strong>max_fanout</strong> constraints in synthesis tool</li>
+          </ul>
+          <div class="info-box info-teal"><strong>Rule of Thumb:</strong> Fanout &gt; 16–20 usually needs buffering. Clock nets target fanout of 4–8 per buffer stage in CTS.</div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="med" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q9</div><div class="qa-q-text">Synchronous vs Asynchronous Reset — differences and best practice?</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-med">Medium</span><span class="badge-company">Qualcomm</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <div class="g2" style="gap:.8rem;">
+            <div>
+              <div class="code-label">Synchronous Reset</div>
+              <div class="code-block">always @(posedge clk)
+  if (rst) Q &lt;= 0;
+  else     Q &lt;= D;</div>
+            </div>
+            <div>
+              <div class="code-label">Asynchronous Reset</div>
+              <div class="code-block">always @(posedge clk or posedge rst)
+  if (rst) Q &lt;= 0;
+  else     Q &lt;= D;</div>
+            </div>
+          </div>
+          <table class="s-table" style="margin-top:.8rem;">
+            <thead><tr><th>Feature</th><th>Sync Reset</th><th>Async Reset</th></tr></thead>
+            <tbody>
+              <tr><td>Needs clock</td><td>✅ Yes</td><td>❌ No</td></tr>
+              <tr><td>Glitch immune</td><td>✅ Yes</td><td>❌ No</td></tr>
+              <tr><td>Preferred for</td><td>ASIC</td><td>FPGA primitives</td></tr>
+            </tbody>
+          </table>
+          <div class="code-label" style="margin-top:.8rem;">Industry Best Practice — Reset Synchronizer</div>
+          <div class="code-block">always @(posedge clk or posedge rst_async)
+  if (rst_async) {sync2, sync1} &lt;= 2'b00;
+  else           {sync2, sync1} &lt;= {sync1, 1'b1};
+assign rst_sync = ~sync2;</div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="easy" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q10</div><div class="qa-q-text">Latch vs Flip-Flop — Key Differences?</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-easy">Easy</span><span class="badge-company">All</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <table class="s-table">
+            <thead><tr><th>Feature</th><th>Latch</th><th>Flip-Flop</th></tr></thead>
+            <tbody>
+              <tr><td>Trigger</td><td>Level-sensitive</td><td>Edge-triggered</td></tr>
+              <tr><td>Transparent</td><td>When EN=1</td><td>Only at clock edge</td></tr>
+              <tr><td>Hardware</td><td>Less (smaller)</td><td>More (predictable)</td></tr>
+              <tr><td>Accidental?</td><td>Common RTL bug!</td><td>Intended behavior</td></tr>
+            </tbody>
+          </table>
+          <div class="info-box info-warn"><strong>Accidental Latches:</strong> Caused by incomplete if/case in combinational always blocks. Always check synthesis reports!</div>
+        </div></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ════ PAGE: FIFO & CDC ════ -->
+  <div class="page" id="page-fifo">
+    <section>
+      <div class="sec-title">📦 FIFO Design & Clock Domain Crossing</div>
+
+      <div class="qa-item" data-diff="hard" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q11</div><div class="qa-q-text">FIFO Depth Calculation — Formula & Examples (Synopsys Interview)</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-hard">Hard</span><span class="badge-company">Synopsys</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <div class="formula-box">FIFO Depth = Write_words − Read_words during burst window</div>
+          <p><strong>Example 1:</strong> Write=200MHz, Read=100MHz, burst=100 cycles</p>
+          <div class="info-box info-teal">Words written = 100 | Words read = 50 | <strong>Depth = 50 words</strong></div>
+          <p><strong>Example 2 (Tricky — Synopsys):</strong> Write=80 bits/100 clk, Read=8 bits/10 clk</p>
+          <div class="info-box info-warn">Rates are EQUAL (0.8 bits/clk)! But worst case: all 80 bits arrive in first clock → <strong>FIFO = 80 bits = 10 bytes</strong></div>
+          <p><strong>Example 3:</strong> Wr=400MHz, Rd=100MHz, 20 packets × 8 bytes</p>
+          <div class="info-box info-green">Write burst = 160 bytes | Read in 50ns = 5 bytes | <strong>Depth = 155 bytes ≈ 160</strong></div>
+          <div class="info-box info-teal"><strong>Always:</strong> Round up to next power of 2. Add 2–3 extra entries for async FIFO gray-code sync latency.</div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="hard" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q12</div><div class="qa-q-text">Sync FIFO vs Async FIFO — Differences & Verilog Code</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-hard">Hard</span><span class="badge-company">All</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <table class="s-table">
+            <thead><tr><th>Feature</th><th>Sync FIFO</th><th>Async FIFO</th></tr></thead>
+            <tbody>
+              <tr><td>Clock domains</td><td>Single</td><td>Two independent</td></tr>
+              <tr><td>Full/Empty</td><td>Binary counter subtraction</td><td>Gray code comparison</td></tr>
+              <tr><td>Pointer type</td><td>Binary</td><td>Gray code ONLY!</td></tr>
+              <tr><td>Synchronizer</td><td>Not needed</td><td>2-FF sync on pointers</td></tr>
+            </tbody>
+          </table>
+          <div class="code-label" style="margin-top:.8rem;">Sync FIFO — Core Logic</div>
+          <div class="code-block">module sync_fifo #(parameter DEPTH=16, WIDTH=8) (
+  input clk, rst, wr_en, rd_en,
+  input  [WIDTH-1:0] din,
+  output reg [WIDTH-1:0] dout,
+  output full, empty
+);
+  reg [WIDTH-1:0] mem [0:DEPTH-1];
+  reg [$clog2(DEPTH):0] wr_ptr, rd_ptr;
+  assign full  = (wr_ptr - rd_ptr) == DEPTH;
+  assign empty = (wr_ptr == rd_ptr);
+  always @(posedge clk or posedge rst) begin
+    if (rst) begin wr_ptr &lt;= 0; rd_ptr &lt;= 0; end
+    else begin
+      if (wr_en && !full)  begin mem[wr_ptr[3:0]] &lt;= din;  wr_ptr &lt;= wr_ptr+1; end
+      if (rd_en && !empty) begin dout &lt;= mem[rd_ptr[3:0]]; rd_ptr &lt;= rd_ptr+1; end
+    end
+  end
+endmodule</div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="hard" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q13</div><div class="qa-q-text">Clock Domain Crossing (CDC) — Types & Techniques</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-hard">Hard</span><span class="badge-company">Siemens</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <p>CDC occurs when a signal from clk_A is sampled in clk_B with no fixed timing relationship → <strong>Metastability risk!</strong></p>
+          <table class="s-table">
+            <thead><tr><th>CDC Type</th><th>Solution</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Single-bit control</td><td>2-FF Synchronizer</td><td>Most common. 3-FF for &gt;1GHz</td></tr>
+              <tr><td>Multi-bit data bus</td><td>FIFO + Gray pointers / Handshake</td><td>NEVER use 2-FF on bus directly!</td></tr>
+              <tr><td>Short pulse</td><td>Toggle Synchronizer</td><td>Min spacing = 2× dest clock periods</td></tr>
+              <tr><td>Gray-coded counter</td><td>2-FF sync (safe)</td><td>Only 1 bit changes per transition</td></tr>
+            </tbody>
+          </table>
+          <div class="code-label" style="margin-top:.8rem;">2-FF Synchronizer</div>
+          <div class="code-block">always @(posedge clk_b or posedge rst)
+  if (rst) {sync2, sync1} &lt;= 2'b00;
+  else     {sync2, sync1} &lt;= {sync1, signal_from_clk_a};
+// sync2 is the safe synchronized output</div>
+          <div class="info-box info-teal"><strong>Rule:</strong> Can lose samples → open-loop (2-FF). Every sample matters → closed-loop (handshake/FIFO).</div>
+        </div></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ════ PAGE: FSM ════ -->
+  <div class="page" id="page-fsm">
+    <section>
+      <div class="sec-title">🔄 FSM Design Questions</div>
+
+      <div class="qa-item" data-diff="hard" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q14</div><div class="qa-q-text">Design Pattern Detector for '1010' — FSM, State Table & Verilog</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-hard">Hard</span><span class="badge-company">All</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <p><strong>States (Overlapping):</strong> S0=IDLE, S1=Got'1', S2=Got'10', S3=Got'101', S4=GOT'1010'</p>
+          <table class="s-table">
+            <thead><tr><th>State</th><th>Input=0</th><th>Input=1</th><th>Output</th></tr></thead>
+            <tbody>
+              <tr><td>S0</td><td>S0</td><td>S1</td><td>0</td></tr>
+              <tr><td>S1</td><td>S2</td><td>S1</td><td>0</td></tr>
+              <tr><td>S2</td><td>S0</td><td>S3</td><td>0</td></tr>
+              <tr><td>S3</td><td>S4</td><td>S1</td><td>0</td></tr>
+              <tr><td>S4</td><td>S2</td><td>S1</td><td>1 (overlap)</td></tr>
+            </tbody>
+          </table>
+          <div class="code-label" style="margin-top:.8rem;">Moore FSM — Verilog RTL</div>
+          <div class="code-block">module pattern_1010 (input clk, rst_n, din, output reg detect);
+  localparam S0=0, S1=1, S2=2, S3=3, S4=4;
+  reg [2:0] state, nxt;
+  always @(*) begin
+    case (state)
+      S0: nxt = din ? S1 : S0;
+      S1: nxt = din ? S1 : S2;
+      S2: nxt = din ? S3 : S0;
+      S3: nxt = din ? S1 : S4;
+      S4: nxt = din ? S1 : S2;
+      default: nxt = S0;
+    endcase
+  end
+  always @(posedge clk or negedge rst_n)
+    if (!rst_n) state &lt;= S0;
+    else        state &lt;= nxt;
+  always @(*) detect = (state == S4);
+endmodule</div>
+          <div class="info-box info-warn"><strong>Non-Overlapping:</strong> At S4, always go to S0: <code>S4: nxt = S0;</code></div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="med" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q15</div><div class="qa-q-text">Moore vs Mealy FSM — Differences & Code</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-med">Medium</span><span class="badge-company">Qualcomm</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <table class="s-table">
+            <thead><tr><th>Feature</th><th>Moore FSM</th><th>Mealy FSM</th></tr></thead>
+            <tbody>
+              <tr><td>Output depends on</td><td>State only</td><td>State + Input</td></tr>
+              <tr><td>Glitch risk</td><td>Low (safer)</td><td>Higher</td></tr>
+              <tr><td>States needed</td><td>More</td><td>Fewer</td></tr>
+              <tr><td>Response speed</td><td>1 cycle later</td><td>Faster (same cycle)</td></tr>
+            </tbody>
+          </table>
+          <div class="info-box info-teal"><strong>Interview Answer:</strong> Moore=glitch-free (synchronized). Mealy=faster response (1 cycle earlier). Mealy has fewer states, Moore has cleaner outputs.</div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="med" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q16</div><div class="qa-q-text">Design a Vending Machine FSM (Candy=4rs, Coke=2rs)</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-med">Medium</span><span class="badge-company">All</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <div class="code-block">module vending_machine (
+  input clk, rst, coin1, coin2, sel_candy, sel_coke,
+  output reg give_candy, give_coke, give_change
+);
+  reg [2:0] balance;
+  always @(posedge clk or posedge rst) begin
+    give_candy &lt;= 0; give_coke &lt;= 0; give_change &lt;= 0;
+    if (rst) balance &lt;= 0;
+    else begin
+      if (coin1) balance &lt;= balance + 1;
+      if (coin2) balance &lt;= balance + 2;
+    end
+    if (sel_coke  && balance >= 2) begin give_coke  &lt;= 1; balance &lt;= balance - 2; end
+    if (sel_candy && balance >= 4) begin give_candy &lt;= 1; balance &lt;= balance - 4; end
+  end
+endmodule</div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="hard" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q17</div><div class="qa-q-text">Implement FSM using RAM — concept and Verilog</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-hard">Hard</span><span class="badge-company">Synopsys</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <div class="info-box info-teal"><strong>RAM Structure:</strong> Address = {current_state, input} | Data out = {next_state, output}</div>
+          <div class="code-block">module ram_fsm (input clk, rst, din, output reg detect);
+  reg [3:0] mem [0:15];
+  reg [2:0] state;
+  wire [3:0] addr  = {state, din};
+  wire [3:0] rdata = mem[addr];
+  always @(posedge clk or posedge rst)
+    if (rst) state &lt;= 3'd0;
+    else     state &lt;= rdata[3:1];
+  assign detect = rdata[0];
+endmodule</div>
+          <div class="info-box info-green"><strong>Advantage:</strong> Change behavior by just changing RAM contents — no recompilation needed! Used in configurable protocol engines.</div>
+        </div></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ════ PAGE: VERILOG/SV ════ -->
+  <div class="page" id="page-verilog">
+    <section>
+      <div class="sec-title">💻 Verilog / SystemVerilog Questions</div>
+
+      <div class="qa-item" data-diff="hard" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q18</div><div class="qa-q-text">Blocking vs Non-Blocking — Deep Dive (Synopsys spent 30 min on this!)</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-hard">Hard</span><span class="badge-company">Synopsys</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <div class="g2" style="gap:.8rem;">
+            <div class="info-box info-teal"><strong>Blocking (=):</strong> Executes sequentially. Use for COMBINATIONAL logic.</div>
+            <div class="info-box info-green"><strong>Non-Blocking (<=):</strong> All RHS evaluated simultaneously. Use for SEQUENTIAL logic.</div>
+          </div>
+          <div class="code-label">Swap — Non-Blocking (CORRECT ✅)</div>
+          <div class="code-block">always @(posedge clk) begin
+  a &lt;= b;  // RHS sampled at same time
+  b &lt;= a;  // TRUE SWAP — a=old_b, b=old_a
+end</div>
+          <div class="code-label">Swap — Blocking (WRONG ❌)</div>
+          <div class="code-block">always @(posedge clk) begin
+  a = b;  // a immediately becomes b
+  b = a;  // b becomes new a (which is b!) — BOTH = b
+end</div>
+          <div class="code-label">3-Stage Shift Register — Non-Blocking</div>
+          <div class="code-block">always @(posedge clk) begin
+  a &lt;= in;  // stage 1
+  b &lt;= a;   // stage 2 — uses OLD a ✅
+  c &lt;= b;   // stage 3 — uses OLD b ✅
+end</div>
+          <div class="info-box info-red"><strong>Golden Rule:</strong> Blocking (=) → always @(*). Non-Blocking (<=) → always @(posedge clk). NEVER mix in same block!</div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="med" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q19</div><div class="qa-q-text">wire vs reg vs logic vs bit in Verilog/SystemVerilog</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-med">Medium</span><span class="badge-company">All</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <table class="s-table">
+            <thead><tr><th>Type</th><th>Language</th><th>States</th><th>Driven by</th><th>Use Case</th></tr></thead>
+            <tbody>
+              <tr><td><code>wire</code></td><td>Verilog</td><td>4-state</td><td>assign / port</td><td>Structural connections</td></tr>
+              <tr><td><code>reg</code></td><td>Verilog</td><td>4-state</td><td>always/initial</td><td>Procedural (≠ always a register!)</td></tr>
+              <tr><td><code>logic</code></td><td>SystemVerilog</td><td>4-state</td><td>assign OR always</td><td>Replaces wire+reg in SV ✅</td></tr>
+              <tr><td><code>bit</code></td><td>SystemVerilog</td><td>2-state (0/1)</td><td>any</td><td>Testbench only (no X/Z)</td></tr>
+            </tbody>
+          </table>
+          <div class="info-box info-teal"><strong>Best Practice:</strong> In SystemVerilog, use <code>logic</code> for almost everything. Use <code>bit</code> only in testbenches.</div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="med" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q20</div><div class="qa-q-text">Task vs Function in Verilog/SystemVerilog</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-med">Medium</span><span class="badge-company">IBM</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <table class="s-table">
+            <thead><tr><th>Feature</th><th>Function</th><th>Task</th></tr></thead>
+            <tbody>
+              <tr><td>Returns value</td><td>✅ Yes</td><td>❌ No (uses output ports)</td></tr>
+              <tr><td>Time delays (#,@)</td><td>❌ Not allowed</td><td>✅ Allowed</td></tr>
+              <tr><td>Call tasks</td><td>❌ No</td><td>✅ Yes</td></tr>
+              <tr><td>Sim time</td><td>Zero time</td><td>Can consume time</td></tr>
+            </tbody>
+          </table>
+          <div class="code-block">// Function — returns value
+function [7:0] add_bytes;
+  input [7:0] a, b;
+  add_bytes = a + b;
+endfunction
+
+// Task — can have delays
+task read_mem;
+  input  [7:0] addr;
+  output [7:0] data;
+  begin
+    #10;
+    data = mem[addr];
+  end
+endtask</div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="med" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q21</div><div class="qa-q-text">AXI Valid-Ready Handshake Mechanism</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-med">Medium</span><span class="badge-company">Qualcomm</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <ul>
+            <li><strong>VALID</strong> (producer): Asserted when data/address/control is valid and ready to transfer</li>
+            <li><strong>READY</strong> (consumer): Asserted when consumer can accept data</li>
+            <li><strong>Transfer</strong> happens ONLY when BOTH valid AND ready are HIGH on same clock edge</li>
+            <li>Producer MUST NOT de-assert VALID after asserting it until transfer happens (AXI sticky rule!)</li>
+            <li>READY can be asserted independently of VALID</li>
+          </ul>
+          <div class="info-box info-teal">
+            <strong>Timing:</strong><br/>
+            Cycle 1: VALID=1, READY=0 → No transfer (consumer busy)<br/>
+            Cycle 2: VALID=1, READY=1 → ✅ Transfer occurs!<br/>
+            Cycle 3: VALID=0, READY=1 → No transfer (nothing to send)
+          </div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="med" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q22</div><div class="qa-q-text">Detect One-Hot Encoding from a 32-bit Integer</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-med">Medium</span><span class="badge-company">All</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <div class="formula-box">N is one-hot if: N ≠ 0 AND (N & (N−1)) == 0</div>
+          <div class="code-block">// N=0b1000 → N-1=0b0111 → N&(N-1)=0 ✅ One-hot!
+function automatic is_one_hot;
+  input [31:0] data;
+  begin
+    is_one_hot = (data != 0) && ((data & (data - 1)) == 0);
+  end
+endfunction</div>
+        </div></div>
+      </div>
+
+      <div class="qa-item" data-diff="easy" onclick="toggleQA(this)">
+        <div class="qa-q">
+          <div class="qa-q-left"><div class="qa-num">Q23</div><div class="qa-q-text">What is a Glitch? How does it propagate and how to fix it?</div></div>
+          <div class="qa-meta"><span class="qa-badge badge-easy">Easy</span><span class="badge-company">Qualcomm</span><span class="qa-chevron">▼</span></div>
+        </div>
+        <div class="qa-body"><div class="qa-body-inner">
+          <p>A glitch is a <strong>momentary incorrect output</strong> in combinational logic caused by different propagation delays.</p>
+          <table class="s-table">
+            <thead><tr><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>Static-1 Hazard</td><td>Output should stay 1 but momentarily glitches to 0</td></tr>
+              <tr><td>Static-0 Hazard</td><td>Output should stay 0 but momentarily glitches to 1</td></tr>
+              <tr><td>Dynamic Hazard</td><td>Output changes more than once when it should change only once</td></tr>
+            </tbody>
+          </table>
+          <ul style="margin-top:.8rem;">
+            <li>Add consensus term (redundant cover in K-map)</li>
+            <li>Register outputs — flip-flop filters glitches</li>
+            <li>Use Gray code in counter sequences (only 1 bit changes)</li>
+            <li>Balance paths in physical design (minimize skew)</li>
+          </ul>
+        </div></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ════ PAGE: CHEAT SHEET ════ -->
+  <div class="page" id="page-cheatsheet">
+    <section>
+      <div class="sec-title">📋 Quick Reference Cheat Sheet</div>
+      <div class="cheat-grid">
+        <div class="cheat-card">
+          <div class="cheat-title">⚡ PCIe Data Rates</div>
+          <div class="cheat-item"><span class="cheat-key">Gen1</span><span class="cheat-val">2.5 GT/s · 8b/10b</span></div>
+          <div class="cheat-item"><span class="cheat-key">Gen2</span><span class="cheat-val">5 GT/s · 8b/10b</span></div>
+          <div class="cheat-item"><span class="cheat-key">Gen3</span><span class="cheat-val">8 GT/s · 128b/130b</span></div>
+          <div class="cheat-item"><span class="cheat-key">Gen4</span><span class="cheat-val">16 GT/s · 128b/130b</span></div>
+          <div class="cheat-item"><span class="cheat-key">Gen5</span><span class="cheat-val">32 GT/s · NRZ</span></div>
+          <div class="cheat-item"><span class="cheat-key">Gen6</span><span class="cheat-val">64 GT/s · PAM4+FLIT</span></div>
+          <div class="cheat-item"><span class="cheat-key">Gen5 x16 BW</span><span class="cheat-val">~63 GB/s</span></div>
+        </div>
+        <div class="cheat-card">
+          <div class="cheat-title">🔌 CXL Types</div>
+          <div class="cheat-item"><span class="cheat-key">Type 1</span><span class="cheat-val">io + cache (no mem)</span></div>
+          <div class="cheat-item"><span class="cheat-key">Type 2</span><span class="cheat-val">io + cache + mem</span></div>
+          <div class="cheat-item"><span class="cheat-key">Type 3</span><span class="cheat-val">io + mem only</span></div>
+          <div class="cheat-item"><span class="cheat-key">CXL.io</span><span class="cheat-val">ALL types required</span></div>
+          <div class="cheat-item"><span class="cheat-key">CXL latency</span><span class="cheat-val">~20–40ns vs PCIe ~500ns</span></div>
+        </div>
+        <div class="cheat-card">
+          <div class="cheat-title">💳 Flow Control Credits</div>
+          <div class="cheat-item"><span class="cheat-key">InitFC=0 for Cpl</span><span class="cheat-val">INFINITE credits ✅</span></div>
+          <div class="cheat-item"><span class="cheat-key">InitFC=0 for P/NP</span><span class="cheat-val">STALL ❌</span></div>
+          <div class="cheat-item"><span class="cheat-key">8b/10b overhead</span><span class="cheat-val">20%</span></div>
+          <div class="cheat-item"><span class="cheat-key">128b/130b overhead</span><span class="cheat-val">~1.5%</span></div>
+        </div>
+        <div class="cheat-card">
+          <div class="cheat-title">⏱ Timing Fixes</div>
+          <div class="cheat-item"><span class="cheat-key">Setup Fix</span><span class="cheat-val">Reduce logic / Pipeline</span></div>
+          <div class="cheat-item"><span class="cheat-key">Hold Fix</span><span class="cheat-val">Add delay buffers</span></div>
+          <div class="cheat-item"><span class="cheat-key">Hold & frequency</span><span class="cheat-val">Independent!</span></div>
+          <div class="cheat-item"><span class="cheat-key">Reset best practice</span><span class="cheat-val">Async assert, Sync de-assert</span></div>
+        </div>
+        <div class="cheat-card">
+          <div class="cheat-title">📦 FIFO Rules</div>
+          <div class="cheat-item"><span class="cheat-key">Depth formula</span><span class="cheat-val">Wr_words − Rd_words</span></div>
+          <div class="cheat-item"><span class="cheat-key">Async FIFO pointer</span><span class="cheat-val">Gray code ONLY!</span></div>
+          <div class="cheat-item"><span class="cheat-key">Full detection</span><span class="cheat-val">Upper bit differs</span></div>
+          <div class="cheat-item"><span class="cheat-key">Empty detection</span><span class="cheat-val">All bits same</span></div>
+          <div class="cheat-item"><span class="cheat-key">Safety margin</span><span class="cheat-val">Round up to power of 2</span></div>
+        </div>
+        <div class="cheat-card">
+          <div class="cheat-title">🔀 CDC Techniques</div>
+          <div class="cheat-item"><span class="cheat-key">Single-bit</span><span class="cheat-val">2-FF synchronizer</span></div>
+          <div class="cheat-item"><span class="cheat-key">Multi-bit bus</span><span class="cheat-val">FIFO / Handshake</span></div>
+          <div class="cheat-item"><span class="cheat-key">Short pulse</span><span class="cheat-val">Toggle synchronizer</span></div>
+          <div class="cheat-item"><span class="cheat-key">2-FF vs 3-FF</span><span class="cheat-val">3-FF for &gt;1GHz</span></div>
+          <div class="cheat-item"><span class="cheat-key">Gray code counter</span><span class="cheat-val">Safe for 2-FF sync</span></div>
+        </div>
+        <div class="cheat-card">
+          <div class="cheat-title">💻 Verilog Rules</div>
+          <div class="cheat-item"><span class="cheat-key">Blocking (=)</span><span class="cheat-val">Combinational blocks</span></div>
+          <div class="cheat-item"><span class="cheat-key">Non-blocking (<=)</span><span class="cheat-val">Sequential blocks</span></div>
+          <div class="cheat-item"><span class="cheat-key">logic (SV)</span><span class="cheat-val">Replaces wire+reg</span></div>
+          <div class="cheat-item"><span class="cheat-key">bit (SV)</span><span class="cheat-val">Testbench only (2-state)</span></div>
+          <div class="cheat-item"><span class="cheat-key">One-hot check</span><span class="cheat-val">N≠0 && (N&N-1)==0</span></div>
+        </div>
+        <div class="cheat-card">
+          <div class="cheat-title">🔄 FSM Quick Facts</div>
+          <div class="cheat-item"><span class="cheat-key">Moore output</span><span class="cheat-val">State only (glitch-free)</span></div>
+          <div class="cheat-item"><span class="cheat-key">Mealy output</span><span class="cheat-val">State + Input (faster)</span></div>
+          <div class="cheat-item"><span class="cheat-key">Mealy states</span><span class="cheat-val">Fewer than Moore</span></div>
+          <div class="cheat-item"><span class="cheat-key">RAM FSM benefit</span><span class="cheat-val">No recompile needed</span></div>
+          <div class="cheat-item"><span class="cheat-key">1010 detect states</span><span class="cheat-val">S0→S1→S2→S3→S4</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ════ PAGE: TRACKER ════ -->
+  <div class="page" id="page-tracker">
+    <section>
+      <div class="sec-title">✅ Study Progress Tracker</div>
+      <div class="card" style="margin-bottom:1.2rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:1.5rem;font-weight:900;color:var(--s-teal-l);" id="tracker-count">0 / 30 Completed</div>
+            <div style="font-size:.8rem;color:var(--s-muted);margin-top:.3rem;">Click any topic below to mark as studied</div>
+          </div>
+          <div style="display:flex;gap:.8rem;">
+            <button onclick="markAll(true)"  style="background:var(--s-teal);color:#fff;border:none;border-radius:8px;padding:.5rem 1rem;cursor:pointer;font-size:.8rem;font-weight:700;">✅ Mark All Done</button>
+            <button onclick="markAll(false)" style="background:var(--s-card2);color:var(--s-muted);border:1px solid var(--s-border);border-radius:8px;padding:.5rem 1rem;cursor:pointer;font-size:.8rem;font-weight:700;">🔄 Reset All</button>
+          </div>
+        </div>
+        <div style="margin-top:1rem;">
+          <div class="skill-track"><div class="skill-fill" id="tracker-bar" style="width:0%;transition:width .5s ease;"></div></div>
+        </div>
+      </div>
+      <div class="progress-grid" id="tracker-grid"></div>
+    </section>
+  </div>
+
+</div><!-- /main -->
+
+<footer>
+  <span>Siemens</span> Digital Design Interview Preparation Guide &nbsp;·&nbsp;
+  Topics: CXL · PCIe · FIFO · CDC · FSM · Verilog · Timing · AXI &nbsp;·&nbsp;
+  Covers: Keysight · IBM · <span>Siemens</span> · Synopsys · Qualcomm
+</footer>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
+<script>
+/* ════════════════════════════════════════
+   PASSWORD PROTECTION
+════════════════════════════════════════ */
+(function () {
+  const CORRECT_PASSWORD = "coolsky";
+  const SESSION_KEY      = "ddiq_auth";
+  const MAX_ATTEMPTS     = 5;
+  const LOCKOUT_MINUTES  = 2;
+  const LOCKOUT_KEY      = "ddiq_lockout";
+
+  /* Already authenticated this session? */
+  if (sessionStorage.getItem(SESSION_KEY) === "true") {
+    hideLockScreen();
+    return;
+  }
+
+  /* Check lockout on load */
+  checkLockout();
+
+  /* Auto-focus input */
+  window.addEventListener('load', () => {
+    const inp = document.getElementById('lock-input');
+    if (inp) inp.focus();
+  });
+
+  /* Toggle show/hide password */
+  window.toggleEye = function () {
+    const input  = document.getElementById("lock-input");
+    const eyeBtn = document.getElementById("eye-btn");
+    if (input.type === "password") {
+      input.type = "text";
+      eyeBtn.textContent = "🙈";
+    } else {
+      input.type = "password";
+      eyeBtn.textContent = "👁";
+    }
+    input.focus();
+  };
+
+  /* Attempt unlock */
+  window.attemptUnlock = function () {
+    if (isLockedOut()) return;
+
+    const input    = document.getElementById("lock-input");
+    const btn      = document.getElementById("lock-btn");
+    const errorMsg = document.getElementById("lock-error");
+    const card     = document.getElementById("lock-card");
+    const entered  = input.value;
+
+    btn.textContent = "🔓 Verifying...";
+    btn.disabled    = true;
+
+    setTimeout(() => {
+      if (entered === CORRECT_PASSWORD) {
+        /* ✅ Correct */
+        errorMsg.classList.remove("visible");
+        card.classList.add("unlocking");
+        btn.textContent   = "✅ Access Granted!";
+        btn.style.background = "linear-gradient(135deg,#4caf7d,#00c8a0)";
+        localStorage.removeItem(LOCKOUT_KEY);
+        localStorage.removeItem("ddiq_fail_count");
+        setTimeout(() => {
+          sessionStorage.setItem(SESSION_KEY, "true");
+          hideLockScreen();
+        }, 750);
+      } else {
+        /* ❌ Wrong */
+        btn.textContent = "🔓 Unlock Dashboard";
+        btn.disabled    = false;
+        input.classList.add("error");
+        input.value = "";
+        errorMsg.classList.add("visible");
+
+        let fails = parseInt(localStorage.getItem("ddiq_fail_count") || "0") + 1;
+        localStorage.setItem("ddiq_fail_count", fails);
+
+        const attemptsDiv  = document.getElementById("lock-attempts");
+        const attemptCount = document.getElementById("attempt-count");
+        attemptsDiv.style.display = "block";
+        attemptCount.textContent  = fails;
+
+        if (fails >= MAX_ATTEMPTS) {
+          const lockUntil = Date.now() + LOCKOUT_MINUTES * 60 * 1000;
+          localStorage.setItem(LOCKOUT_KEY, lockUntil);
+          localStorage.setItem("ddiq_fail_count", "0");
+          showLockoutMessage();
+        }
+
+        setTimeout(() => input.classList.remove("error"), 500);
+        input.focus();
+      }
+    }, 500);
+  };
+
+  function checkLockout() {
+    if (isLockedOut()) showLockoutMessage();
+  }
+
+  function isLockedOut() {
+    const lockUntil = parseInt(localStorage.getItem(LOCKOUT_KEY) || "0");
+    return Date.now() < lockUntil;
+  }
+
+  function showLockoutMessage() {
+    const btn      = document.getElementById("lock-btn");
+    const input    = document.getElementById("lock-input");
+    const errorMsg = document.getElementById("lock-error");
+    input.disabled    = true;
+    btn.disabled      = true;
+    btn.style.opacity = "0.5";
+    btn.textContent   = "🔒 Temporarily Locked";
+
+    const interval = setInterval(() => {
+      const lockUntil = parseInt(localStorage.getItem(LOCKOUT_KEY) || "0");
+      const remaining = Math.max(0, Math.ceil((lockUntil - Date.now()) / 1000));
+      const mins      = Math.floor(remaining / 60);
+      const secs      = remaining % 60;
+      errorMsg.classList.add("visible");
+      errorMsg.textContent = `Too many attempts. Try again in ${mins}:${secs.toString().padStart(2,"0")}`;
+
+      if (remaining <= 0) {
+        clearInterval(interval);
+        input.disabled    = false;
+        btn.disabled      = false;
+        btn.style.opacity = "1";
+        btn.textContent   = "🔓 Unlock Dashboard";
+        errorMsg.textContent = "";
+        errorMsg.classList.remove("visible");
+        input.focus();
+      }
+    }, 1000);
+  }
+
+  function hideLockScreen() {
+    const ls = document.getElementById("lock-screen");
+    if (!ls) return;
+    ls.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+    ls.style.opacity    = "0";
+    ls.style.transform  = "scale(1.04)";
+    setTimeout(() => ls.remove(), 550);
+  }
+})();
+
+/* Lock dashboard manually (nav button) */
+window.lockDashboard = function () {
+  sessionStorage.removeItem("ddiq_auth");
+  location.reload();
+};
+
+/* ════════════════════════════════════════
+   PAGE NAVIGATION
+════════════════════════════════════════ */
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  animateBars();
+}
+
+/* ════════════════════════════════════════
+   ACCORDION Q&A
+════════════════════════════════════════ */
+function toggleQA(item) {
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.qa-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+/* ════════════════════════════════════════
+   FILTER Q&A
+════════════════════════════════════════ */
+function filterQA(chip, diff, page) {
+  document.querySelectorAll(`#page-${page} .filter-chip`).forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  document.querySelectorAll(`#page-${page} .qa-item`).forEach(item => {
+    item.style.display = (diff === 'all' || item.dataset.diff === diff) ? '' : 'none';
+  });
+}
+
+/* ════════════════════════════════════════
+   SKILL BARS ANIMATION
+════════════════════════════════════════ */
+function animateBars() {
+  setTimeout(() => {
+    document.querySelectorAll('.skill-fill[data-width]').forEach(bar => {
+      bar.style.width = bar.dataset.width + '%';
+    });
+    document.querySelectorAll('.t-fill[data-w]').forEach(bar => {
+      bar.style.width = bar.dataset.w + '%';
+    });
+  }, 120);
+}
+animateBars();
+
+/* ════════════════════════════════════════
+   SEARCH
+════════════════════════════════════════ */
+function searchTopics(query) {
+  if (!query.trim()) {
+    document.querySelectorAll('.qa-item').forEach(i => i.style.display = '');
+    return;
+  }
+  const q = query.toLowerCase();
+  document.querySelectorAll('.qa-item').forEach(item => {
+    item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+/* ════════════════════════════════════════
+   PROGRESS TRACKER
+════════════════════════════════════════ */
+const topics = [
+  'CXL Protocol — Types & Protocols',
+  'PCIe Flow Control — InitFC & Credits',
+  'PCIe Encoding — 8b/10b vs 128b/130b',
+  'Scrambling — Purpose & LFSR',
+  'PCIe Gen5 vs Gen6 — Key Differences',
+  'Setup & Hold Time Violations',
+  'Fanout Reduction Techniques',
+  'FIFO Depth Calculation',
+  'FSM Pattern Detector — 1010',
+  'FSM Using RAM',
+  'Sequential vs Combinational Circuits',
+  'PCIe Bifurcation',
+  'Sync FIFO vs Async FIFO',
+  'Clock Domain Crossing (CDC)',
+  'Fast-to-Slow & Slow-to-Fast Pulse',
+  'Synchronous vs Asynchronous Reset',
+  'Latch vs Flip-Flop',
+  'SR Flip-Flop using D Flip-Flop',
+  'AND Gate using MUX',
+  'Blocking vs Non-Blocking — Deep Dive',
+  'AXI Valid-Ready Handshake',
+  'Moore vs Mealy FSM',
+  'Vending Machine FSM Design',
+  'Glitch — Causes & Fixes',
+  'One-Hot Encoding Detection',
+  'wire vs reg vs logic vs bit',
+  'Task vs Function in Verilog/SV',
+  '$display vs $monitor vs $strobe',
+  'FIFO using BRAM',
+  'AXI4 Deep Dive & Bonus Tips',
+];
+
+let done = new Set(JSON.parse(localStorage.getItem('ddiq_done') || '[]'));
+
+function buildTracker() {
+  const grid = document.getElementById('tracker-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  topics.forEach((t, i) => {
+    const div = document.createElement('div');
+    div.className = 'prog-item' + (done.has(i) ? ' done' : '');
+    div.onclick = () => toggleDone(i, div);
+    div.innerHTML = `<div class="prog-check">${done.has(i) ? '✓' : ''}</div><div class="prog-label">${t}</div>`;
+    grid.appendChild(div);
+  });
+  updateProgress();
+}
+
+function toggleDone(i, el) {
+  if (done.has(i)) {
+    done.delete(i);
+    el.classList.remove('done');
+    el.querySelector('.prog-check').textContent = '';
+  } else {
+    done.add(i);
+    el.classList.add('done');
+    el.querySelector('.prog-check').textContent = '✓';
+  }
+  localStorage.setItem('ddiq_done', JSON.stringify([...done]));
+  updateProgress();
+}
+
+function markAll(state) {
+  if (state) topics.forEach((_, i) => done.add(i));
+  else done.clear();
+  localStorage.setItem('ddiq_done', JSON.stringify([...done]));
+  buildTracker();
+}
+
+function updateProgress() {
+  const count = done.size;
+  const total = topics.length;
+  const tc = document.getElementById('tracker-count');
+  const pb = document.getElementById('progress-badge');
+  const tb = document.getElementById('tracker-bar');
+  if (tc) tc.textContent = `${count} / ${total} Completed`;
+  if (pb) pb.textContent = `${count} / ${total}`;
+  if (tb) tb.style.width = (count / total * 100) + '%';
+}
+
+buildTracker();
+</script>
+</body>
+</html>
+</html>
