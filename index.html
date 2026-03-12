@@ -1,733 +1,1354 @@
-<a href="select/mem.html"> mem </a>
-<a href="select/trig.html"> trigger </a>
-<a href="select/vel.html"> veloce </a>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Satyam Kumar Yadav – Project Engineer Dashboard</title>
+  <title>Sky Dashboard — Navigation Hub</title>
   <style>
-    /* ── Reset & Base ── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ══════════════════════════════════════════
+       CSS VARIABLES & RESET
+    ══════════════════════════════════════════ */
     :root {
-      --bg:        #0d1117;
-      --card:      #161b22;
-      --border:    #30363d;
-      --accent:    #58a6ff;
-      --accent2:   #3fb950;
-      --accent3:   #f78166;
-      --accent4:   #d2a8ff;
-      --text:      #e6edf3;
-      --muted:     #8b949e;
-      --tag-bg:    #1f2937;
-      --hover:     #1f6feb33;
-      --radius:    12px;
-      --transition: 0.3s ease;
+      --teal:        #009999;
+      --teal-l:      #00d7be;
+      --teal-d:      #007373;
+      --teal-glow:   rgba(0,153,153,0.22);
+      --dark:        #111416;
+      --dark2:       #181b1e;
+      --card:        #1e2226;
+      --card2:       #242a30;
+      --border:      #2a3038;
+      --border-h:    #009999;
+      --text:        #eef0f2;
+      --muted:       #8a9bb0;
+      --accent-blue: #4da6ff;
+      --accent-pur:  #b46fff;
+      --accent-grn:  #4cdf8a;
+      --accent-org:  #f5a623;
+      --accent-red:  #e05252;
+      --accent-pink: #ff6eb4;
+      --radius:      14px;
+      --shadow:      0 8px 32px rgba(0,0,0,0.45);
+      --glow:        0 0 24px rgba(0,153,153,0.25);
     }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--dark);
       color: var(--text);
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    /* ── Scrollbar ── */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #0d0f11; }
+    ::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 4px; }
 
-    /* ── Header ── */
-    header {
-      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+    /* ══ ANIMATED BACKGROUND GRID ══ */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,153,153,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,153,153,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Radial glow blobs */
+    .bg-blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+      animation: blobFloat 10s ease-in-out infinite;
+    }
+    .blob1 { width: 500px; height: 500px; background: rgba(0,153,153,0.08); top: -100px; left: -100px; animation-delay: 0s; }
+    .blob2 { width: 400px; height: 400px; background: rgba(77,166,255,0.06); bottom: -80px; right: -80px; animation-delay: 4s; }
+    .blob3 { width: 300px; height: 300px; background: rgba(180,111,255,0.05); top: 40%; left: 50%; animation-delay: 7s; }
+
+    @keyframes blobFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      50%      { transform: translate(20px,-20px) scale(1.05); }
+    }
+
+    /* ══ EVERYTHING ABOVE Z-INDEX 0 ══ */
+    nav, .hero, .main, footer, .modal-overlay { position: relative; z-index: 1; }
+
+    /* ══════════════════════════════════════════
+       TOP NAV BAR
+    ══════════════════════════════════════════ */
+    nav {
+      position: sticky; top: 0; z-index: 500;
+      height: 60px;
+      background: rgba(17,20,22,0.92);
+      backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--border);
-      padding: 32px 40px;
-      display: flex;
-      align-items: center;
-      gap: 28px;
-      position: relative;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1.8rem;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.4);
+    }
+
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.7rem;
+      text-decoration: none;
+    }
+    .brand-box {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--teal), var(--teal-l));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 900; color: #fff;
+      box-shadow: 0 0 14px var(--teal-glow);
+    }
+    .brand-text { font-size: 1rem; font-weight: 800; letter-spacing: 2px; color: var(--teal); text-transform: uppercase; }
+    .brand-sub  { font-size: 0.7rem; color: var(--muted); font-weight: 400; letter-spacing: 0; }
+
+    .nav-center {
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .nav-pill {
+      padding: 0.32rem 0.9rem; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 600; cursor: pointer;
+      border: 1px solid transparent; color: var(--muted);
+      background: none; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .nav-pill:hover, .nav-pill.active {
+      background: var(--teal); color: #fff; border-color: var(--teal);
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 0.8rem; }
+
+    .search-wrap {
+      position: relative; display: flex; align-items: center;
+    }
+    .search-wrap .s-icon {
+      position: absolute; left: 0.7rem; font-size: 0.85rem; color: var(--muted);
+    }
+    .nav-search {
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 0.35rem 0.9rem 0.35rem 2rem;
+      color: var(--text); font-size: 0.8rem; outline: none; width: 200px;
+      transition: border-color 0.2s, width 0.3s;
+    }
+    .nav-search:focus { border-color: var(--teal); width: 240px; }
+    .nav-search::placeholder { color: var(--muted); }
+
+    .add-btn {
+      display: flex; align-items: center; gap: 0.4rem;
+      background: linear-gradient(135deg, var(--teal), var(--teal-l));
+      color: #fff; border: none; border-radius: 20px;
+      padding: 0.38rem 1rem; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px;
+      box-shadow: 0 3px 14px var(--teal-glow);
+    }
+    .add-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 20px rgba(0,153,153,0.4); }
+    .add-btn:active { transform: translateY(0); }
+
+    .view-toggle {
+      display: flex; gap: 0.3rem;
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 0.2rem;
+    }
+    .vt-btn {
+      width: 28px; height: 28px; border-radius: 16px; border: none;
+      background: none; color: var(--muted); cursor: pointer;
+      font-size: 0.85rem; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .vt-btn.active { background: var(--teal); color: #fff; }
+
+    /* ══════════════════════════════════════════
+       HERO SECTION
+    ══════════════════════════════════════════ */
+    .hero {
+      padding: 3rem 2rem 2rem;
+      background: linear-gradient(160deg, #0b1416 0%, #0d1f20 50%, #0b1416 100%);
+      border-bottom: 1px solid var(--border);
       overflow: hidden;
     }
-    header::before {
-      content: '';
-      position: absolute;
-      top: -60px; right: -60px;
-      width: 220px; height: 220px;
-      background: radial-gradient(circle, #58a6ff22 0%, transparent 70%);
-      border-radius: 50%;
+    .hero-inner {
+      max-width: 1300px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 2rem;
     }
-    .avatar {
-      width: 80px; height: 80px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent4));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2rem; font-weight: 700; color: #fff;
-      flex-shrink: 0;
-      box-shadow: 0 0 0 3px var(--border), 0 0 20px #58a6ff44;
+    .hero-left h1 {
+      font-size: 2.2rem; font-weight: 900; line-height: 1.15;
+      letter-spacing: -0.5px;
     }
-    .header-info h1 { font-size: 1.8rem; font-weight: 700; color: var(--text); }
-    .header-info .role {
-      color: var(--accent); font-size: 1rem; font-weight: 500; margin: 4px 0 10px;
-    }
-    .contact-links { display: flex; flex-wrap: wrap; gap: 10px; }
-    .contact-links a {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--tag-bg); border: 1px solid var(--border);
-      color: var(--muted); text-decoration: none;
-      padding: 4px 12px; border-radius: 20px; font-size: 0.78rem;
-      transition: var(--transition);
-    }
-    .contact-links a:hover { border-color: var(--accent); color: var(--accent); }
-
-    /* ── Nav Tabs ── */
-    nav {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      padding: 0 40px;
-      display: flex; gap: 0;
-      overflow-x: auto;
-    }
-    .tab-btn {
-      background: none; border: none; cursor: pointer;
-      color: var(--muted); padding: 14px 22px;
-      font-size: 0.88rem; font-weight: 500;
-      border-bottom: 2px solid transparent;
-      transition: var(--transition); white-space: nowrap;
-    }
-    .tab-btn:hover { color: var(--text); }
-    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-    /* ── Main Layout ── */
-    main { padding: 32px 40px; max-width: 1200px; margin: 0 auto; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; animation: fadeIn 0.35s ease; }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
-
-    /* ── Section Title ── */
-    .section-title {
-      font-size: 1.1rem; font-weight: 600;
-      color: var(--muted); text-transform: uppercase;
-      letter-spacing: 0.08em; margin-bottom: 20px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .section-title::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
+    .hero-left h1 .hl { color: var(--teal-l); }
+    .hero-left p {
+      color: var(--muted); margin-top: 0.6rem;
+      font-size: 0.88rem; line-height: 1.7; max-width: 500px;
     }
 
-    /* ── Cards ── */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 22px 26px;
-      transition: var(--transition);
-    }
-    .card:hover { border-color: var(--accent); box-shadow: 0 0 16px #58a6ff18; }
-
-    /* ── Grid ── */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
-    @media(max-width:768px) {
-      .grid-2, .grid-3 { grid-template-columns: 1fr; }
-      header { flex-direction: column; padding: 24px 20px; }
-      main { padding: 20px 16px; }
-      nav { padding: 0 16px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .htag {
+      background: rgba(0,153,153,0.12); border: 1px solid rgba(0,153,153,0.35);
+      color: var(--teal-l); border-radius: 20px; padding: 0.22rem 0.7rem;
+      font-size: 0.72rem; font-weight: 600;
     }
 
-    /* ── Stat Cards ── */
-    .stat-card {
+    .hero-stats { display: flex; gap: 1.2rem; flex-wrap: wrap; }
+    .hstat {
+      background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.3rem;
+      text-align: center; min-width: 90px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .hstat:hover { border-color: var(--teal); box-shadow: var(--glow); }
+    .hstat-num   { font-size: 1.8rem; font-weight: 900; color: var(--teal-l); line-height: 1; }
+    .hstat-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.25rem; }
+
+    /* ══════════════════════════════════════════
+       MAIN CONTENT AREA
+    ══════════════════════════════════════════ */
+    .main {
+      max-width: 1300px; margin: 0 auto;
+      padding: 1.8rem 1.5rem 3rem;
+    }
+
+    /* ══ SECTION HEADER ══ */
+    .sec-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.8rem;
+    }
+    .sec-title {
+      font-size: 1rem; font-weight: 800; color: var(--text);
+      display: flex; align-items: center; gap: 0.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--teal);
+    }
+    .sec-count {
+      font-size: 0.72rem; color: var(--muted); font-weight: 500;
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 0.2rem 0.6rem;
+    }
+
+    /* ══ FILTER CHIPS ══ */
+    .filter-row {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin-bottom: 1.4rem;
+    }
+    .chip {
+      padding: 0.28rem 0.8rem; border-radius: 20px;
+      font-size: 0.73rem; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--border); color: var(--muted);
+      background: var(--card2); transition: all 0.18s;
+    }
+    .chip:hover, .chip.active {
+      background: var(--teal); color: #fff; border-color: var(--teal);
+    }
+
+    /* ══════════════════════════════════════════
+       CARD GRID — GRID VIEW
+    ══════════════════════════════════════════ */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.1rem;
+    }
+
+    /* ══ PAGE CARD ══ */
+    .page-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 20px 24px;
-      display: flex; align-items: center; gap: 16px;
-      transition: var(--transition);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      display: flex; flex-direction: column;
+      text-decoration: none; color: inherit;
+      animation: cardIn 0.4s ease both;
     }
-    .stat-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-    .stat-icon {
-      width: 48px; height: 48px; border-radius: 10px;
+    .page-card:hover {
+      border-color: var(--border-h);
+      transform: translateY(-5px);
+      box-shadow: var(--glow), var(--shadow);
+    }
+    .page-card.hidden { display: none; }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Stagger animation */
+    .page-card:nth-child(1)  { animation-delay: 0.03s; }
+    .page-card:nth-child(2)  { animation-delay: 0.06s; }
+    .page-card:nth-child(3)  { animation-delay: 0.09s; }
+    .page-card:nth-child(4)  { animation-delay: 0.12s; }
+    .page-card:nth-child(5)  { animation-delay: 0.15s; }
+    .page-card:nth-child(6)  { animation-delay: 0.18s; }
+    .page-card:nth-child(7)  { animation-delay: 0.21s; }
+    .page-card:nth-child(8)  { animation-delay: 0.24s; }
+
+    /* Colored top accent bar */
+    .card-accent {
+      height: 4px;
+      width: 100%;
+    }
+
+    /* Card header */
+    .card-head {
+      padding: 1.1rem 1.1rem 0.6rem;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;
+    }
+    .card-icon-wrap {
+      width: 46px; height: 46px; border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
       font-size: 1.4rem; flex-shrink: 0;
     }
-    .stat-card .value { font-size: 1.6rem; font-weight: 700; }
-    .stat-card .label { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
-
-    /* ── Timeline ── */
-    .timeline { position: relative; padding-left: 28px; }
-    .timeline::before {
-      content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
-      width: 2px; background: var(--border);
+    .card-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; }
+    .badge {
+      font-size: 0.62rem; font-weight: 700; padding: 0.15rem 0.5rem;
+      border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px;
     }
-    .tl-item { position: relative; margin-bottom: 28px; }
-    .tl-dot {
-      position: absolute; left: -24px; top: 4px;
-      width: 12px; height: 12px; border-radius: 50%;
-      background: var(--accent); border: 2px solid var(--bg);
-      box-shadow: 0 0 8px var(--accent);
-    }
-    .tl-date { font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; }
-    .tl-title { font-size: 1rem; font-weight: 600; color: var(--text); }
-    .tl-sub { font-size: 0.85rem; color: var(--accent); margin-bottom: 8px; }
-    .tl-body { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
-    .tl-body ul { padding-left: 16px; }
-    .tl-body li { margin-bottom: 4px; }
+    .badge-new  { background: rgba(76,223,138,0.18); color: var(--accent-grn); border: 1px solid rgba(76,223,138,0.4); }
+    .badge-hot  { background: rgba(245,166,35,0.18);  color: var(--accent-org); border: 1px solid rgba(245,166,35,0.4); }
+    .badge-pin  { background: rgba(77,166,255,0.18);  color: var(--accent-blue); border: 1px solid rgba(77,166,255,0.4); }
+    .badge-done { background: rgba(0,153,153,0.18);   color: var(--teal-l); border: 1px solid rgba(0,153,153,0.4); }
 
-    /* ── Tags ── */
-    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-    .tag {
-      background: var(--tag-bg); border: 1px solid var(--border);
-      color: var(--muted); padding: 3px 10px;
-      border-radius: 20px; font-size: 0.75rem;
-      transition: var(--transition); cursor: default;
+    /* Card body */
+    .card-body { padding: 0 1.1rem 0.8rem; flex: 1; }
+    .card-name {
+      font-size: 0.95rem; font-weight: 800; color: var(--text);
+      line-height: 1.3; margin-bottom: 0.35rem;
     }
-    .tag:hover { border-color: var(--accent); color: var(--accent); }
-    .tag.blue  { border-color: #58a6ff55; color: var(--accent); }
-    .tag.green { border-color: #3fb95055; color: var(--accent2); }
-    .tag.purple{ border-color: #d2a8ff55; color: var(--accent4); }
-    .tag.red   { border-color: #f7816655; color: var(--accent3); }
-
-    /* ── Skill Bars ── */
-    .skill-item { margin-bottom: 16px; }
-    .skill-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
-    .skill-name { font-size: 0.88rem; font-weight: 500; }
-    .skill-pct  { font-size: 0.8rem; color: var(--muted); }
-    .skill-bar  { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-    .skill-fill {
-      height: 100%; border-radius: 3px;
-      background: linear-gradient(90deg, var(--accent), var(--accent4));
-      width: 0; transition: width 1s ease;
+    .card-desc {
+      font-size: 0.76rem; color: var(--muted); line-height: 1.65;
     }
 
-    /* ── Project Cards ── */
-    .project-card {
-      background: var(--card);
+    /* Card tags */
+    .card-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; padding: 0 1.1rem 0.8rem; }
+    .ctag {
+      font-size: 0.65rem; padding: 0.12rem 0.45rem; border-radius: 6px;
+      background: rgba(255,255,255,0.05); color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    /* Card footer */
+    .card-foot {
+      padding: 0.7rem 1.1rem;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-cat {
+      font-size: 0.68rem; color: var(--muted); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .card-arrow {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: rgba(0,153,153,0.12); border: 1px solid rgba(0,153,153,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; color: var(--teal);
+      transition: all 0.2s;
+    }
+    .page-card:hover .card-arrow {
+      background: var(--teal); color: #fff; transform: translateX(2px);
+    }
+
+    /* ══════════════════════════════════════════
+       LIST VIEW
+    ══════════════════════════════════════════ */
+    .cards-list { display: flex; flex-direction: column; gap: 0.65rem; }
+
+    .list-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.9rem 1.2rem;
+      display: flex; align-items: center; gap: 1rem;
+      text-decoration: none; color: inherit;
+      transition: all 0.2s; position: relative; overflow: hidden;
+      animation: cardIn 0.35s ease both;
+    }
+    .list-card::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .list-card:hover { border-color: var(--teal); transform: translateX(5px); box-shadow: var(--glow); }
+    .list-card:hover::before { opacity: 1; }
+    .list-card.hidden { display: none; }
+
+    .lc-icon {
+      width: 42px; height: 42px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0;
+    }
+    .lc-body { flex: 1; min-width: 0; }
+    .lc-name { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+    .lc-desc { font-size: 0.74rem; color: var(--muted); margin-top: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lc-meta { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+    .lc-cat  { font-size: 0.68rem; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+    .lc-arr  { font-size: 1rem; color: var(--teal); transition: transform 0.2s; }
+    .list-card:hover .lc-arr { transform: translateX(3px); }
+
+    /* ══════════════════════════════════════════
+       PINNED / FEATURED ROW
+    ══════════════════════════════════════════ */
+    .featured-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .feat-card {
+      background: linear-gradient(135deg, var(--card2), var(--card));
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 22px 26px;
-      transition: var(--transition);
-      cursor: pointer;
+      padding: 1.3rem;
+      display: flex; align-items: center; gap: 1rem;
+      text-decoration: none; color: inherit;
+      transition: all 0.25s; position: relative; overflow: hidden;
     }
-    .project-card:hover { border-color: var(--accent4); box-shadow: 0 0 20px #d2a8ff18; }
-    .project-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
-    .project-card .period { font-size: 0.75rem; color: var(--muted); margin-bottom: 10px; }
-    .project-card p { font-size: 0.84rem; color: var(--muted); line-height: 1.6; }
-    .project-detail { display: none; margin-top: 12px; }
-    .project-card.open .project-detail { display: block; animation: fadeIn 0.3s ease; }
-    .project-card.open { border-color: var(--accent4); }
-    .expand-hint { font-size: 0.75rem; color: var(--accent); margin-top: 8px; }
-
-    /* ── Donut Chart ── */
-    .donut-wrap { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
-    svg.donut { transform: rotate(-90deg); }
-    .donut-legend { display: flex; flex-direction: column; gap: 10px; }
-    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
-    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-
-    /* ── Profile Tab ── */
-    .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    @media(max-width:768px){ .profile-grid { grid-template-columns: 1fr; } }
-    .info-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 12px; }
-    .info-label { font-size: 0.78rem; color: var(--muted); min-width: 90px; }
-    .info-value { font-size: 0.88rem; color: var(--text); }
-
-    /* ── Tooltip ── */
-    [data-tip] { position: relative; }
-    [data-tip]:hover::after {
-      content: attr(data-tip);
-      position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%);
-      background: #1f2937; border: 1px solid var(--border);
-      color: var(--text); font-size: 0.75rem; padding: 4px 10px;
-      border-radius: 6px; white-space: nowrap; z-index: 10;
-      pointer-events: none;
+    .feat-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,153,153,0.06), transparent);
+      opacity: 0; transition: opacity 0.25s;
     }
+    .feat-card:hover { border-color: var(--teal); transform: translateY(-3px); box-shadow: var(--glow); }
+    .feat-card:hover::after { opacity: 1; }
+    .feat-icon {
+      width: 56px; height: 56px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.7rem; flex-shrink: 0;
+    }
+    .feat-body { flex: 1; }
+    .feat-label { font-size: 0.65rem; color: var(--teal); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.25rem; }
+    .feat-name  { font-size: 1rem; font-weight: 800; color: var(--text); }
+    .feat-desc  { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; line-height: 1.5; }
+    .feat-arr   { font-size: 1.2rem; color: var(--teal); transition: transform 0.2s; flex-shrink: 0; }
+    .feat-card:hover .feat-arr { transform: translateX(4px); }
 
-    /* ── Misc ── */
-    .mb-20 { margin-bottom: 20px; }
-    .mb-28 { margin-bottom: 28px; }
-    .chip {
-      display: inline-block;
-      background: linear-gradient(135deg, #58a6ff22, #d2a8ff22);
-      border: 1px solid #58a6ff44;
-      color: var(--accent); padding: 2px 10px;
-      border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+    /* ══════════════════════════════════════════
+       EMPTY STATE
+    ══════════════════════════════════════════ */
+    .empty-state {
+      text-align: center; padding: 4rem 2rem;
+      display: none;
+    }
+    .empty-state.show { display: block; }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-title { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; }
+    .empty-sub   { font-size: 0.8rem; color: var(--muted); }
+
+    /* ══════════════════════════════════════════
+       ADD PAGE MODAL
+    ══════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 900;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 100%; max-width: 520px;
+      padding: 2rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      transform: translateY(30px) scale(0.97);
+      transition: transform 0.3s ease;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+    .modal-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);
+    }
+    .modal-title { font-size: 1.05rem; font-weight: 800; color: var(--text); }
+    .modal-close {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--card2); border: 1px solid var(--border);
+      color: var(--muted); cursor: pointer; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .modal-close:hover { background: var(--accent-red); color: #fff; border-color: var(--accent-red); }
+
+    .form-group { margin-bottom: 1.1rem; }
+    .form-label { font-size: 0.78rem; font-weight: 700; color: var(--muted); margin-bottom: 0.4rem; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; background: var(--dark2);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.7rem 0.9rem; color: var(--text);
+      font-size: 0.85rem; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(0,153,153,0.15);
+    }
+    .form-textarea { resize: vertical; min-height: 70px; }
+    .form-select option { background: var(--dark2); }
+
+    /* Emoji picker */
+    .emoji-grid {
+      display: grid; grid-template-columns: repeat(8,1fr); gap: 0.3rem; margin-top: 0.5rem;
+    }
+    .emoji-btn {
+      width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--dark2); cursor: pointer; font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .emoji-btn:hover, .emoji-btn.selected { background: var(--teal); border-color: var(--teal); transform: scale(1.1); }
+
+    /* Color picker */
+    .color-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    .color-dot {
+      width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+      border: 2px solid transparent; transition: all 0.15s;
+    }
+    .color-dot:hover, .color-dot.selected { border-color: #fff; transform: scale(1.15); }
+
+    /* Badge picker */
+    .badge-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    .badge-pick {
+      padding: 0.25rem 0.65rem; border-radius: 8px; cursor: pointer;
+      font-size: 0.72rem; font-weight: 700; border: 1px solid var(--border);
+      background: var(--dark2); color: var(--muted); transition: all 0.15s;
+    }
+    .badge-pick:hover, .badge-pick.selected { border-color: var(--teal); color: var(--teal-l); background: rgba(0,153,153,0.1); }
+
+    .modal-actions { display: flex; gap: 0.7rem; margin-top: 1.5rem; }
+    .btn-primary {
+      flex: 1; background: linear-gradient(135deg, var(--teal), var(--teal-l));
+      color: #fff; border: none; border-radius: 10px;
+      padding: 0.75rem; font-size: 0.88rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
+      box-shadow: 0 4px 14px var(--teal-glow);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,153,153,0.4); }
+    .btn-secondary {
+      padding: 0.75rem 1.2rem; background: var(--card2);
+      border: 1px solid var(--border); border-radius: 10px;
+      color: var(--muted); font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--teal); color: var(--text); }
+
+    /* ══ PREVIEW BOX IN MODAL ══ */
+    .preview-box {
+      background: var(--dark2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.8rem 1rem;
+      margin-top: 0.5rem; font-size: 0.8rem; color: var(--muted);
+    }
+    .preview-card-mini {
+      display: flex; align-items: center; gap: 0.7rem;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.7rem 0.9rem;
+    }
+    .pcm-icon { font-size: 1.3rem; }
+    .pcm-name { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+    .pcm-desc { font-size: 0.72rem; color: var(--muted); }
+
+    /* ══ CONTEXT MENU (right-click) ══ */
+    .ctx-menu {
+      position: fixed; z-index: 800;
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 0.4rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      min-width: 160px;
+      opacity: 0; pointer-events: none; transform: scale(0.95);
+      transition: all 0.15s;
+    }
+    .ctx-menu.open { opacity: 1; pointer-events: all; transform: scale(1); }
+    .ctx-item {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.5rem 0.8rem; border-radius: 8px;
+      font-size: 0.8rem; color: var(--muted); cursor: pointer;
+      transition: all 0.15s;
+    }
+    .ctx-item:hover { background: rgba(0,153,153,0.12); color: var(--text); }
+    .ctx-item.danger:hover { background: rgba(224,82,82,0.12); color: var(--accent-red); }
+    .ctx-divider { height: 1px; background: var(--border); margin: 0.3rem 0; }
+
+    /* ══ TOAST NOTIFICATION ══ */
+    .toast-wrap {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1000;
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .toast {
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 0.7rem 1rem;
+      font-size: 0.8rem; color: var(--text);
+      display: flex; align-items: center; gap: 0.6rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+      min-width: 220px;
+    }
+    .toast.success { border-color: var(--accent-grn); }
+    .toast.error   { border-color: var(--accent-red); }
+    .toast.info    { border-color: var(--teal); }
+    @keyframes toastIn  { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes toastOut { from { opacity:1; } to { opacity:0; transform:translateX(30px); } }
+
+    /* ══ FOOTER ══ */
+    footer {
+      text-align: center; padding: 1.5rem;
+      font-size: 0.72rem; color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    footer span { color: var(--teal); }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 768px) {
+      .nav-center { display: none; }
+      .hero-left h1 { font-size: 1.5rem; }
+      .hero-stats { gap: 0.8rem; }
+      .hstat { padding: 0.7rem 0.9rem; min-width: 70px; }
+      .hstat-num { font-size: 1.4rem; }
+      .nav-search { width: 140px; }
+      .nav-search:focus { width: 160px; }
+    }
+    @media (max-width: 500px) {
+      nav { padding: 0 1rem; }
+      .main { padding: 1.2rem 1rem 2rem; }
+      .brand-sub { display: none; }
     }
   </style>
 </head>
 <body>
 
-<!-- ══ HEADER ══ -->
-<header>
-  <div class="avatar">SY</div>
-  <div class="header-info">
-    <h1>Satyam Kumar Yadav</h1>
-    <div class="role">⚡ Project Engineer</div>
-    <div class="contact-links">
-      <a href="mailto:ysatyam166@gmail.com" data-tip="Send Email">✉ ysatyam166@gmail.com</a>
-      <a href="tel:+918112859963" data-tip="Call">📞 +91-8112859963</a>
-      <a href="#" data-tip="Location">📍 Gurgaon, India</a>
-      <a href="https://www.linkedin.com/in/satyam-kumar-yadav-a37071190" target="_blank" data-tip="LinkedIn">🔗 LinkedIn</a>
-      <!-- No GitHub link found in resume, keeping as placeholder for now -->
-      <a href="#" data-tip="GitHub">🐙 GitHub</a>
-    </div>
-  </div>
-</header>
+<!-- Background blobs -->
+<div class="bg-blob blob1"></div>
+<div class="bg-blob blob2"></div>
+<div class="bg-blob blob3"></div>
 
-<!-- ══ NAV TABS ══ -->
+<!-- ══════════════════════════════════════════
+     TOP NAV
+══════════════════════════════════════════ -->
 <nav>
-  <button class="tab-btn active" onclick="switchTab('overview')">🏠 Overview</button>
-  <button class="tab-btn" onclick="switchTab('experience')">💼 Experience</button>
-  <button class="tab-btn" onclick="switchTab('projects')">🚀 Projects</button>
-  <button class="tab-btn" onclick="switchTab('skills')">🛠 Skills</button>
-  <button class="tab-btn" onclick="switchTab('education')">🎓 Education</button>
+  <a href="#" class="nav-brand">
+    <div class="brand-box">S</div>
+    <div>
+      <div class="brand-text">SkyDash</div>
+      <div class="brand-sub">Navigation Hub</div>
+    </div>
+  </a>
+
+  <div class="nav-center">
+    <button class="nav-pill active" onclick="filterCategory('all',this)">All</button>
+    <button class="nav-pill" onclick="filterCategory('design',this)">Design</button>
+    <button class="nav-pill" onclick="filterCategory('tools',this)">Tools</button>
+    <button class="nav-pill" onclick="filterCategory('docs',this)">Docs</button>
+    <button class="nav-pill" onclick="filterCategory('misc',this)">Misc</button>
+  </div>
+
+  <div class="nav-right">
+    <div class="search-wrap">
+      <span class="s-icon">🔍</span>
+      <input class="nav-search" type="text" placeholder="Search pages..." oninput="searchCards(this.value)" />
+    </div>
+    <div class="view-toggle">
+      <button class="vt-btn active" id="vt-grid" onclick="setView('grid')" title="Grid View">⊞</button>
+      <button class="vt-btn"        id="vt-list" onclick="setView('list')" title="List View">☰</button>
+    </div>
+    <button class="add-btn" onclick="openModal()">＋ Add Page</button>
+  </div>
 </nav>
 
-<!-- ══ MAIN ══ -->
-<main>
-
-  <!-- ▸ OVERVIEW TAB -->
-  <div id="tab-overview" class="tab-content active">
-
-    <!-- Stat Cards -->
-    <div class="grid-3 mb-28">
-      <div class="stat-card">
-        <div class="stat-icon" style="background:#58a6ff18;">⚡</div>
-        <div>
-          <div class="value" style="color:var(--accent)">2.5+</div>
-          <div class="label">Years of Experience</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background:#3fb95018;">🚀</div>
-        <div>
-          <div class="value" style="color:var(--accent2)">3+</div>
-          <div class="label">Key Projects</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background:#d2a8ff18;">🛠</div>
-        <div>
-          <div class="value" style="color:var(--accent4)">10+</div>
-          <div class="label">Technologies & Tools</div>
-        </div>
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <h1>Your <span class="hl">Interactive</span><br/>Navigation Hub</h1>
+      <p>All your pages in one place. Click any card to navigate, right-click for options, or add new pages with the button above.</p>
+      <div class="hero-tags">
+        <span class="htag">🔍 Searchable</span>
+        <span class="htag">📌 Pinnable</span>
+        <span class="htag">🎨 Customizable</span>
+        <span class="htag">➕ Expandable</span>
+        <span class="htag">💾 Auto-Saved</span>
       </div>
     </div>
-
-    <!-- Profile + Skill Distribution -->
-    <div class="grid-2 mb-28">
-      <div class="card">
-        <div class="section-title">👤 Profile</div>
-        <p style="font-size:0.9rem;color:var(--muted);line-height:1.7;margin-bottom:16px;">
-          Versatile and results-driven Project Engineer with over 2.5 years of experience in the Research and Development domain, demonstrating expertise in FPGA design, hardware verification, and communication protocols. Proven track record of successful project contributions in organizations such as MKU Limited, ITI Limited (PSU) and Logic fruit Technology. Accomplished in working on complex projects, including thermal image cameras, secured communication systems for defense, and PCIe Gen5 analyzers.
-        </p>
-        <div class="info-row"><span class="info-label">Location</span><span class="info-value">Gurgaon, India</span></div>
-        <div class="info-row"><span class="info-label">Current Role</span><span class="info-value">Assistant Engineer @ MKU Limited</span></div>
-        <div class="info-row"><span class="info-label">Education</span><span class="info-value">B.Tech ECE – MNNIT (2017–2021)</span></div>
-        <div class="info-row"><span class="info-label">Focus Area</span><span class="info-value">FPGA Design, Hardware Verification, Communication Protocols</span></div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">📊 Skill Distribution</div>
-        <div class="donut-wrap">
-          <svg class="donut" width="140" height="140" viewBox="0 0 140 140">
-            <!-- FPGA Design (30%) -->
-            <circle cx="70" cy="70" r="54" fill="none" stroke="#58a6ff" stroke-width="18"
-              stroke-dasharray="102 220" stroke-dashoffset="0"/>
-            <!-- Hardware Verification (25%) -->
-            <circle cx="70" cy="70" r="54" fill="none" stroke="#3fb950" stroke-width="18"
-              stroke-dasharray="85 220" stroke-dashoffset="-102"/>
-            <!-- Communication Protocols (20%) -->
-            <circle cx="70" cy="70" r="54" fill="none" stroke="#d2a8ff" stroke-width="18"
-              stroke-dasharray="68 220" stroke-dashoffset="-187"/>
-            <!-- Tools & Languages (25%) -->
-            <circle cx="70" cy="70" r="54" fill="none" stroke="#f78166" stroke-width="18"
-              stroke-dasharray="85 220" stroke-dashoffset="-255"/>
-          </svg>
-          <div class="donut-legend">
-            <div class="legend-item"><div class="legend-dot" style="background:#58a6ff"></div>FPGA Design (30%)</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#3fb950"></div>Hardware Verification (25%)</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#d2a8ff"></div>Communication Protocols (20%)</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#f78166"></div>Tools & Languages (25%)</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick Tech Tags -->
-    <div class="card">
-      <div class="section-title">🏷 Technology Highlights</div>
-      <div class="tags">
-        <span class="tag blue">VHDL</span>
-        <span class="tag blue">Verilog</span>
-        <span class="tag blue">System Verilog</span>
-        <span class="tag green">UVM</span>
-        <span class="tag green">SPI</span>
-        <span class="tag green">I2C</span>
-        <span class="tag green">UART</span>
-        <span class="tag green">APB</span>
-        <span class="tag purple">Xilinx Vivado</span>
-        <span class="tag purple">QuestaSim</span>
-        <span class="tag purple">Xilinx ILA</span>
-        <span class="tag red">FPGA Design</span>
-        <span class="tag red">Hardware Verification</span>
-        <span class="tag red">PCIe Gen5</span>
-        <span class="tag blue">Basic C</span>
-        <span class="tag blue">Python Scripting</span>
-        <span class="tag purple">Oscilloscope</span>
-      </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-num" id="stat-total">3</div><div class="hstat-label">Total Pages</div></div>
+      <div class="hstat"><div class="hstat-num" id="stat-pinned">1</div><div class="hstat-label">Pinned</div></div>
+      <div class="hstat"><div class="hstat-num" id="stat-cats">3</div><div class="hstat-label">Categories</div></div>
     </div>
   </div>
+</div>
 
-  <!-- ▸ EXPERIENCE TAB -->
-  <div id="tab-experience" class="tab-content">
-    <div class="section-title">💼 Work Experience</div>
-    <div class="timeline">
+<!-- ══════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════ -->
+<div class="main">
 
-      <div class="tl-item">
-        <div class="tl-dot" style="background:var(--accent2);box-shadow:0 0 8px var(--accent2)"></div>
-        <div class="tl-date">Dec 2022 – Present &nbsp;|&nbsp; Gurgaon, India</div>
-        <div class="tl-title">Assistant Engineer, R&D Department <span class="chip">Current</span></div>
-        <div class="tl-sub">MKU Limited</div>
-        <div class="tl-body">
-          <ul>
-            <li>Worked on the development of a thermal image camera Interface with thermal sensor and perform sensor data acquisition.</li>
-            <li>Utilized an image pipeline to process the acquired data and send processed data out through HDMI and OLED outputs.</li>
-            <li>Designed HMI for feature control using push buttons.</li>
-            <li>Implemented the project using the Nexys Video Board (Artix 200T FPGA) and moved the final project on Artix 35T FPGA.</li>
-            <li>Worked on hardware verification to ensure the system's functionality.</li>
-          </ul>
-        </div>
-        <div class="tags" style="margin-top:12px">
-          <span class="tag blue">Verilog</span>
-          <span class="tag blue">VHDL</span>
-          <span class="tag green">FPGA Testing</span>
-          <span class="tag green">Hardware Verification</span>
-          <span class="tag purple">Xilinx Vivado</span>
-          <span class="tag purple">ILA</span>
-          <span class="tag purple">Oscilloscope</span>
+  <!-- ══ PINNED / FEATURED ══ -->
+  <section id="pinned-section">
+    <div class="sec-head">
+      <div class="sec-title">📌 Pinned Pages</div>
+    </div>
+    <div class="featured-row" id="featured-row">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- ══ ALL PAGES ══ -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-title">
+        🗂️ All Pages
+        <span class="sec-count" id="visible-count">3 pages</span>
+      </div>
+      <div class="filter-row" style="margin-bottom:0;">
+        <span class="chip active" onclick="filterTag('all',this)">All</span>
+        <span class="chip" onclick="filterTag('design',this)">Design</span>
+        <span class="chip" onclick="filterTag('tools',this)">Tools</span>
+        <span class="chip" onclick="filterTag('docs',this)">Docs</span>
+        <span class="chip" onclick="filterTag('misc',this)">Misc</span>
+      </div>
+    </div>
+
+    <!-- GRID VIEW -->
+    <div class="cards-grid" id="cards-grid"></div>
+
+    <!-- LIST VIEW -->
+    <div class="cards-list" id="cards-list" style="display:none;"></div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-title">No pages found</div>
+      <div class="empty-sub">Try a different search or category, or add a new page!</div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+<footer>
+  <span>SkyDash</span> · Interactive Navigation Hub ·
+  Right-click any card for options · All data saved locally in your browser
+</footer>
+
+<!-- ══════════════════════════════════════════
+     ADD / EDIT PAGE MODAL
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">➕ Add New Page</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <!-- Page Name -->
+    <div class="form-group">
+      <label class="form-label">Page Name *</label>
+      <input class="form-input" id="f-name" type="text" placeholder="e.g. Memory Module" oninput="updatePreview()" />
+    </div>
+
+    <!-- URL -->
+    <div class="form-group">
+      <label class="form-label">Page URL / Path *</label>
+      <input class="form-input" id="f-url" type="text" placeholder="e.g. select/mem.html or https://..." oninput="updatePreview()" />
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="form-textarea" id="f-desc" placeholder="Short description of this page..." oninput="updatePreview()"></textarea>
+    </div>
+
+    <!-- Category -->
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select class="form-select" id="f-cat">
+        <option value="design">Design</option>
+        <option value="tools">Tools</option>
+        <option value="docs">Docs</option>
+        <option value="misc">Misc</option>
+      </select>
+    </div>
+
+    <!-- Icon Picker -->
+    <div class="form-group">
+      <label class="form-label">Icon</label>
+      <div class="emoji-grid" id="emoji-grid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- Color Picker -->
+    <div class="form-group">
+      <label class="form-label">Accent Color</label>
+      <div class="color-row" id="color-row">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- Badge -->
+    <div class="form-group">
+      <label class="form-label">Badge (optional)</label>
+      <div class="badge-row">
+        <div class="badge-pick selected" data-badge="" onclick="selectBadge(this)">None</div>
+        <div class="badge-pick" data-badge="new"  onclick="selectBadge(this)">🟢 New</div>
+        <div class="badge-pick" data-badge="hot"  onclick="selectBadge(this)">🔥 Hot</div>
+        <div class="badge-pick" data-badge="pin"  onclick="selectBadge(this)">📌 Pin</div>
+        <div class="badge-pick" data-badge="done" onclick="selectBadge(this)">✅ Done</div>
+      </div>
+    </div>
+
+    <!-- Open in new tab -->
+    <div class="form-group" style="display:flex;align-items:center;gap:.7rem;">
+      <input type="checkbox" id="f-newtab" style="width:16px;height:16px;accent-color:var(--teal);" />
+      <label for="f-newtab" class="form-label" style="margin:0;cursor:pointer;">Open in new tab</label>
+    </div>
+
+    <!-- Live Preview -->
+    <div class="form-group">
+      <label class="form-label">Live Preview</label>
+      <div class="preview-box">
+        <div class="preview-card-mini" id="preview-mini">
+          <div class="pcm-icon" id="prev-icon">📄</div>
+          <div>
+            <div class="pcm-name" id="prev-name">Page Name</div>
+            <div class="pcm-desc" id="prev-desc">Description will appear here</div>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-date">July 2022 – Nov 2022 &nbsp;|&nbsp; Bangalore, India</div>
-        <div class="tl-title">Assistant Executive Engineer, R&D Department</div>
-        <div class="tl-sub">ITI Limited (PSU)</div>
-        <div class="tl-body">
-          <ul>
-            <li>Engaged in the development of an Encrypter project for the Ministry of Defence, designed to establish secure communication across diverse communication mediums, including analog calls, IP calls, video transmissions, and file transfers.</li>
-          </ul>
-        </div>
-        <div class="tags" style="margin-top:12px">
-          <span class="tag blue">Verilog</span>
-          <span class="tag blue">VHDL</span>
-          <span class="tag green">FPGA Testing</span>
-          <span class="tag purple">Xilinx ISE</span>
-          <span class="tag purple">Chipscope Pro</span>
-        </div>
-      </div>
-
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-date">June 2021 – July 2022 &nbsp;|&nbsp; Gurgaon, India</div>
-        <div class="tl-title">R&D Engineer</div>
-        <div class="tl-sub">Logic Fruit Technologies</div>
-        <div class="tl-body">
-          <ul>
-            <li>Worked on PCIe Gen5 Analyzer project (Keysight Project).</li>
-            <li>Involved in design, integration, and verification of an Ordered Set Compression Module.</li>
-            <li>Executed comprehensive testing in simulations, generated bit files, and performed hardware testing using Vivado Software and debugging with Vivado ILA.</li>
-            <li>Testing on FPGA Board with two back-to-back Exerciser and Analyzer whole Top-Level Design.</li>
-          </ul>
-        </div>
-        <div class="tags" style="margin-top:12px">
-          <span class="tag blue">VHDL</span>
-          <span class="tag green">PCIe Gen5</span>
-          <span class="tag green">FPGA</span>
-          <span class="tag purple">Vivado</span>
-          <span class="tag purple">QuestaSim</span>
-          <span class="tag purple">ILA</span>
-        </div>
-      </div>
-
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary"   id="modal-save-btn" onclick="savePage()">✓ Add Page</button>
     </div>
   </div>
+</div>
 
-  <!-- ▸ PROJECTS TAB -->
-  <div id="tab-projects" class="tab-content">
-    <div class="section-title">🚀 Projects & Achievements <span style="font-size:0.75rem;color:var(--muted);margin-left:8px;">(click a card to expand)</span></div>
-    <div style="display:flex;flex-direction:column;gap:18px;">
+<!-- ══ CONTEXT MENU ══ -->
+<div class="ctx-menu" id="ctx-menu">
+  <div class="ctx-item" onclick="ctxOpen()">🔗 Open Page</div>
+  <div class="ctx-item" onclick="ctxOpenNew()">↗️ Open in New Tab</div>
+  <div class="ctx-item" onclick="ctxEdit()">✏️ Edit Card</div>
+  <div class="ctx-item" onclick="ctxPin()">📌 Toggle Pin</div>
+  <div class="ctx-divider"></div>
+  <div class="ctx-item danger" onclick="ctxDelete()">🗑️ Delete Card</div>
+</div>
 
-      <!-- Project 1 -->
-      <div class="project-card" onclick="toggleProject(this)">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
-          <h3>⚡ I2C, UART, SPI Communication Protocol, FIFO, RAM</h3>
-          <span class="chip">Academic</span>
-        </div>
-        <div class="period">Design & Verification · System Verilog · UVM</div>
-        <p>Design and verification of essential communication protocols and memory elements using advanced verification methodologies.</p>
-        <div class="expand-hint">▼ Click to see details</div>
-        <div class="project-detail">
-          <div class="tl-body">
-            <ul>
-              <li>Designed and verified I2C, UART, SPI Communication Protocols.</li>
-              <li>Implemented and verified FIFO and RAM modules.</li>
-              <li>Utilized System Verilog and Universal Verification Methodology (UVM) for comprehensive verification.</li>
-            </ul>
-          </div>
-          <div class="tags" style="margin-top:12px">
-            <span class="tag blue">System Verilog</span>
-            <span class="tag green">UVM</span>
-            <span class="tag green">I2C</span>
-            <span class="tag green">UART</span>
-            <span class="tag green">SPI</span>
-            <span class="tag red">FIFO</span>
-            <span class="tag red">RAM</span>
-          </div>
-        </div>
-      </div>
+<!-- ══ TOAST CONTAINER ══ -->
+<div class="toast-wrap" id="toast-wrap"></div>
 
-      <!-- Project 2 -->
-      <div class="project-card" onclick="toggleProject(this)">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
-          <h3>📚 Udemy Certifications</h3>
-          <span class="chip">Self-Paced Learning</span>
-        </div>
-        <div class="period">Verilog · VHDL · System Verilog · UVM</div>
-        <p>Completed multiple Udemy certifications to deepen knowledge in hardware description and verification languages.</p>
-        <div class="expand-hint">▼ Click to see details</div>
-        <div class="project-detail">
-          <div class="tl-body">
-            <ul>
-              <li>Achieved certifications in Verilog, VHDL, System Verilog, and UVM.</li>
-              <li>Demonstrated commitment to continuous learning and skill enhancement in the VLSI domain.</li>
-            </ul>
-          </div>
-          <div class="tags" style="margin-top:12px">
-            <span class="tag blue">Verilog</span>
-            <span class="tag blue">VHDL</span>
-            <span class="tag blue">System Verilog</span>
-            <span class="tag green">UVM</span>
-            <span class="tag purple">Certification</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Project 3 -->
-      <div class="project-card" onclick="toggleProject(this)">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
-          <h3>🏆 Competitive Exam Qualifications</h3>
-          <span class="chip">Academic</span>
-        </div>
-        <div class="period">JEE Main · JEE Advance · GATE</div>
-        <p>Successfully qualified in highly competitive national-level entrance examinations.</p>
-        <div class="expand-hint">▼ Click to see details</div>
-        <div class="project-detail">
-          <div class="tl-body">
-            <ul>
-              <li>Qualified in JEE Main and JEE Advance entrance exams in 2017.</li>
-              <li>Qualified in GATE in 2021.</li>
-            </ul>
-          </div>
-          <div class="tags" style="margin-top:12px">
-            <span class="tag green">JEE Main</span>
-            <span class="tag green">JEE Advance</span>
-            <span class="tag green">GATE</span>
-            <span class="tag purple">Achievements</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ▸ SKILLS TAB -->
-  <div id="tab-skills" class="tab-content">
-    <div class="grid-2">
-
-      <div>
-        <div class="section-title">💻 Languages</div>
-        <div class="card mb-20">
-          <div class="skill-item" data-pct="90">
-            <div class="skill-header"><span class="skill-name">VHDL</span><span class="skill-pct">90%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#58a6ff,#79c0ff)"></div></div>
-          </div>
-          <div class="skill-item" data-pct="90">
-            <div class="skill-header"><span class="skill-name">Verilog</span><span class="skill-pct">90%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#58a6ff,#79c0ff)"></div></div>
-          </div>
-          <div class="skill-item" data-pct="85">
-            <div class="skill-header"><span class="skill-name">System Verilog</span><span class="skill-pct">85%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#58a6ff,#79c0ff)"></div></div>
-          </div>
-          <div class="skill-item" data-pct="70">
-            <div class="skill-header"><span class="skill-name">Python Scripting</span><span class="skill-pct">70%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#58a6ff,#79c0ff)"></div></div>
-          </div>
-          <div class="skill-item" data-pct="65">
-            <div class="skill-header"><span class="skill-name">Basic C</span><span class="skill-pct">65%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#58a6ff,#79c0ff)"></div></div>
-          </div>
-        </div>
-
-        <div class="section-title">🛠 Tools</div>
-        <div class="card">
-          <div class="skill-item" data-pct="90">
-            <div class="skill-header"><span class="skill-name">Xilinx Vivado</span><span class="skill-pct">90%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#d2a8ff,#f0abfc)"></div></div>
-          </div>
-          <div class="skill-item" data-pct="80">
-            <div class="skill-header"><span class="skill-name">QuestaSim</span><span class="skill-pct">80%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#d2a8ff,#f0abfc)"></div></div>
-          </div>
-          <div class="skill-item" data-pct="85">
-            <div class="skill-header"><span class="skill-name">Xilinx ILA</span><span class="skill-pct">85%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#d2a8ff,#f0abfc)"></div></div>
-          </div>
-          <div class="skill-item" data-pct="75">
-            <div class="skill-header"><span class="skill-name">Oscilloscope</span><span class="skill-pct">75%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#d2a8ff,#f0abfc)"></div></div>
-          </div>
-          <div class="skill-item" data-pct="70">
-            <div class="skill-header"><span class="skill-name">Xilinx ISE</span><span class="skill-pct">70%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#d2a8ff,#f0abfc)"></div></div>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div class="section-title">⚙️ Verification & Protocols</div>
-        <div class="card mb-20">
-          <div class="skill-item" data-pct="85">
-            <div class="skill-header"><span class="skill-name">UVM</span><span class="skill-pct">85%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#3fb950,#56d364)"></div></div>
-          </div>
-          <div class="skill-item" data-pct="90">
-            <div class="skill-header"><span class="skill-name">FPGA Design</span><span class="skill-pct">90%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#3fb950,#56d364)"></div></div>
-          </div>
-          <div class="skill-item" data-pct="88">
-            <div class="skill-header"><span class="skill-name">Hardware Verification</span><span class="skill-pct">88%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#3fb950,#56d364)"></div></div>
-          </div>
-          <div class="skill-item" data-pct="80">
-            <div class="skill-header"><span class="skill-name">Logic Design</span><span class="skill-pct">80%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#3fb950,#56d364)"></div></div>
-          </div>
-          <div class="skill-item" data-pct="75">
-            <div class="skill-header"><span class="skill-name">Debugging</span><span class="skill-pct">75%</span></div>
-            <div class="skill-bar"><div class="skill-fill" style="background:linear-gradient(90deg,#3fb950,#56d364)"></div></div>
-          </div>
-        </div>
-
-        <div class="section-title">📡 Protocols</div>
-        <div class="card">
-          <div class="tags">
-            <span class="tag green">SPI</span>
-            <span class="tag green">I2C</span>
-            <span class="tag green">UART</span>
-            <span class="tag green">APB</span>
-            <span class="tag blue">PCIe Gen5</span>
-            <span class="tag red">Communication Protocols</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ▸ EDUCATION TAB -->
-  <div id="tab-education" class="tab-content">
-    <div class="section-title">🎓 Education</div>
-    <div class="card" style="max-width:600px; margin-bottom: 20px;">
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
-        <div class="stat-icon" style="background:#58a6ff18;font-size:2rem;width:60px;height:60px;border-radius:12px;">🏛</div>
-        <div>
-          <div style="font-size:1.1rem;font-weight:700;">Motilal Nehru National Institute of Technology</div>
-          <div style="color:var(--accent);font-size:0.9rem;margin-top:2px;">Bachelor of Technology in ECE | CPI: 8.52</div>
-          <div style="color:var(--muted);font-size:0.8rem;margin-top:4px;">📅 2017 – 2021 &nbsp;|&nbsp; 📍 Prayagraj, Uttar Pradesh</div>
-        </div>
-      </div>
-      <div class="tags">
-        <span class="tag blue">Electronics & Communication Engineering</span>
-        <span class="tag green">MNNIT</span>
-        <span class="tag purple">B.Tech</span>
-        <span class="tag red">2017 – 2021</span>
-      </div>
-    </div>
-
-    <div class="card" style="max-width:600px; margin-bottom: 20px;">
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
-        <div class="stat-icon" style="background:#d2a8ff18;font-size:2rem;width:60px;height:60px;border-radius:12px;">🏫</div>
-        <div>
-          <div style="font-size:1.1rem;font-weight:700;">S.I.C. Katwar Jaunpur</div>
-          <div style="color:var(--accent4);font-size:0.9rem;margin-top:2px;">Class 12th, U.P. Board: 85.4%</div>
-          <div style="color:var(--muted);font-size:0.8rem;margin-top:4px;">📅 2016 &nbsp;|&nbsp; 📍 Janpur, Uttar Pradesh</div>
-        </div>
-      </div>
-      <div class="tags">
-        <span class="tag blue">High School</span>
-        <span class="tag green">U.P. Board</span>
-        <span class="tag purple">Class 12th</span>
-        <span class="tag red">2016</span>
-      </div>
-    </div>
-
-    <div class="card" style="max-width:600px;">
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
-        <div class="stat-icon" style="background:#f7816618;font-size:2rem;width:60px;height:60px;border-radius:12px;">📚</div>
-        <div>
-          <div style="font-size:1.1rem;font-weight:700;">BRIJ Bihari Sahai College Allahabad</div>
-          <div style="color:var(--accent3);font-size:0.9rem;margin-top:2px;">Class 10th, U.P. Board: 88.3%</div>
-          <div style="color:var(--muted);font-size:0.8rem;margin-top:4px;">📅 2014 &nbsp;|&nbsp; 📍 Prayagraj, Uttar Pradesh</div>
-        </div>
-      </div>
-      <div class="tags">
-        <span class="tag blue">High School</span>
-        <span class="tag green">U.P. Board</span>
-        <span class="tag purple">Class 10th</span>
-        <span class="tag red">2014</span>
-      </div>
-    </div>
-  </div>
-
-</main>
-
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
 <script>
-  // ── Tab Switching ──
-  function switchTab(name) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
-    event.currentTarget.classList.add('active');
-    if (name === 'skills') animateBars();
+/* ════════════════════════════════════════
+   DATA — DEFAULT PAGES
+   ➕ TO ADD MORE: just add objects to this array!
+════════════════════════════════════════ */
+const DEFAULT_PAGES = [
+  {
+    id: 1,
+    name: 'Memory',
+    url: 'select/mem.html',
+    desc: 'Access memory design modules, BRAM configurations and reference guides.',
+    category: 'design',
+    icon: '🧠',
+    color: '#009999',
+    badge: 'pin',
+    pinned: true,
+    newTab: false,
+    tags: ['BRAM', 'RAM', 'Memory']
+  },
+  {
+    id: 2,
+    name: 'Trigger',
+    url: 'select/trig.html',
+    desc: 'Configure and explore trigger logic, signal capture and event detection.',
+    category: 'design',
+    icon: '⚡',
+    color: '#f5a623',
+    badge: 'hot',
+    pinned: false,
+    newTab: false,
+    tags: ['Trigger', 'Signal', 'Events']
+  },
+  {
+    id: 3,
+    name: 'Veloce',
+    url: 'select/vel.html',
+    desc: 'High-speed emulation, hardware verification and Veloce platform tools.',
+    category: 'tools',
+    icon: '🚀',
+    color: '#b46fff',
+    badge: 'new',
+    pinned: false,
+    newTab: false,
+    tags: ['Emulation', 'Verification', 'FPGA']
   }
+];
 
-  // ── Skill Bar Animation ──
-  function animateBars() {
-    document.querySelectorAll('.skill-item').forEach(item => {
-      const pct = item.getAttribute('data-pct');
-      const fill = item.querySelector('.skill-fill');
-      fill.style.width = '0';
-      setTimeout(() => { fill.style.width = pct + '%'; }, 80);
-    });
-  }
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+const STORAGE_KEY = 'skydash_pages';
+let pages         = [];
+let currentView   = 'grid';
+let activeFilter  = 'all';
+let searchQuery   = '';
+let editingId     = null;
+let ctxTargetId   = null;
 
-  // ── Project Toggle ──
-  function toggleProject(card) {
-    const isOpen = card.classList.contains('open');
-    document.querySelectorAll('.project-card').forEach(c => c.classList.remove('open'));
-    document.querySelectorAll('.expand-hint').forEach(h => h.textContent = '▼ Click to see details');
-    if (!isOpen) {
-      card.classList.add('open');
-      card.querySelector('.expand-hint').textContent = '▲ Click to collapse';
-    }
-  }
+/* Selected modal values */
+let selIcon  = '📄';
+let selColor = '#009999';
+let selBadge = '';
 
-  // ── Animate bars on first load if skills tab is active ──
-  window.addEventListener('load', () => {
-    if (document.getElementById('tab-skills').classList.contains('active')) animateBars();
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+function init() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  pages = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_PAGES));
+  buildEmojiGrid();
+  buildColorRow();
+  render();
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(pages));
+}
+
+/* ════════════════════════════════════════
+   RENDER
+════════════════════════════════════════ */
+function render() {
+  renderFeatured();
+  renderCards();
+  updateStats();
+}
+
+/* Filtered pages */
+function getFiltered() {
+  return pages.filter(p => {
+    const matchCat = activeFilter === 'all' || p.category === activeFilter;
+    const q = searchQuery.toLowerCase();
+    const matchSearch = !q ||
+      p.name.toLowerCase().includes(q) ||
+      (p.desc || '').toLowerCase().includes(q) ||
+      (p.tags || []).some(t => t.toLowerCase().includes(q));
+    return matchCat && matchSearch;
   });
+}
+
+/* ── Featured / Pinned ── */
+function renderFeatured() {
+  const pinned = pages.filter(p => p.pinned);
+  const sec    = document.getElementById('pinned-section');
+  const row    = document.getElementById('featured-row');
+  if (!pinned.length) { sec.style.display = 'none'; return; }
+  sec.style.display = '';
+  row.innerHTML = pinned.map(p => `
+    <a href="${p.url}" class="feat-card" ${p.newTab ? 'target="_blank"' : ''}
+       oncontextmenu="showCtx(event,${p.id})">
+      <div class="feat-icon" style="background:${p.color}22;">${p.icon}</div>
+      <div class="feat-body">
+        <div class="feat-label">📌 Pinned · ${cap(p.category)}</div>
+        <div class="feat-name">${p.name}</div>
+        <div class="feat-desc">${p.desc || ''}</div>
+      </div>
+      <div class="feat-arr">→</div>
+    </a>
+  `).join('');
+}
+
+/* ── Cards ── */
+function renderCards() {
+  const filtered = getFiltered();
+  const grid     = document.getElementById('cards-grid');
+  const list     = document.getElementById('cards-list');
+  const empty    = document.getElementById('empty-state');
+  const cnt      = document.getElementById('visible-count');
+
+  cnt.textContent = `${filtered.length} page${filtered.length !== 1 ? 's' : ''}`;
+
+  if (!filtered.length) {
+    grid.innerHTML = '';
+    list.innerHTML = '';
+    empty.classList.add('show');
+    return;
+  }
+  empty.classList.remove('show');
+
+  /* Grid */
+  grid.innerHTML = filtered.map((p, i) => `
+    <a href="${p.url}" class="page-card" ${p.newTab ? 'target="_blank"' : ''}
+       oncontextmenu="showCtx(event,${p.id})"
+       style="animation-delay:${i * 0.05}s;">
+      <div class="card-accent" style="background:linear-gradient(to right,${p.color},${p.color}88);"></div>
+      <div class="card-head">
+        <div class="card-icon-wrap" style="background:${p.color}20;">${p.icon}</div>
+        <div class="card-badges">
+          ${p.badge ? `<span class="badge badge-${p.badge}">${badgeLabel(p.badge)}</span>` : ''}
+          ${p.pinned ? `<span class="badge badge-pin">📌</span>` : ''}
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${p.name}</div>
+        <div class="card-desc">${p.desc || 'Click to open this page.'}</div>
+      </div>
+      ${p.tags && p.tags.length ? `
+      <div class="card-tags">
+        ${p.tags.slice(0,3).map(t => `<span class="ctag">${t}</span>`).join('')}
+      </div>` : ''}
+      <div class="card-foot">
+        <div class="card-cat">${cap(p.category)}</div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+  `).join('');
+
+  /* List */
+  list.innerHTML = filtered.map((p, i) => `
+    <a href="${p.url}" class="list-card" ${p.newTab ? 'target="_blank"' : ''}
+       oncontextmenu="showCtx(event,${p.id})"
+       style="animation-delay:${i * 0.04}s;">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${p.color};border-radius:3px 0 0 3px;"></div>
+      <div class="lc-icon" style="background:${p.color}20;">${p.icon}</div>
+      <div class="lc-body">
+        <div class="lc-name">${p.name} ${p.badge ? `<span class="badge badge-${p.badge}" style="margin-left:.4rem;">${badgeLabel(p.badge)}</span>` : ''}</div>
+        <div class="lc-desc">${p.desc || p.url}</div>
+      </div>
+      <div class="lc-meta">
+        <div class="lc-cat">${cap(p.category)}</div>
+        <div class="lc-arr">→</div>
+      </div>
+    </a>
+  `).join('');
+}
+
+/* ── Stats ── */
+function updateStats() {
+  document.getElementById('stat-total').textContent  = pages.length;
+  document.getElementById('stat-pinned').textContent = pages.filter(p => p.pinned).length;
+  const cats = new Set(pages.map(p => p.category));
+  document.getElementById('stat-cats').textContent   = cats.size;
+}
+
+/* ════════════════════════════════════════
+   FILTERS & SEARCH
+════════════════════════════════════════ */
+function filterCategory(cat, btn) {
+  activeFilter = cat;
+  document.querySelectorAll('.nav-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards();
+}
+
+function filterTag(cat, chip) {
+  activeFilter = cat;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  /* Sync nav pills */
+  document.querySelectorAll('.nav-pill').forEach(b => {
+    b.classList.toggle('active', b.textContent.toLowerCase().trim() === cat);
+  });
+  renderCards();
+}
+
+function searchCards(q) {
+  searchQuery = q;
+  renderCards();
+}
+
+/* ════════════════════════════════════════
+   VIEW TOGGLE
+════════════════════════════════════════ */
+function setView(v) {
+  currentView = v;
+  document.getElementById('cards-grid').style.display = v === 'grid' ? '' : 'none';
+  document.getElementById('cards-list').style.display = v === 'list' ? '' : 'none';
+  document.getElementById('vt-grid').classList.toggle('active', v === 'grid');
+  document.getElementById('vt-list').classList.toggle('active', v === 'list');
+}
+
+/* ════════════════════════════════════════
+   MODAL — ADD / EDIT
+════════════════════════════════════════ */
+function openModal(id = null) {
+  editingId = id;
+  const modal = document.getElementById('modal-overlay');
+  const title = document.getElementById('modal-title');
+  const saveBtn = document.getElementById('modal-save-btn');
+
+  if (id) {
+    /* Edit mode */
+    const p = pages.find(x => x.id === id);
+    if (!p) return;
+    title.textContent   = '✏️ Edit Page';
+    saveBtn.textContent = '✓ Save Changes';
+    document.getElementById('f-name').value   = p.name;
+    document.getElementById('f-url').value    = p.url;
+    document.getElementById('f-desc').value   = p.desc || '';
+    document.getElementById('f-cat').value    = p.category;
+    document.getElementById('f-newtab').checked = p.newTab || false;
+    selIcon  = p.icon;
+    selColor = p.color;
+    selBadge = p.badge || '';
+  } else {
+    /* Add mode */
+    title.textContent   = '➕ Add New Page';
+    saveBtn.textContent = '✓ Add Page';
+    document.getElementById('f-name').value   = '';
+    document.getElementById('f-url').value    = '';
+    document.getElementById('f-desc').value   = '';
+    document.getElementById('f-cat').value    = 'design';
+    document.getElementById('f-newtab').checked = false;
+    selIcon  = '📄';
+    selColor = '#009999';
+    selBadge = '';
+  }
+
+  syncEmojiGrid();
+  syncColorRow();
+  syncBadgeRow();
+  updatePreview();
+  modal.classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  editingId = null;
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function savePage() {
+  const name = document.getElementById('f-name').value.trim();
+  const url  = document.getElementById('f-url').value.trim();
+  if (!name) { toast('⚠️ Please enter a page name.', 'error'); return; }
+  if (!url)  { toast('⚠️ Please enter a page URL.',  'error'); return; }
+
+  const cat    = document.getElementById('f-cat').value;
+  const desc   = document.getElementById('f-desc').value.trim();
+  const newTab = document.getElementById('f-newtab').checked;
+
+  if (editingId) {
+    /* Update */
+    const idx = pages.findIndex(p => p.id === editingId);
+    if (idx !== -1) {
+      pages[idx] = { ...pages[idx], name, url, desc, category: cat, icon: selIcon, color: selColor, badge: selBadge, newTab };
+    }
+    toast('✅ Page updated successfully!', 'success');
+  } else {
+    /* Add */
+    const newId = pages.length ? Math.max(...pages.map(p => p.id)) + 1 : 1;
+    pages.push({ id: newId, name, url, desc, category: cat, icon: selIcon, color: selColor, badge: selBadge, pinned: false, newTab, tags: [] });
+    toast('✅ Page added successfully!', 'success');
+  }
+
+  save();
+  render();
+  closeModal();
+}
+
+/* ════════════════════════════════════════
+   EMOJI PICKER
+════════════════════════════════════════ */
+const EMOJIS = [
+  '📄','🧠','⚡','🚀','🔌','📦','🔄','💻',
+  '🏠','⚙️','🔧','📊','🗂️','🔍','🛠️','📡',
+  '🎯','🔐','💾','🖥️','📱','🌐','🔬','⚗️',
+  '📋','🗃️','📁','🔑','🛡️','⚖️','🧩','🎛️'
+];
+
+function buildEmojiGrid() {
+  const grid = document.getElementById('emoji-grid');
+  grid.innerHTML = EMOJIS.map(e => `
+    <button class="emoji-btn ${e === selIcon ? 'selected' : ''}"
+            onclick="selectEmoji('${e}',this)">${e}</button>
+  `).join('');
+}
+
+function selectEmoji(e, btn) {
+  selIcon = e;
+  document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  updatePreview();
+}
+
+function syncEmojiGrid() {
+  document.querySelectorAll('.emoji-btn').forEach(b => {
+    b.classList.toggle('selected', b.textContent === selIcon);
+  });
+}
+
+/* ════════════════════════════════════════
+   COLOR PICKER
+════════════════════════════════════════ */
+const COLORS = [
+  '#009999','#00d7be','#4da6ff','#b46fff',
+  '#f5a623','#e05252','#4cdf8a','#ff6eb4',
+  '#ff8c42','#7ec8e3','#c9f0a8','#ffd166'
+];
+
+function buildColorRow() {
+  const row = document.getElementById('color-row');
+  row.innerHTML = COLORS.map(c => `
+    <div class="color-dot ${c === selColor ? 'selected' : ''}"
+         style="background:${c};"
+         onclick="selectColor('${c}',this)"
+         title="${c}"></div>
+  `).join('');
+}
+
+function selectColor(c, dot) {
+  selColor = c;
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+  dot.classList.add('selected');
+  updatePreview();
+}
+
+function syncColorRow() {
+  document.querySelectorAll('.color-dot').forEach(d => {
+    d.classList.toggle('selected', d.style.background === selColor || d.title === selColor);
+  });
+}
+
+/* ════════════════════════════════════════
+   BADGE PICKER
+════════════════════════════════════════ */
+function selectBadge(el) {
+  selBadge = el.dataset.badge;
+  document.querySelectorAll('.badge-pick').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function syncBadgeRow() {
+  document.querySelectorAll('.badge-pick').forEach(b => {
+    b.classList.toggle('selected', b.dataset.badge === selBadge);
+  });
+}
+
+/* ════════════════════════════════════════
+   LIVE PREVIEW
+════════════════════════════════════════ */
+function updatePreview() {
+  const name = document.getElementById('f-name').value || 'Page Name';
+  const desc = document.getElementById('f-desc').value || 'Description will appear here';
+  document.getElementById('prev-icon').textContent = selIcon;
+  document.getElementById('prev-name').textContent = name;
+  document.getElementById('prev-desc').textContent = desc;
+  document.getElementById('preview-mini').style.borderLeft = `3px solid ${selColor}`;
+}
+
+/* ════════════════════════════════════════
+   CONTEXT MENU
+════════════════════════════════════════ */
+function showCtx(e, id) {
+  e.preventDefault();
+  e.stopPropagation();
+  ctxTargetId = id;
+  const menu = document.getElementById('ctx-menu');
+  menu.style.left = Math.min(e.clientX, window.innerWidth  - 180) + 'px';
+  menu.style.top  = Math.min(e.clientY, window.innerHeight - 200) + 'px';
+  menu.classList.add('open');
+}
+
+function hideCtx() {
+  document.getElementById('ctx-menu').classList.remove('open');
+}
+
+function ctxOpen() {
+  const p = pages.find(x => x.id === ctxTargetId);
+  if (p) window.location.href = p.url;
+  hideCtx();
+}
+
+function ctxOpenNew() {
+  const p = pages.find(x => x.id === ctxTargetId);
+  if (p) window.open(p.url, '_blank');
+  hideCtx();
+}
+
+function ctxEdit() {
+  openModal(ctxTargetId);
+  hideCtx();
+}
+
+function ctxPin() {
+  const p = pages.find(x => x.id === ctxTargetId);
+  if (p) {
+    p.pinned = !p.pinned;
+    save(); render();
+    toast(p.pinned ? '📌 Page pinned!' : '📌 Page unpinned!', 'info');
+  }
+  hideCtx();
+}
+
+function ctxDelete() {
+  const p = pages.find(x => x.id === ctxTargetId);
+  if (!p) return;
+  if (confirm(`Delete "${p.name}"? This cannot be undone.`)) {
+    pages = pages.filter(x => x.id !== ctxTargetId);
+    save(); render();
+    toast('🗑️ Page deleted.', 'info');
+  }
+  hideCtx();
+}
+
+document.addEventListener('click', hideCtx);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); hideCtx(); } });
+
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
+function toast(msg, type = 'info') {
+  const wrap = document.getElementById('toast-wrap');
+  const el   = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 3100);
+}
+
+/* ════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════ */
+function cap(s)         { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+function badgeLabel(b)  {
+  return { new:'🟢 New', hot:'🔥 Hot', pin:'📌 Pin', done:'✅ Done' }[b] || '';
+}
+
+/* ════════════════════════════════════════
+   KEYBOARD SHORTCUT — Ctrl+K = focus search
+════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    document.querySelector('.nav-search').focus();
+  }
+});
+
+/* ════════════════════════════════════════
+   BOOT
+════════════════════════════════════════ */
+init();
 </script>
 </body>
 </html>
