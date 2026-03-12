@@ -59,7 +59,7 @@ const SKYDASH_PAGES = [
     pinned: false,
     newTab: false,
     tags: ['Confidential', 'Docs'],
-    passwordProtected: true    // ← 🔒 This page requires password to open
+    passwordProtected: true    
   }
   // ─────────────────────────────────────────────────────
   // ADD MORE PAGES BELOW — push to Git and everyone sees!
