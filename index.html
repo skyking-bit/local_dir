@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SkyDash — Navigation Hub</title>
   <style>
-    /* ══════════════════════════════════════════
-       ROOT VARIABLES
-    ══════════════════════════════════════════ */
     :root {
       --teal:      #009999;
       --teal-l:    #00d7be;
@@ -37,7 +34,6 @@
     ::-webkit-scrollbar-track{background:#0a0c0e}
     ::-webkit-scrollbar-thumb{background:var(--teal);border-radius:4px}
 
-    /* ══ BG GRID ══ */
     body::before{
       content:'';position:fixed;inset:0;
       background-image:linear-gradient(rgba(0,153,153,0.035) 1px,transparent 1px),
@@ -50,11 +46,9 @@
     .b3{width:320px;height:320px;background:rgba(180,111,255,0.04);top:45%;left:55%;animation-delay:9s}
     @keyframes blobF{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,-18px) scale(1.06)}}
 
-    nav,.hero,.main,footer,.overlay{position:relative;z-index:1}
+    nav,.hero,.main,footer{position:relative;z-index:1}
 
-    /* ══════════════════════════════════════════
-       NAV
-    ══════════════════════════════════════════ */
+    /* ── NAV ── */
     nav{
       position:sticky;top:0;z-index:500;height:62px;
       background:rgba(15,18,20,0.94);backdrop-filter:blur(20px);
@@ -72,7 +66,6 @@
     }
     .brand-name{font-size:1rem;font-weight:800;letter-spacing:2px;color:var(--teal);text-transform:uppercase}
     .brand-sub{font-size:.68rem;color:var(--muted)}
-
     .nav-pills{display:flex;gap:.35rem}
     .npill{
       padding:.3rem .85rem;border-radius:20px;font-size:.74rem;font-weight:600;
@@ -80,7 +73,6 @@
       background:none;transition:all .2s;text-transform:uppercase;letter-spacing:.5px
     }
     .npill:hover,.npill.active{background:var(--teal);color:#fff;border-color:var(--teal)}
-
     .nav-right{display:flex;align-items:center;gap:.7rem}
     .srch-wrap{position:relative;display:flex;align-items:center}
     .srch-ico{position:absolute;left:.7rem;font-size:.82rem;color:var(--muted)}
@@ -91,8 +83,6 @@
     }
     .nav-srch:focus{border-color:var(--teal);width:235px}
     .nav-srch::placeholder{color:var(--muted)}
-
-    /* Admin badge */
     .admin-badge{
       display:flex;align-items:center;gap:.4rem;
       background:rgba(0,153,153,0.12);border:1px solid rgba(0,153,153,0.35);
@@ -101,7 +91,6 @@
     }
     .admin-badge:hover{background:rgba(0,153,153,0.22)}
     .admin-badge.locked{background:rgba(224,82,82,0.1);border-color:rgba(224,82,82,0.35);color:var(--red)}
-
     .vt-wrap{display:flex;gap:.25rem;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:.18rem}
     .vtb{
       width:28px;height:28px;border-radius:14px;border:none;
@@ -109,7 +98,6 @@
       display:flex;align-items:center;justify-content:center;transition:all .2s
     }
     .vtb.active{background:var(--teal);color:#fff}
-
     .add-btn{
       display:flex;align-items:center;gap:.4rem;
       background:linear-gradient(135deg,var(--teal),var(--teal-l));
@@ -120,9 +108,7 @@
     .add-btn:hover{transform:translateY(-1px);box-shadow:0 5px 22px rgba(0,153,153,0.42)}
     .add-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
-    /* ══════════════════════════════════════════
-       HERO
-    ══════════════════════════════════════════ */
+    /* ── HERO ── */
     .hero{
       padding:2.8rem 2rem 2rem;
       background:linear-gradient(155deg,#0b1416 0%,#0d2020 50%,#0b1416 100%);
@@ -140,23 +126,19 @@
     .hst-n{font-size:1.75rem;font-weight:900;color:var(--teal-l);line-height:1}
     .hst-l{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:.22rem}
 
-    /* ══════════════════════════════════════════
-       MAIN
-    ══════════════════════════════════════════ */
+    /* ── MAIN ── */
     .main{max-width:1300px;margin:0 auto;padding:1.8rem 1.5rem 3rem}
-
     .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;flex-wrap:wrap;gap:.7rem}
     .sec-title{font-size:.98rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.5rem;padding-bottom:.45rem;border-bottom:2px solid var(--teal)}
     .sec-cnt{font-size:.7rem;color:var(--muted);background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:.18rem .55rem}
-
     .chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.3rem}
     .chip{padding:.26rem .78rem;border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid var(--border);color:var(--muted);background:var(--card2);transition:all .18s}
     .chip:hover,.chip.active{background:var(--teal);color:#fff;border-color:var(--teal)}
 
-    /* ══ GRID ══ */
+    /* ── GRID ── */
     .cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:1.1rem}
 
-    /* ══ PAGE CARD ══ */
+    /* ── PAGE CARD ── */
     .pc{
       background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
       overflow:hidden;cursor:pointer;transition:all .25s;position:relative;
@@ -164,10 +146,9 @@
       animation:cIn .4s ease both
     }
     .pc:hover{border-color:var(--teal);transform:translateY(-5px);box-shadow:var(--glow),var(--shadow)}
-    .pc.hidden{display:none}
+    .pc.pw-protected{border-color:rgba(224,82,82,0.35)}
+    .pc.pw-protected:hover{border-color:var(--red);box-shadow:0 0 28px rgba(224,82,82,0.22),var(--shadow)}
     @keyframes cIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-
-    /* Edit overlay buttons — only visible in admin mode */
     .pc-edit-btns{
       position:absolute;top:.6rem;right:.6rem;
       display:flex;gap:.3rem;z-index:10;
@@ -185,7 +166,6 @@
     .peb-del:hover{background:var(--red)}
     .peb-pin{background:rgba(77,166,255,0.8);color:#fff}
     .peb-pin:hover{background:var(--blue)}
-
     .c-accent{height:4px;width:100%}
     .c-head{padding:1.1rem 1.1rem .55rem;display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem}
     .c-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
@@ -196,6 +176,7 @@
     .b-pin{background:rgba(77,166,255,.18);color:var(--blue);border:1px solid rgba(77,166,255,.4)}
     .b-done{background:rgba(0,153,153,.18);color:var(--teal-l);border:1px solid rgba(0,153,153,.4)}
     .b-doc{background:rgba(180,111,255,.18);color:var(--pur);border:1px solid rgba(180,111,255,.4)}
+    .b-lock{background:rgba(224,82,82,.18);color:var(--red);border:1px solid rgba(224,82,82,.4)}
     .c-body{padding:0 1.1rem .75rem;flex:1}
     .c-name{font-size:.93rem;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:.3rem}
     .c-desc{font-size:.74rem;color:var(--muted);line-height:1.65}
@@ -205,8 +186,9 @@
     .c-cat{font-size:.66rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
     .c-arr{width:27px;height:27px;border-radius:8px;background:rgba(0,153,153,0.12);border:1px solid rgba(0,153,153,0.3);display:flex;align-items:center;justify-content:center;font-size:.82rem;color:var(--teal);transition:all .2s}
     .pc:hover .c-arr{background:var(--teal);color:#fff;transform:translateX(2px)}
+    .lock-ribbon{position:absolute;top:0;left:0;right:0;background:linear-gradient(to bottom,rgba(224,82,82,0.18),transparent);height:38px;pointer-events:none;border-radius:var(--radius) var(--radius) 0 0}
 
-    /* ══ LIST VIEW ══ */
+    /* ── LIST VIEW ── */
     .cl-wrap{display:flex;flex-direction:column;gap:.6rem}
     .lc{
       background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
@@ -215,7 +197,8 @@
       animation:cIn .35s ease both
     }
     .lc:hover{border-color:var(--teal);transform:translateX(5px);box-shadow:var(--glow)}
-    .lc.hidden{display:none}
+    .lc.pw-protected{border-color:rgba(224,82,82,0.35)}
+    .lc.pw-protected:hover{border-color:var(--red);box-shadow:0 0 20px rgba(224,82,82,0.18)}
     .lc-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0}
     .lc-body{flex:1;min-width:0}
     .lc-name{font-size:.86rem;font-weight:700;color:var(--text)}
@@ -224,16 +207,16 @@
     .lc-cat{font-size:.66rem;color:var(--muted);font-weight:600;text-transform:uppercase}
     .lc-arr{font-size:.95rem;color:var(--teal);transition:transform .2s}
     .lc:hover .lc-arr{transform:translateX(3px)}
-    /* list edit btns */
     .lc-ebtns{display:flex;gap:.25rem;opacity:0;pointer-events:none;transition:opacity .2s}
     .lc:hover .lc-ebtns.admin-on{opacity:1;pointer-events:all}
 
-    /* ══ PINNED ROW ══ */
+    /* ── PINNED ROW ── */
     .feat-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1rem;margin-bottom:2rem}
     .fc{
       background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid var(--border);
       border-radius:var(--radius);padding:1.25rem;display:flex;align-items:center;gap:1rem;
-      text-decoration:none;color:inherit;transition:all .25s;position:relative;overflow:hidden
+      text-decoration:none;color:inherit;transition:all .25s;position:relative;overflow:hidden;
+      cursor:pointer
     }
     .fc::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,153,153,0.06),transparent);opacity:0;transition:opacity .25s}
     .fc:hover{border-color:var(--teal);transform:translateY(-3px);box-shadow:var(--glow)}
@@ -246,25 +229,23 @@
     .fc-arr{font-size:1.15rem;color:var(--teal);transition:transform .2s;flex-shrink:0}
     .fc:hover .fc-arr{transform:translateX(4px)}
 
-    /* ══ EMPTY STATE ══ */
+    /* ── EMPTY STATE ── */
     .empty{text-align:center;padding:4rem 2rem;display:none}
     .empty.show{display:block}
     .empty-ico{font-size:3rem;margin-bottom:.9rem}
     .empty-t{font-size:.98rem;font-weight:700;color:var(--text);margin-bottom:.35rem}
     .empty-s{font-size:.78rem;color:var(--muted)}
 
-    /* ══════════════════════════════════════════
-       ADMIN PASSWORD MODAL
-    ══════════════════════════════════════════ */
+    /* ── OVERLAY BASE ── */
     .overlay{
       position:fixed;inset:0;z-index:900;
-      background:rgba(0,0,0,0.78);backdrop-filter:blur(8px);
+      background:rgba(0,0,0,0.82);backdrop-filter:blur(10px);
       display:flex;align-items:center;justify-content:center;
       opacity:0;pointer-events:none;transition:opacity .3s
     }
     .overlay.open{opacity:1;pointer-events:all}
 
-    /* Admin lock modal */
+    /* ── ADMIN MODAL ── */
     .admin-modal{
       background:var(--card);border:1px solid var(--border);border-radius:20px;
       width:100%;max-width:400px;padding:2rem;
@@ -272,13 +253,14 @@
       transform:translateY(28px) scale(.97);transition:transform .3s ease
     }
     .overlay.open .admin-modal{transform:translateY(0) scale(1)}
-
     .am-head{text-align:center;margin-bottom:1.5rem}
-    .am-lock-ico{font-size:3rem;animation:lockPulse 2.5s ease-in-out infinite;display:block;margin-bottom:.6rem}
-    @keyframes lockPulse{0%,100%{filter:drop-shadow(0 0 8px rgba(0,153,153,.4));transform:scale(1)}50%{filter:drop-shadow(0 0 20px rgba(0,215,190,.7));transform:scale(1.08)}}
+    .am-lock-ico{font-size:3rem;display:block;margin-bottom:.6rem}
+    .am-lock-ico.pulse-teal{animation:lockTeal 2.5s ease-in-out infinite}
+    .am-lock-ico.pulse-red {animation:lockRed  2.5s ease-in-out infinite}
+    @keyframes lockTeal{0%,100%{filter:drop-shadow(0 0 8px rgba(0,153,153,.4));transform:scale(1)}50%{filter:drop-shadow(0 0 20px rgba(0,215,190,.7));transform:scale(1.08)}}
+    @keyframes lockRed {0%,100%{filter:drop-shadow(0 0 8px rgba(224,82,82,.4));transform:scale(1)}50%{filter:drop-shadow(0 0 20px rgba(224,82,82,.8));transform:scale(1.08)}}
     .am-title{font-size:1.1rem;font-weight:900;color:var(--text)}
     .am-sub{font-size:.76rem;color:var(--muted);margin-top:.3rem;line-height:1.6}
-
     .pw-wrap{position:relative;margin-bottom:.8rem}
     .pw-input{
       width:100%;background:var(--dark2);border:2px solid var(--border);border-radius:11px;
@@ -286,7 +268,7 @@
       outline:none;letter-spacing:.12em;transition:border-color .25s,box-shadow .25s;font-family:inherit
     }
     .pw-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,153,153,0.18)}
-    .pw-input.err{border-color:var(--red);box-shadow:0 0 0 3px rgba(224,82,82,0.15);animation:shake .4s ease}
+    .pw-input.err{border-color:var(--red) !important;box-shadow:0 0 0 3px rgba(224,82,82,0.15) !important;animation:shake .4s ease}
     @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
     .pw-eye{position:absolute;right:.85rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted);transition:color .2s}
     .pw-eye:hover{color:var(--teal)}
@@ -294,15 +276,16 @@
     .pw-err.show{opacity:1}
     .pw-attempts{font-size:.7rem;color:var(--muted);text-align:center;margin-bottom:.6rem}
     .pw-attempts span{color:var(--org);font-weight:700}
-
     .am-btn{
-      width:100%;background:linear-gradient(135deg,var(--teal),var(--teal-l));
-      color:#fff;border:none;border-radius:11px;padding:.85rem;
+      width:100%;border:none;border-radius:11px;padding:.85rem;
       font-size:.92rem;font-weight:800;cursor:pointer;transition:all .2s;
-      letter-spacing:.5px;box-shadow:0 4px 16px var(--teal-glow)
+      letter-spacing:.5px;color:#fff
     }
-    .am-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 22px rgba(0,153,153,0.45)}
-    .am-btn:disabled{cursor:not-allowed;opacity:.5}
+    .am-btn.teal-btn{background:linear-gradient(135deg,var(--teal),var(--teal-l));box-shadow:0 4px 16px var(--teal-glow)}
+    .am-btn.teal-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 22px rgba(0,153,153,0.45)}
+    .am-btn.red-btn{background:linear-gradient(135deg,#c0392b,var(--red));box-shadow:0 4px 16px rgba(224,82,82,0.3)}
+    .am-btn.red-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 22px rgba(224,82,82,0.45)}
+    .am-btn:disabled{cursor:not-allowed;opacity:.5;transform:none !important}
     .am-cancel{
       width:100%;margin-top:.6rem;background:none;border:1px solid var(--border);
       border-radius:11px;padding:.65rem;font-size:.82rem;color:var(--muted);
@@ -310,9 +293,7 @@
     }
     .am-cancel:hover{border-color:var(--teal);color:var(--text)}
 
-    /* ══════════════════════════════════════════
-       ADD/EDIT PAGE MODAL
-    ══════════════════════════════════════════ */
+    /* ── ADD/EDIT MODAL ── */
     .modal{
       background:var(--card);border:1px solid var(--border);border-radius:20px;
       width:100%;max-width:530px;padding:2rem;
@@ -325,7 +306,6 @@
     .m-title{font-size:1.02rem;font-weight:800;color:var(--text)}
     .m-close{width:32px;height:32px;border-radius:8px;background:var(--card2);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
     .m-close:hover{background:var(--red);color:#fff;border-color:var(--red)}
-
     .fg{margin-bottom:1rem}
     .fl{font-size:.75rem;font-weight:700;color:var(--muted);margin-bottom:.38rem;display:block;text-transform:uppercase;letter-spacing:.5px}
     .fi,.fs,.fta{
@@ -336,38 +316,27 @@
     .fi:focus,.fs:focus,.fta:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,153,153,0.14)}
     .fta{resize:vertical;min-height:65px}
     .fs option{background:var(--dark2)}
-
-    /* Emoji grid */
     .eg{display:grid;grid-template-columns:repeat(8,1fr);gap:.28rem;margin-top:.45rem}
     .eb{width:35px;height:35px;border-radius:8px;border:1px solid var(--border);background:var(--dark2);cursor:pointer;font-size:1.05rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
     .eb:hover,.eb.sel{background:var(--teal);border-color:var(--teal);transform:scale(1.1)}
-
-    /* Color row */
     .cr{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.45rem}
     .cd{width:27px;height:27px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s}
     .cd:hover,.cd.sel{border-color:#fff;transform:scale(1.18)}
-
-    /* Badge row */
     .br{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.45rem}
     .bp{padding:.22rem .6rem;border-radius:8px;cursor:pointer;font-size:.7rem;font-weight:700;border:1px solid var(--border);background:var(--dark2);color:var(--muted);transition:all .15s}
     .bp:hover,.bp.sel{border-color:var(--teal);color:var(--teal-l);background:rgba(0,153,153,0.1)}
-
-    /* Preview */
     .prev-box{background:var(--dark2);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;margin-top:.4rem}
     .prev-mini{display:flex;align-items:center;gap:.65rem;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:.65rem .85rem}
     .pm-ico{font-size:1.25rem}
     .pm-name{font-size:.83rem;font-weight:700;color:var(--text)}
     .pm-desc{font-size:.7rem;color:var(--muted)}
-
     .m-actions{display:flex;gap:.65rem;margin-top:1.4rem}
     .btn-p{flex:1;background:linear-gradient(135deg,var(--teal),var(--teal-l));color:#fff;border:none;border-radius:10px;padding:.72rem;font-size:.86rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px var(--teal-glow)}
     .btn-p:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,153,153,0.42)}
     .btn-s{padding:.72rem 1.1rem;background:var(--card2);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:.86rem;font-weight:600;cursor:pointer;transition:all .2s}
     .btn-s:hover{border-color:var(--teal);color:var(--text)}
 
-    /* ══════════════════════════════════════════
-       DOCUMENT UPLOAD MODAL
-    ══════════════════════════════════════════ */
+    /* ── DOC MODAL ── */
     .doc-modal{
       background:var(--card);border:1px solid var(--border);border-radius:20px;
       width:100%;max-width:580px;padding:2rem;
@@ -376,12 +345,9 @@
       max-height:90vh;overflow-y:auto
     }
     .overlay.open .doc-modal{transform:translateY(0) scale(1)}
-
-    /* Drop zone */
     .drop-zone{
       border:2px dashed var(--border);border-radius:14px;padding:2.5rem 1.5rem;
-      text-align:center;cursor:pointer;transition:all .25s;position:relative;
-      background:var(--dark2)
+      text-align:center;cursor:pointer;transition:all .25s;position:relative;background:var(--dark2)
     }
     .drop-zone:hover,.drop-zone.drag-over{border-color:var(--teal);background:rgba(0,153,153,0.06)}
     .drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
@@ -390,54 +356,56 @@
     .dz-sub{font-size:.76rem;color:var(--muted);line-height:1.6}
     .dz-types{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
     .dz-type{font-size:.65rem;padding:.15rem .5rem;border-radius:6px;background:rgba(0,153,153,0.12);color:var(--teal-l);border:1px solid rgba(0,153,153,0.3);font-weight:600}
-
-    /* File preview list */
     .file-list{margin-top:1rem;display:flex;flex-direction:column;gap:.5rem}
-    .file-item{
-      background:var(--card2);border:1px solid var(--border);border-radius:10px;
-      padding:.65rem .9rem;display:flex;align-items:center;gap:.75rem
-    }
+    .file-item{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:.65rem .9rem;display:flex;align-items:center;gap:.75rem}
     .fi-ico{font-size:1.3rem;flex-shrink:0}
     .fi-body{flex:1;min-width:0}
     .fi-name{font-size:.8rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .fi-size{font-size:.68rem;color:var(--muted);margin-top:.1rem}
     .fi-remove{background:rgba(224,82,82,0.15);border:1px solid rgba(224,82,82,0.35);color:var(--red);border-radius:7px;padding:.2rem .5rem;font-size:.7rem;cursor:pointer;transition:all .15s;flex-shrink:0}
     .fi-remove:hover{background:var(--red);color:#fff}
-
-    /* Parse options */
     .parse-opts{background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:1rem}
     .po-title{font-size:.78rem;font-weight:700;color:var(--teal-l);margin-bottom:.7rem;text-transform:uppercase;letter-spacing:.5px}
     .po-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
     .po-item{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--muted);cursor:pointer}
     .po-item input{accent-color:var(--teal);width:14px;height:14px}
-
-    /* Import result */
-    .import-result{
-      background:var(--dark2);border:1px solid var(--border);border-radius:12px;
-      padding:1rem;margin-top:1rem;display:none
-    }
+    .import-result{background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:1rem;display:none}
     .import-result.show{display:block}
     .ir-title{font-size:.8rem;font-weight:700;color:var(--teal-l);margin-bottom:.6rem}
     .ir-cards{display:flex;flex-direction:column;gap:.4rem;max-height:200px;overflow-y:auto}
-    .ir-card{
-      background:var(--card);border:1px solid var(--border);border-radius:9px;
-      padding:.55rem .8rem;display:flex;align-items:center;gap:.6rem;
-      font-size:.76rem
-    }
+    .ir-card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:.55rem .8rem;display:flex;align-items:center;gap:.6rem;font-size:.76rem}
     .ir-card input[type=checkbox]{accent-color:var(--teal)}
     .ir-ico{font-size:1rem}
     .ir-info{flex:1}
     .ir-name{font-weight:700;color:var(--text)}
     .ir-url{color:var(--muted);font-size:.68rem;margin-top:.1rem}
-
-    /* Progress bar */
     .parse-progress{margin-top:.8rem;display:none}
     .parse-progress.show{display:block}
     .pp-bar-wrap{height:6px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:.4rem}
     .pp-bar{height:100%;background:linear-gradient(to right,var(--teal),var(--teal-l));width:0;transition:width .3s;border-radius:4px}
     .pp-label{font-size:.72rem;color:var(--muted)}
 
-    /* ══ CONTEXT MENU ══ */
+    /* ── ADMIN BAR ── */
+    .admin-bar{
+      background:linear-gradient(90deg,rgba(0,153,153,0.15),rgba(0,215,190,0.08),rgba(0,153,153,0.15));
+      border-bottom:1px solid rgba(0,153,153,0.35);
+      padding:.45rem 1.8rem;display:none;align-items:center;justify-content:space-between;
+      font-size:.75rem;position:sticky;top:62px;z-index:490;backdrop-filter:blur(10px)
+    }
+    .admin-bar.show{display:flex}
+    .ab-left{display:flex;align-items:center;gap:.6rem;color:var(--teal-l);font-weight:600}
+    .ab-dot{width:7px;height:7px;border-radius:50%;background:var(--grn);animation:abPulse 1.5s ease-in-out infinite}
+    @keyframes abPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
+    .ab-right{display:flex;gap:.5rem}
+    .ab-btn{padding:.25rem .7rem;border-radius:8px;font-size:.7rem;font-weight:700;cursor:pointer;border:1px solid;transition:all .15s}
+    .ab-btn-teal{background:rgba(0,153,153,0.15);border-color:rgba(0,153,153,0.4);color:var(--teal-l)}
+    .ab-btn-teal:hover{background:var(--teal);color:#fff}
+    .ab-btn-pur{background:rgba(180,111,255,0.15);border-color:rgba(180,111,255,0.4);color:var(--pur)}
+    .ab-btn-pur:hover{background:var(--pur);color:#fff}
+    .ab-btn-red{background:rgba(224,82,82,0.12);border-color:rgba(224,82,82,0.35);color:var(--red)}
+    .ab-btn-red:hover{background:var(--red);color:#fff}
+
+    /* ── CONTEXT MENU ── */
     .ctx{
       position:fixed;z-index:800;background:var(--card2);border:1px solid var(--border);
       border-radius:12px;padding:.4rem;box-shadow:0 12px 32px rgba(0,0,0,0.55);
@@ -449,7 +417,7 @@
     .ci.danger:hover{background:rgba(224,82,82,0.12);color:var(--red)}
     .cd-sep{height:1px;background:var(--border);margin:.28rem 0}
 
-    /* ══ TOAST ══ */
+    /* ── TOAST ── */
     .toast-wrap{position:fixed;bottom:1.4rem;right:1.4rem;z-index:1000;display:flex;flex-direction:column;gap:.45rem}
     .toast{
       background:var(--card2);border:1px solid var(--border);border-radius:12px;
@@ -463,29 +431,6 @@
     .toast.warn{border-color:var(--org)}
     @keyframes tIn{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
     @keyframes tOut{from{opacity:1}to{opacity:0;transform:translateX(28px)}}
-
-    /* ══ ADMIN INDICATOR BAR ══ */
-    .admin-bar{
-      background:linear-gradient(90deg,rgba(0,153,153,0.15),rgba(0,215,190,0.08),rgba(0,153,153,0.15));
-      border-bottom:1px solid rgba(0,153,153,0.35);
-      padding:.45rem 1.8rem;display:none;align-items:center;justify-content:space-between;
-      font-size:.75rem;position:sticky;top:62px;z-index:490;backdrop-filter:blur(10px)
-    }
-    .admin-bar.show{display:flex}
-    .ab-left{display:flex;align-items:center;gap:.6rem;color:var(--teal-l);font-weight:600}
-    .ab-dot{width:7px;height:7px;border-radius:50%;background:var(--grn);animation:abPulse 1.5s ease-in-out infinite}
-    @keyframes abPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
-    .ab-right{display:flex;gap:.5rem}
-    .ab-btn{
-      padding:.25rem .7rem;border-radius:8px;font-size:.7rem;font-weight:700;
-      cursor:pointer;border:1px solid;transition:all .15s
-    }
-    .ab-btn-teal{background:rgba(0,153,153,0.15);border-color:rgba(0,153,153,0.4);color:var(--teal-l)}
-    .ab-btn-teal:hover{background:var(--teal);color:#fff}
-    .ab-btn-pur{background:rgba(180,111,255,0.15);border-color:rgba(180,111,255,0.4);color:var(--pur)}
-    .ab-btn-pur:hover{background:var(--pur);color:#fff}
-    .ab-btn-red{background:rgba(224,82,82,0.12);border-color:rgba(224,82,82,0.35);color:var(--red)}
-    .ab-btn-red:hover{background:var(--red);color:#fff}
 
     footer{text-align:center;padding:1.4rem;font-size:.7rem;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem}
     footer span{color:var(--teal)}
@@ -506,14 +451,11 @@
 </head>
 <body>
 
-<!-- Background blobs -->
 <div class="blob b1"></div>
 <div class="blob b2"></div>
 <div class="blob b3"></div>
 
-<!-- ══════════════════════════════════════════
-     ADMIN MODE INDICATOR BAR
-══════════════════════════════════════════ -->
+<!-- ── ADMIN BAR ── -->
 <div class="admin-bar" id="admin-bar">
   <div class="ab-left">
     <div class="ab-dot"></div>
@@ -526,9 +468,7 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     TOP NAV
-══════════════════════════════════════════ -->
+<!-- ── NAV ── -->
 <nav>
   <a href="#" class="brand">
     <div class="brand-box">S</div>
@@ -537,7 +477,6 @@
       <div class="brand-sub"></div>
     </div>
   </a>
-
   <div class="nav-pills">
     <button class="npill active" onclick="filterCat('all',this)">All</button>
     <button class="npill" onclick="filterCat('design',this)">Design</button>
@@ -545,7 +484,6 @@
     <button class="npill" onclick="filterCat('docs',this)">Docs</button>
     <button class="npill" onclick="filterCat('misc',this)">Misc</button>
   </div>
-
   <div class="nav-right">
     <div class="srch-wrap">
       <span class="srch-ico">🔍</span>
@@ -555,22 +493,19 @@
       <button class="vtb active" id="vt-g" onclick="setView('grid')" title="Grid">⊞</button>
       <button class="vtb"        id="vt-l" onclick="setView('list')" title="List">☰</button>
     </div>
-    <!-- Admin toggle button -->
     <div class="admin-badge locked" id="admin-badge" onclick="handleAdminClick()" title="Click to unlock editing">
       🔒 <span id="admin-badge-txt">Admin</span>
     </div>
-    <button class="add-btn" id="add-btn" onclick="guardedAdd()" disabled title="Unlock admin to add pages">➕ Add Page</button>
+    <button class="add-btn" id="add-btn" onclick="guardedAdd()" disabled>➕ Add Page</button>
   </div>
 </nav>
 
-<!-- ══════════════════════════════════════════
-     HERO
-══════════════════════════════════════════ -->
+<!-- ── HERO ── -->
 <div class="hero">
   <div class="hero-in">
     <div class="hero-left">
       <h1>Your <span class="hl">Interactive</span><br/>Navigation Hub</h1>
-      <p>🔒 Admin-protected SKY</p>
+      <p>🔒 Admin-protected SKY dashboard</p>
       <div class="htags">
         <span class="htag">🔒 Edit Protected</span>
         <span class="htag">📂 Doc Import</span>
@@ -581,31 +516,25 @@
       </div>
     </div>
     <div class="hstats">
-      <div class="hst"><div class="hst-n" id="st-total">3</div><div class="hst-l">Pages</div></div>
-      <div class="hst"><div class="hst-n" id="st-pinned">1</div><div class="hst-l">Pinned</div></div>
-      <div class="hst"><div class="hst-n" id="st-cats">3</div><div class="hst-l">Categories</div></div>
+      <div class="hst"><div class="hst-n" id="st-total">0</div><div class="hst-l">Pages</div></div>
+      <div class="hst"><div class="hst-n" id="st-pinned">0</div><div class="hst-l">Pinned</div></div>
+      <div class="hst"><div class="hst-n" id="st-cats">0</div><div class="hst-l">Categories</div></div>
       <div class="hst"><div class="hst-n" id="st-docs">0</div><div class="hst-l">Imported</div></div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     MAIN
-══════════════════════════════════════════ -->
+<!-- ── MAIN ── -->
 <div class="main">
-
-  <!-- Pinned -->
   <section id="pin-sec">
     <div class="sec-head">
       <div class="sec-title">📌 Pinned Pages</div>
     </div>
     <div class="feat-row" id="feat-row"></div>
   </section>
-
-  <!-- All pages -->
   <section>
     <div class="sec-head">
-      <div class="sec-title">🗂️ All Pages <span class="sec-cnt" id="vis-cnt">3 pages</span></div>
+      <div class="sec-title">🗂️ All Pages <span class="sec-cnt" id="vis-cnt">0 pages</span></div>
       <div class="chips" style="margin-bottom:0">
         <span class="chip active" onclick="filterTag('all',this)">All</span>
         <span class="chip" onclick="filterTag('design',this)">Design</span>
@@ -629,47 +558,90 @@
   🔒 Edit protected · 📂 Document import supported · 💾 Auto-saved locally
 </footer>
 
-<!-- ══════════════════════════════════════════
+<!-- ════════════════════════════════════════
+     INDEX GATE MODAL  (password wall for the whole dashboard)
+════════════════════════════════════════ -->
+<div class="overlay" id="gate-overlay">
+  <div class="admin-modal">
+    <div class="am-head">
+      <span class="am-lock-ico pulse-red">🔐</span>
+      <div class="am-title">SkyDash — Access Required</div>
+      <div class="am-sub">This dashboard is password protected.<br/>Enter the password to continue.</div>
+    </div>
+    <div class="pw-wrap">
+      <input class="pw-input" id="gate-input" type="password"
+             placeholder="Enter dashboard password…" maxlength="32" autocomplete="off"
+             onkeydown="if(event.key==='Enter')tryGateUnlock()"/>
+      <button class="pw-eye" onclick="toggleEye('gate-input')">👁</button>
+    </div>
+    <div class="pw-err" id="gate-err">Incorrect password. Please try again.</div>
+    <button class="am-btn red-btn" id="gate-btn" onclick="tryGateUnlock()">🔓 Enter Dashboard</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
      ADMIN PASSWORD MODAL
-══════════════════════════════════════════ -->
+════════════════════════════════════════ -->
 <div class="overlay" id="pw-overlay" onclick="handlePwOverlay(event)">
   <div class="admin-modal">
     <div class="am-head">
-      <span class="am-lock-ico" id="pw-lock-ico">🔐</span>
-      <div class="am-title" id="pw-modal-title">Admin Access</div>
-      <div class="am-sub" id="pw-modal-sub">Enter your admin password to unlock editing features.</div>
+      <span class="am-lock-ico pulse-teal">🔐</span>
+      <div class="am-title">Admin Access</div>
+      <div class="am-sub">Enter your admin password to unlock editing features.</div>
     </div>
     <div class="pw-wrap">
-      <input class="pw-input" id="pw-input" type="password" placeholder="Enter admin password…"
-             maxlength="32" autocomplete="off" onkeydown="if(event.key==='Enter')tryUnlock()"/>
-      <button class="pw-eye" onclick="togglePwEye()">👁</button>
+      <input class="pw-input" id="pw-input" type="password"
+             placeholder="Enter admin password…" maxlength="32" autocomplete="off"
+             onkeydown="if(event.key==='Enter')tryUnlock()"/>
+      <button class="pw-eye" onclick="toggleEye('pw-input')">👁</button>
     </div>
     <div class="pw-err" id="pw-err">Incorrect password. Please try again.</div>
     <div class="pw-attempts" id="pw-attempts" style="display:none">
       Failed attempts: <span id="pw-att-cnt">0</span> / 5
     </div>
-    <button class="am-btn" id="pw-btn" onclick="tryUnlock()">🔓 Unlock Admin</button>
+    <button class="am-btn teal-btn" id="pw-btn" onclick="tryUnlock()">🔓 Unlock Admin</button>
     <button class="am-cancel" onclick="closePwModal()">Cancel</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
+<!-- ════════════════════════════════════════
+     PAGE PASSWORD MODAL  (per-card protection)
+════════════════════════════════════════ -->
+<div class="overlay" id="page-pw-overlay" onclick="handlePagePwOverlay(event)">
+  <div class="admin-modal" style="border-color:rgba(224,82,82,0.4)">
+    <div class="am-head">
+      <span class="am-lock-ico pulse-red">🔐</span>
+      <div class="am-title">Protected Page</div>
+      <div class="am-sub" id="page-pw-sub">This page is password protected.</div>
+    </div>
+    <div class="pw-wrap">
+      <input class="pw-input" id="page-pw-input" type="password"
+             placeholder="Enter page password…" maxlength="32" autocomplete="off"
+             onkeydown="if(event.key==='Enter')tryPageUnlock()"/>
+      <button class="pw-eye" onclick="toggleEye('page-pw-input')">👁</button>
+    </div>
+    <div class="pw-err" id="page-pw-err">Incorrect password. Please try again.</div>
+    <button class="am-btn red-btn" id="page-pw-btn" onclick="tryPageUnlock()">🔓 Unlock Page</button>
+    <button class="am-cancel" id="page-pw-cancel" onclick="closePagePwModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
      ADD / EDIT PAGE MODAL
-══════════════════════════════════════════ -->
+════════════════════════════════════════ -->
 <div class="overlay" id="edit-overlay" onclick="handleEditOverlay(event)">
   <div class="modal">
     <div class="m-head">
       <div class="m-title" id="edit-title">➕ Add New Page</div>
       <button class="m-close" onclick="closeEditModal()">✕</button>
     </div>
-
     <div class="fg">
       <label class="fl">Page Name *</label>
       <input class="fi" id="f-name" type="text" placeholder="e.g. Memory Module" oninput="updatePrev()"/>
     </div>
     <div class="fg">
       <label class="fl">Page URL / Path *</label>
-      <input class="fi" id="f-url" type="text" placeholder="e.g. select/mem.html or https://…" oninput="updatePrev()"/>
+      <input class="fi" id="f-url" type="text" placeholder="e.g. select/mem.html" oninput="updatePrev()"/>
     </div>
     <div class="fg">
       <label class="fl">Description</label>
@@ -695,12 +667,12 @@
     <div class="fg">
       <label class="fl">Badge</label>
       <div class="br">
-        <div class="bp sel" data-b="" onclick="selBadge(this)">None</div>
-        <div class="bp" data-b="new"  onclick="selBadge(this)">🟢 New</div>
-        <div class="bp" data-b="hot"  onclick="selBadge(this)">🔥 Hot</div>
-        <div class="bp" data-b="pin"  onclick="selBadge(this)">📌 Pin</div>
-        <div class="bp" data-b="done" onclick="selBadge(this)">✅ Done</div>
-        <div class="bp" data-b="doc"  onclick="selBadge(this)">📄 Doc</div>
+        <div class="bp sel" data-b=""     onclick="selBadge(this)">None</div>
+        <div class="bp"     data-b="new"  onclick="selBadge(this)">🟢 New</div>
+        <div class="bp"     data-b="hot"  onclick="selBadge(this)">🔥 Hot</div>
+        <div class="bp"     data-b="pin"  onclick="selBadge(this)">📌 Pin</div>
+        <div class="bp"     data-b="done" onclick="selBadge(this)">✅ Done</div>
+        <div class="bp"     data-b="doc"  onclick="selBadge(this)">📄 Doc</div>
       </div>
     </div>
     <div class="fg" style="display:flex;align-items:center;gap:.7rem">
@@ -719,7 +691,6 @@
         </div>
       </div>
     </div>
-
     <div class="m-actions">
       <button class="btn-s" onclick="closeEditModal()">Cancel</button>
       <button class="btn-p" id="edit-save-btn" onclick="savePage()">✓ Add Page</button>
@@ -727,17 +698,15 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     DOCUMENT UPLOAD / IMPORT MODAL
-══════════════════════════════════════════ -->
+<!-- ════════════════════════════════════════
+     DOCUMENT IMPORT MODAL
+════════════════════════════════════════ -->
 <div class="overlay" id="doc-overlay" onclick="handleDocOverlay(event)">
   <div class="doc-modal">
     <div class="m-head">
       <div class="m-title">📂 Import Document as Dashboard Card</div>
       <button class="m-close" onclick="closeDocModal()">✕</button>
     </div>
-
-    <!-- Drop Zone -->
     <div class="drop-zone" id="drop-zone"
          ondragover="dzDragOver(event)" ondragleave="dzDragLeave(event)" ondrop="dzDrop(event)">
       <input type="file" id="doc-file-input" multiple
@@ -745,24 +714,15 @@
              onchange="handleFiles(this.files)"/>
       <span class="dz-ico">📁</span>
       <div class="dz-title">Drop files here or click to browse</div>
-      <div class="dz-sub">Each file becomes a dashboard card automatically.<br/>Supports HTML, text, markdown, JSON, CSV and more.</div>
+      <div class="dz-sub">Each file becomes a dashboard card automatically.</div>
       <div class="dz-types">
-        <span class="dz-type">.html</span>
-        <span class="dz-type">.htm</span>
-        <span class="dz-type">.txt</span>
-        <span class="dz-type">.md</span>
-        <span class="dz-type">.json</span>
-        <span class="dz-type">.csv</span>
-        <span class="dz-type">.v / .sv</span>
-        <span class="dz-type">.js</span>
-        <span class="dz-type">.css</span>
+        <span class="dz-type">.html</span><span class="dz-type">.md</span>
+        <span class="dz-type">.txt</span><span class="dz-type">.json</span>
+        <span class="dz-type">.csv</span><span class="dz-type">.v/.sv</span>
+        <span class="dz-type">.js</span><span class="dz-type">.css</span>
       </div>
     </div>
-
-    <!-- File list -->
     <div class="file-list" id="file-list"></div>
-
-    <!-- Parse options -->
     <div class="parse-opts" id="parse-opts" style="display:none">
       <div class="po-title">⚙️ Import Options</div>
       <div class="po-row">
@@ -774,132 +734,159 @@
         <label class="po-item"><input type="checkbox" id="opt-pin"/>           Pin imported cards</label>
       </div>
     </div>
-
-    <!-- Progress -->
     <div class="parse-progress" id="parse-prog">
       <div class="pp-label" id="pp-label">Parsing files…</div>
       <div class="pp-bar-wrap"><div class="pp-bar" id="pp-bar"></div></div>
     </div>
-
-    <!-- Import result preview -->
     <div class="import-result" id="import-result">
       <div class="ir-title">✅ Ready to Import — Select which cards to add:</div>
       <div class="ir-cards" id="ir-cards"></div>
     </div>
-
     <div class="m-actions" style="margin-top:1.2rem">
       <button class="btn-s" onclick="closeDocModal()">Cancel</button>
-      <button class="btn-p" id="doc-import-btn" onclick="doImport()" style="display:none">
-        ✓ Import Selected Cards
-      </button>
-      <button class="btn-p" id="doc-parse-btn" onclick="parseFiles()">
-        🔍 Analyse Files
-      </button>
+      <button class="btn-p" id="doc-import-btn" onclick="doImport()" style="display:none">✓ Import Selected</button>
+      <button class="btn-p" id="doc-parse-btn"  onclick="parseFiles()">🔍 Analyse Files</button>
     </div>
   </div>
 </div>
 
-<!-- ══ CONTEXT MENU ══ -->
+<!-- ── CONTEXT MENU ── -->
 <div class="ctx" id="ctx">
   <div class="ci" onclick="ctxOpen()">🔗 Open Page</div>
   <div class="ci" onclick="ctxOpenNew()">↗️ Open in New Tab</div>
-  <div class="ci" id="ctx-edit" onclick="ctxEdit()" style="display:none">✏️ Edit Card</div>
-  <div class="ci" id="ctx-pin"  onclick="ctxPin()"  style="display:none">📌 Toggle Pin</div>
-  <div class="cd-sep" id="ctx-sep" style="display:none"></div>
-  <div class="ci danger" id="ctx-del" onclick="ctxDel()" style="display:none">🗑️ Delete Card</div>
+  <div class="ci"        id="ctx-edit" onclick="ctxEdit()" style="display:none">✏️ Edit Card</div>
+  <div class="ci"        id="ctx-pin"  onclick="ctxPin()"  style="display:none">📌 Toggle Pin</div>
+  <div class="cd-sep"    id="ctx-sep"                      style="display:none"></div>
+  <div class="ci danger" id="ctx-del"  onclick="ctxDel()"  style="display:none">🗑️ Delete Card</div>
 </div>
 
-<!-- ══ TOAST ══ -->
+<!-- ── TOAST ── -->
 <div class="toast-wrap" id="toast-wrap"></div>
 
-<!-- ══════════════════════════════════════════
-     JAVASCRIPT
-══════════════════════════════════════════ -->
+<!-- Load pages.js FIRST so SKYDASH_PAGES is available -->
+<script src="pages.js"></script>
+
 <script>
-/* ════════════════════════════════════════
-   CONFIG — CHANGE YOUR PASSWORD HERE ↓
-════════════════════════════════════════ */
-const ADMIN_PASSWORD  = 'coolsky';   // ← Change this to your password
-const MAX_FAILS       = 5;
-const LOCKOUT_MS      = 2 * 60 * 1000; // 2 minutes
-const STORAGE_KEY     = 'skydash_v2';
-const ADMIN_SESS_KEY  = 'skydash_admin';
-const FAIL_KEY        = 'skydash_fails';
-const LOCKOUT_KEY     = 'skydash_lockout';
+/* ══════════════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════════════ */
+const DASHBOARD_PASSWORD = 'coolsky';   // gate password for the whole index
+const ADMIN_PASSWORD     = 'coolsky';   // admin edit password
+const PAGE_PASSWORD      = 'coolsky';   // per-card password
+const MAX_FAILS          = 5;
+const LOCKOUT_MS         = 2 * 60 * 1000;
+const STORAGE_KEY        = 'skydash_v3';        // bumped version clears old stale data
+const ADMIN_SESS_KEY     = 'skydash_admin';
+const GATE_SESS_KEY      = 'skydash_gate';
+const PAGE_UL_KEY        = 'skydash_page_ul';
+const FAIL_KEY           = 'skydash_fails';
+const LOCKOUT_KEY        = 'skydash_lockout';
 
-/* ════════════════════════════════════════
-   DEFAULT PAGES
-════════════════════════════════════════ */
-const DEFAULT_PAGES = [
-  { id:1, name:'Memory',  url:'select/mem.html',  desc:'Access memory design modules, BRAM configurations and reference guides.', category:'design', icon:'🧠', color:'#009999', badge:'pin',  pinned:true,  newTab:false, tags:['BRAM','RAM','Memory'],   imported:false },
-  { id:2, name:'Trigger', url:'select/trig.html', desc:'Configure and explore trigger logic, signal capture and event detection.',  category:'design', icon:'⚡', color:'#f5a623', badge:'hot',  pinned:false, newTab:false, tags:['Trigger','Signal'],      imported:false },
-  { id:3, name:'Veloce',  url:'select/vel.html',  desc:'High-speed emulation, hardware verification and Veloce platform tools.',   category:'tools',  icon:'🚀', color:'#b46fff', badge:'new',  pinned:false, newTab:false, tags:['Emulation','FPGA'],      imported:false },
-];
-
-/* ════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    STATE
-════════════════════════════════════════ */
-let pages       = [];
-let isAdmin     = false;
-let curView     = 'grid';
-let activeFilter= 'all';
-let searchQ     = '';
-let editingId   = null;
-let ctxId       = null;
-let pendingFiles= [];
-let parsedCards = [];
+══════════════════════════════════════════════════ */
+let pages           = [];
+let isAdmin         = false;
+let curView         = 'grid';
+let activeFilter    = 'all';
+let searchQ         = '';
+let editingId       = null;
+let ctxId           = null;
+let pendingFiles    = [];
+let parsedCards     = [];
+let pagePwTargetId  = null;
+let unlockedPageIds = new Set();
 
-/* Modal icon/color/badge selections */
-let selIco   = '📄';
-let selClr   = '#009999';
-let selBadgeV= '';
+let selIco    = '📄';
+let selClr    = '#009999';
+let selBadgeV = '';
 
-/* ════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    BOOT
-════════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 function init() {
+  /* Always rebuild from pages.js as master source,
+     then append any user-added pages from localStorage */
   const saved = localStorage.getItem(STORAGE_KEY);
-  pages = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_PAGES));
+  const jsIds = new Set(SKYDASH_PAGES.map(p => p.id));
+
+  if (saved) {
+    try {
+      const savedPages  = JSON.parse(saved);
+      const userAdded   = savedPages.filter(p => !jsIds.has(p.id));
+      pages = [...JSON.parse(JSON.stringify(SKYDASH_PAGES)), ...userAdded];
+    } catch(e) {
+      pages = JSON.parse(JSON.stringify(SKYDASH_PAGES));
+    }
+  } else {
+    pages = JSON.parse(JSON.stringify(SKYDASH_PAGES));
+  }
+
+  /* Restore unlocked card sessions */
+  try {
+    const ul = JSON.parse(sessionStorage.getItem(PAGE_UL_KEY) || '[]');
+    unlockedPageIds = new Set(ul);
+  } catch(e) { unlockedPageIds = new Set(); }
+
   /* Restore admin session */
   if (sessionStorage.getItem(ADMIN_SESS_KEY) === 'true') activateAdmin(false);
+
   buildEmojiGrid();
   buildColorRow();
+
+  /* ── GATE CHECK ──
+     If dashboard not yet unlocked this session, show gate modal.
+     Gate modal has no close button and blocks everything. */
+  if (sessionStorage.getItem(GATE_SESS_KEY) !== 'true') {
+    openGate();
+    return; // Do NOT render until gate is passed
+  }
+
   render();
 }
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(pages)); }
+function saveUnlocked() { sessionStorage.setItem(PAGE_UL_KEY, JSON.stringify([...unlockedPageIds])); }
 
-/* ════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    RENDER
-════════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 function render() { renderPinned(); renderCards(); updateStats(); }
 
 function filtered() {
   return pages.filter(p => {
     const mc = activeFilter === 'all' || p.category === activeFilter;
     const q  = searchQ.toLowerCase();
-    const ms = !q || p.name.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q) || (p.tags||[]).some(t=>t.toLowerCase().includes(q));
+    const ms = !q ||
+               p.name.toLowerCase().includes(q) ||
+               (p.desc || '').toLowerCase().includes(q) ||
+               (p.tags || []).some(t => t.toLowerCase().includes(q));
     return mc && ms;
   });
 }
 
-/* Pinned */
+/* Pinned row */
 function renderPinned() {
   const pins = pages.filter(p => p.pinned);
   const sec  = document.getElementById('pin-sec');
   const row  = document.getElementById('feat-row');
   if (!pins.length) { sec.style.display = 'none'; return; }
   sec.style.display = '';
-  row.innerHTML = pins.map(p => `
-    <a href="${p.url}" class="fc" ${p.newTab?'target="_blank"':''} oncontextmenu="showCtx(event,${p.id})">
+
+  row.innerHTML = pins.map(p => {
+    const locked = p.passwordProtected && !unlockedPageIds.has(p.id);
+    return `
+    <div class="fc" onclick="${locked ? `openPagePw(${p.id})` : `navigateTo(${p.id})`}"
+         oncontextmenu="showCtx(event,${p.id})">
       <div class="fc-icon" style="background:${p.color}22">${p.icon}</div>
       <div class="fc-body">
-        <div class="fc-lbl">📌 Pinned · ${cap(p.category)}</div>
+        <div class="fc-lbl">📌 Pinned · ${cap(p.category)}${locked ? ' · 🔒' : ''}</div>
         <div class="fc-name">${p.name}</div>
-        <div class="fc-desc">${p.desc||''}</div>
+        <div class="fc-desc">${locked ? '🔒 Password required.' : (p.desc || '')}</div>
       </div>
-      <div class="fc-arr">→</div>
-    </a>`).join('');
+      <div class="fc-arr">${locked ? '🔒' : '→'}</div>
+    </div>`;
+  }).join('');
 }
 
 /* Cards */
@@ -909,15 +896,28 @@ function renderCards() {
   const list = document.getElementById('cards-list');
   const emp  = document.getElementById('empty-state');
   const cnt  = document.getElementById('vis-cnt');
-  cnt.textContent = `${f.length} page${f.length!==1?'s':''}`;
-  if (!f.length) { grid.innerHTML=''; list.innerHTML=''; emp.classList.add('show'); return; }
+
+  cnt.textContent = `${f.length} page${f.length !== 1 ? 's' : ''}`;
+
+  if (!f.length) {
+    grid.innerHTML = '';
+    list.innerHTML = '';
+    emp.classList.add('show');
+    return;
+  }
   emp.classList.remove('show');
 
   const adminClass = isAdmin ? 'admin-on' : '';
 
   /* Grid */
-  grid.innerHTML = f.map((p,i) => `
-    <a href="${p.url}" class="pc" ${p.newTab?'target="_blank"':''} oncontextmenu="showCtx(event,${p.id})" style="animation-delay:${i*.05}s">
+  grid.innerHTML = f.map((p, i) => {
+    const locked = p.passwordProtected && !unlockedPageIds.has(p.id);
+    return `
+    <div class="pc${locked ? ' pw-protected' : ''}"
+         onclick="${locked ? `openPagePw(${p.id})` : `navigateTo(${p.id})`}"
+         oncontextmenu="showCtx(event,${p.id})"
+         style="animation-delay:${i * .05}s">
+      ${locked ? '<div class="lock-ribbon"></div>' : ''}
       <div class="pc-edit-btns ${adminClass}">
         <button class="peb peb-pin"  onclick="quickPin(event,${p.id})"  title="Toggle Pin">📌</button>
         <button class="peb peb-edit" onclick="quickEdit(event,${p.id})" title="Edit">✏️</button>
@@ -927,30 +927,42 @@ function renderCards() {
       <div class="c-head">
         <div class="c-icon" style="background:${p.color}20">${p.icon}</div>
         <div class="c-badges">
-          ${p.badge?`<span class="badge b-${p.badge}">${bLabel(p.badge)}</span>`:''}
-          ${p.pinned?`<span class="badge b-pin">📌</span>`:''}
-          ${p.imported?`<span class="badge b-doc">📄 Imported</span>`:''}
+          ${p.badge    ? `<span class="badge b-${p.badge}">${bLabel(p.badge)}</span>` : ''}
+          ${p.pinned   ? `<span class="badge b-pin">📌</span>` : ''}
+          ${locked     ? `<span class="badge b-lock">🔒 Protected</span>` : ''}
+          ${p.imported ? `<span class="badge b-doc">📄 Imported</span>` : ''}
         </div>
       </div>
       <div class="c-body">
         <div class="c-name">${p.name}</div>
-        <div class="c-desc">${p.desc||'Click to open this page.'}</div>
+        <div class="c-desc">${locked ? '🔒 Password required to access this page.' : (p.desc || 'Click to open this page.')}</div>
       </div>
-      ${p.tags&&p.tags.length?`<div class="c-tags">${p.tags.slice(0,3).map(t=>`<span class="ctag">${t}</span>`).join('')}</div>`:''}
+      ${p.tags && p.tags.length
+        ? `<div class="c-tags">${p.tags.slice(0,3).map(t=>`<span class="ctag">${t}</span>`).join('')}</div>`
+        : ''}
       <div class="c-foot">
         <div class="c-cat">${cap(p.category)}</div>
-        <div class="c-arr">→</div>
+        <div class="c-arr">${locked ? '🔒' : '→'}</div>
       </div>
-    </a>`).join('');
+    </div>`;
+  }).join('');
 
   /* List */
-  list.innerHTML = f.map((p,i) => `
-    <a href="${p.url}" class="lc" ${p.newTab?'target="_blank"':''} oncontextmenu="showCtx(event,${p.id})" style="animation-delay:${i*.04}s">
+  list.innerHTML = f.map((p, i) => {
+    const locked = p.passwordProtected && !unlockedPageIds.has(p.id);
+    return `
+    <div class="lc${locked ? ' pw-protected' : ''}"
+         onclick="${locked ? `openPagePw(${p.id})` : `navigateTo(${p.id})`}"
+         oncontextmenu="showCtx(event,${p.id})"
+         style="animation-delay:${i * .04}s">
       <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${p.color};border-radius:3px 0 0 3px"></div>
       <div class="lc-icon" style="background:${p.color}20">${p.icon}</div>
       <div class="lc-body">
-        <div class="lc-name">${p.name} ${p.badge?`<span class="badge b-${p.badge}" style="margin-left:.35rem">${bLabel(p.badge)}</span>`:''}</div>
-        <div class="lc-desc">${p.desc||p.url}</div>
+        <div class="lc-name">${p.name}
+          ${p.badge  ? `<span class="badge b-${p.badge}" style="margin-left:.35rem">${bLabel(p.badge)}</span>` : ''}
+          ${locked   ? `<span class="badge b-lock" style="margin-left:.35rem">🔒 Protected</span>` : ''}
+        </div>
+        <div class="lc-desc">${locked ? '🔒 Password required.' : (p.desc || p.url)}</div>
       </div>
       <div class="lc-meta">
         <div class="lc-ebtns ${adminClass}">
@@ -959,51 +971,97 @@ function renderCards() {
           <button class="peb peb-del"  onclick="quickDel(event,${p.id})"  title="Delete">🗑️</button>
         </div>
         <div class="lc-cat">${cap(p.category)}</div>
-        <div class="lc-arr">→</div>
+        <div class="lc-arr">${locked ? '🔒' : '→'}</div>
       </div>
-    </a>`).join('');
+    </div>`;
+  }).join('');
 }
 
-/* Stats */
 function updateStats() {
   document.getElementById('st-total').textContent  = pages.length;
-  document.getElementById('st-pinned').textContent = pages.filter(p=>p.pinned).length;
-  document.getElementById('st-cats').textContent   = new Set(pages.map(p=>p.category)).size;
-  document.getElementById('st-docs').textContent   = pages.filter(p=>p.imported).length;
+  document.getElementById('st-pinned').textContent = pages.filter(p => p.pinned).length;
+  document.getElementById('st-cats').textContent   = new Set(pages.map(p => p.category)).size;
+  document.getElementById('st-docs').textContent   = pages.filter(p => p.imported).length;
 }
 
-/* ════════════════════════════════════════
+/* ══════════════════════════════════════════════════
+   NAVIGATE
+══════════════════════════════════════════════════ */
+function navigateTo(id) {
+  const p = pages.find(x => x.id === id);
+  if (!p) return;
+  if (p.newTab) window.open(p.url, '_blank');
+  else window.location.href = p.url;
+}
+
+/* ══════════════════════════════════════════════════
    FILTERS & SEARCH
-════════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 function filterCat(c, btn) {
   activeFilter = c;
-  document.querySelectorAll('.npill').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.npill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderCards();
 }
 function filterTag(c, chip) {
   activeFilter = c;
-  document.querySelectorAll('.chip').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
   chip.classList.add('active');
-  document.querySelectorAll('.npill').forEach(b=>b.classList.toggle('active', b.textContent.toLowerCase().trim()===c));
+  document.querySelectorAll('.npill').forEach(b =>
+    b.classList.toggle('active', b.textContent.toLowerCase().trim() === c));
   renderCards();
 }
-function doSearch(q) { searchQ=q; renderCards(); }
+function doSearch(q) { searchQ = q; renderCards(); }
 
-/* ════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    VIEW TOGGLE
-════════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 function setView(v) {
   curView = v;
-  document.getElementById('cards-grid').style.display = v==='grid' ? '' : 'none';
-  document.getElementById('cards-list').style.display = v==='list' ? '' : 'none';
-  document.getElementById('vt-g').classList.toggle('active', v==='grid');
-  document.getElementById('vt-l').classList.toggle('active', v==='list');
+  document.getElementById('cards-grid').style.display = v === 'grid' ? '' : 'none';
+  document.getElementById('cards-list').style.display = v === 'list' ? '' : 'none';
+  document.getElementById('vt-g').classList.toggle('active', v === 'grid');
+  document.getElementById('vt-l').classList.toggle('active', v === 'list');
 }
 
-/* ════════════════════════════════════════
-   ADMIN PASSWORD SYSTEM
-════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   DASHBOARD GATE  (password wall for whole index)
+══════════════════════════════════════════════════ */
+function openGate() {
+  document.getElementById('gate-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('gate-input').focus(), 200);
+}
+
+function tryGateUnlock() {
+  const val = document.getElementById('gate-input').value;
+  const btn = document.getElementById('gate-btn');
+  const err = document.getElementById('gate-err');
+  const inp = document.getElementById('gate-input');
+
+  btn.disabled = true;
+  btn.textContent = '🔓 Verifying…';
+
+  setTimeout(() => {
+    if (val === DASHBOARD_PASSWORD) {
+      sessionStorage.setItem(GATE_SESS_KEY, 'true');
+      document.getElementById('gate-overlay').classList.remove('open');
+      toast('✅ Welcome to SkyDash!', 'success');
+      render();
+    } else {
+      inp.classList.add('err');
+      err.classList.add('show');
+      err.textContent = 'Incorrect password. Please try again.';
+      inp.value = '';
+      btn.disabled = false;
+      btn.textContent = '🔓 Enter Dashboard';
+      setTimeout(() => { inp.classList.remove('err'); inp.focus(); }, 500);
+    }
+  }, 400);
+}
+
+/* ══════════════════════════════════════════════════
+   ADMIN PASSWORD
+══════════════════════════════════════════════════ */
 function handleAdminClick() {
   if (isAdmin) { lockAdmin(); return; }
   openPwModal();
@@ -1011,10 +1069,16 @@ function handleAdminClick() {
 
 function openPwModal() {
   if (isLockedOut()) { showLockoutMsg(); return; }
-  document.getElementById('pw-overlay').classList.add('open');
-  document.getElementById('pw-input').value = '';
+  const inp = document.getElementById('pw-input');
+  inp.value = '';
+  inp.disabled = false;
   document.getElementById('pw-err').classList.remove('show');
-  setTimeout(()=>document.getElementById('pw-input').focus(), 200);
+  document.getElementById('pw-attempts').style.display = 'none';
+  const btn = document.getElementById('pw-btn');
+  btn.disabled = false;
+  btn.textContent = '🔓 Unlock Admin';
+  document.getElementById('pw-overlay').classList.add('open');
+  setTimeout(() => inp.focus(), 200);
 }
 
 function closePwModal() {
@@ -1023,12 +1087,6 @@ function closePwModal() {
 
 function handlePwOverlay(e) {
   if (e.target === document.getElementById('pw-overlay')) closePwModal();
-}
-
-function togglePwEye() {
-  const inp = document.getElementById('pw-input');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-  inp.focus();
 }
 
 function tryUnlock() {
@@ -1040,21 +1098,18 @@ function tryUnlock() {
 
   setTimeout(() => {
     if (val === ADMIN_PASSWORD) {
-      /* ✅ Correct */
       localStorage.removeItem(FAIL_KEY);
       localStorage.removeItem(LOCKOUT_KEY);
       closePwModal();
       activateAdmin(true);
       toast('🛡️ Admin mode activated!', 'success');
     } else {
-      /* ❌ Wrong */
-      const fails = (parseInt(localStorage.getItem(FAIL_KEY)||'0')) + 1;
+      const fails = (parseInt(localStorage.getItem(FAIL_KEY) || '0')) + 1;
       localStorage.setItem(FAIL_KEY, fails);
       const inp = document.getElementById('pw-input');
       inp.classList.add('err');
       document.getElementById('pw-err').classList.add('show');
-      const attDiv = document.getElementById('pw-attempts');
-      attDiv.style.display = 'block';
+      document.getElementById('pw-attempts').style.display = 'block';
       document.getElementById('pw-att-cnt').textContent = fails;
       inp.value = '';
       btn.disabled = false;
@@ -1064,46 +1119,46 @@ function tryUnlock() {
         localStorage.setItem(FAIL_KEY, '0');
         showLockoutMsg();
       }
-      setTimeout(()=>{ inp.classList.remove('err'); inp.focus(); }, 500);
+      setTimeout(() => { inp.classList.remove('err'); inp.focus(); }, 500);
     }
   }, 450);
 }
 
 function isLockedOut() {
-  const until = parseInt(localStorage.getItem(LOCKOUT_KEY)||'0');
-  return Date.now() < until;
+  return Date.now() < parseInt(localStorage.getItem(LOCKOUT_KEY) || '0');
 }
 
 function showLockoutMsg() {
   const btn = document.getElementById('pw-btn');
   const err = document.getElementById('pw-err');
   const inp = document.getElementById('pw-input');
-  inp.disabled = true; btn.disabled = true; btn.style.opacity = '.45';
-  btn.textContent = '🔒 Temporarily Locked';
+  inp.disabled = true;
+  btn.disabled = true;
   err.classList.add('show');
-  const iv = setInterval(()=>{
-    const rem = Math.max(0, Math.ceil((parseInt(localStorage.getItem(LOCKOUT_KEY)||'0') - Date.now())/1000));
-    const m = Math.floor(rem/60), s = rem%60;
+  const iv = setInterval(() => {
+    const rem = Math.max(0, Math.ceil((parseInt(localStorage.getItem(LOCKOUT_KEY) || '0') - Date.now()) / 1000));
+    const m = Math.floor(rem / 60), s = rem % 60;
     err.textContent = `Too many attempts. Try again in ${m}:${String(s).padStart(2,'0')}`;
     if (rem <= 0) {
       clearInterval(iv);
-      inp.disabled=false; btn.disabled=false; btn.style.opacity='1';
-      btn.textContent='🔓 Unlock Admin';
-      err.textContent='Incorrect password. Please try again.';
+      inp.disabled = false;
+      btn.disabled = false;
+      btn.textContent = '🔓 Unlock Admin';
+      err.textContent = 'Incorrect password. Please try again.';
       err.classList.remove('show');
       inp.focus();
     }
   }, 1000);
 }
 
-function activateAdmin(saveSession=true) {
+function activateAdmin(saveSession = true) {
   isAdmin = true;
   if (saveSession) sessionStorage.setItem(ADMIN_SESS_KEY, 'true');
   document.getElementById('admin-badge').classList.remove('locked');
   document.getElementById('admin-badge-txt').textContent = 'Admin ✓';
   document.getElementById('add-btn').disabled = false;
   document.getElementById('admin-bar').classList.add('show');
-  render(); /* Re-render to show edit buttons */
+  render();
 }
 
 function lockAdmin() {
@@ -1122,20 +1177,81 @@ function guardedAdd() {
   openAddModal();
 }
 
-/* ════════════════════════════════════════
+/* ══════════════════════════════════════════════════
+   PER-CARD PAGE PASSWORD
+══════════════════════════════════════════════════ */
+function openPagePw(pageId) {
+  /* If already unlocked this session, just navigate */
+  if (unlockedPageIds.has(pageId)) { navigateTo(pageId); return; }
+  const p = pages.find(x => x.id === pageId);
+  if (!p) return;
+  pagePwTargetId = pageId;
+  document.getElementById('page-pw-sub').textContent =
+    `"${p.name}" is password protected. Enter the password to access it.`;
+  const inp = document.getElementById('page-pw-input');
+  inp.value = '';
+  inp.disabled = false;
+  document.getElementById('page-pw-err').classList.remove('show');
+  const btn = document.getElementById('page-pw-btn');
+  btn.disabled = false;
+  btn.textContent = '🔓 Unlock Page';
+  document.getElementById('page-pw-overlay').classList.add('open');
+  setTimeout(() => inp.focus(), 200);
+}
+
+function closePagePwModal() {
+  document.getElementById('page-pw-overlay').classList.remove('open');
+  pagePwTargetId = null;
+}
+
+function handlePagePwOverlay(e) {
+  if (e.target === document.getElementById('page-pw-overlay')) closePagePwModal();
+}
+
+function tryPageUnlock() {
+  const val = document.getElementById('page-pw-input').value;
+  const btn = document.getElementById('page-pw-btn');
+  const err = document.getElementById('page-pw-err');
+  const inp = document.getElementById('page-pw-input');
+
+  btn.disabled = true;
+  btn.textContent = '🔓 Verifying…';
+
+  setTimeout(() => {
+    if (val === PAGE_PASSWORD) {
+      unlockedPageIds.add(pagePwTargetId);
+      saveUnlocked();
+      const p = pages.find(x => x.id === pagePwTargetId);
+      closePagePwModal();
+      toast(`✅ "${p ? p.name : 'Page'}" unlocked!`, 'success');
+      render();
+      if (p) setTimeout(() => navigateTo(p.id), 350);
+    } else {
+      inp.classList.add('err');
+      err.classList.add('show');
+      err.textContent = 'Incorrect password. Please try again.';
+      inp.value = '';
+      btn.disabled = false;
+      btn.textContent = '🔓 Unlock Page';
+      setTimeout(() => { inp.classList.remove('err'); inp.focus(); }, 500);
+    }
+  }, 400);
+}
+
+/* ══════════════════════════════════════════════════
    ADD / EDIT MODAL
-════════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 function openAddModal() {
   if (!isAdmin) { openPwModal(); return; }
   editingId = null;
   document.getElementById('edit-title').textContent    = '➕ Add New Page';
   document.getElementById('edit-save-btn').textContent = '✓ Add Page';
-  document.getElementById('f-name').value   = '';
-  document.getElementById('f-url').value    = '';
-  document.getElementById('f-desc').value   = '';
-  document.getElementById('f-cat').value    = 'design';
+  document.getElementById('f-name').value     = '';
+  document.getElementById('f-url').value      = '';
+  document.getElementById('f-desc').value     = '';
+  document.getElementById('f-cat').value      = 'design';
   document.getElementById('f-newtab').checked = false;
-  selIco='📄'; selClr='#009999'; selBadgeV='';
+  selIco = '📄'; selClr = '#009999'; selBadgeV = '';
   syncEmojiGrid(); syncColorRow(); syncBadgeRow();
   updatePrev();
   document.getElementById('edit-overlay').classList.add('open');
@@ -1143,104 +1259,131 @@ function openAddModal() {
 
 function openEditModal(id) {
   if (!isAdmin) { openPwModal(); return; }
-  const p = pages.find(x=>x.id===id);
+  const p = pages.find(x => x.id === id);
   if (!p) return;
   editingId = id;
   document.getElementById('edit-title').textContent    = '✏️ Edit Page';
   document.getElementById('edit-save-btn').textContent = '✓ Save Changes';
-  document.getElementById('f-name').value   = p.name;
-  document.getElementById('f-url').value    = p.url;
-  document.getElementById('f-desc').value   = p.desc||'';
-  document.getElementById('f-cat').value    = p.category;
-  document.getElementById('f-newtab').checked = p.newTab||false;
-  selIco=p.icon; selClr=p.color; selBadgeV=p.badge||'';
+  document.getElementById('f-name').value     = p.name;
+  document.getElementById('f-url').value      = p.url;
+  document.getElementById('f-desc').value     = p.desc || '';
+  document.getElementById('f-cat').value      = p.category;
+  document.getElementById('f-newtab').checked = p.newTab || false;
+  selIco = p.icon; selClr = p.color; selBadgeV = p.badge || '';
   syncEmojiGrid(); syncColorRow(); syncBadgeRow();
   updatePrev();
   document.getElementById('edit-overlay').classList.add('open');
 }
 
-function closeEditModal() { document.getElementById('edit-overlay').classList.remove('open'); editingId=null; }
-function handleEditOverlay(e) { if (e.target===document.getElementById('edit-overlay')) closeEditModal(); }
+function closeEditModal() {
+  document.getElementById('edit-overlay').classList.remove('open');
+  editingId = null;
+}
+
+function handleEditOverlay(e) {
+  if (e.target === document.getElementById('edit-overlay')) closeEditModal();
+}
 
 function savePage() {
   const name   = document.getElementById('f-name').value.trim();
   const url    = document.getElementById('f-url').value.trim();
-  if (!name) { toast('⚠️ Page name is required.','error'); return; }
-  if (!url)  { toast('⚠️ Page URL is required.','error');  return; }
+  if (!name) { toast('⚠️ Page name is required.', 'error'); return; }
+  if (!url)  { toast('⚠️ Page URL is required.',  'error'); return; }
   const cat    = document.getElementById('f-cat').value;
   const desc   = document.getElementById('f-desc').value.trim();
   const newTab = document.getElementById('f-newtab').checked;
 
   if (editingId) {
-    const i = pages.findIndex(p=>p.id===editingId);
-    if (i!==-1) pages[i] = {...pages[i], name, url, desc, category:cat, icon:selIco, color:selClr, badge:selBadgeV, newTab};
-    toast('✅ Page updated!','success');
+    const i = pages.findIndex(p => p.id === editingId);
+    if (i !== -1) {
+      pages[i] = { ...pages[i], name, url, desc, category: cat,
+                   icon: selIco, color: selClr, badge: selBadgeV, newTab };
+    }
+    toast('✅ Page updated!', 'success');
   } else {
-    const nid = pages.length ? Math.max(...pages.map(p=>p.id))+1 : 1;
-    pages.push({id:nid, name, url, desc, category:cat, icon:selIco, color:selClr, badge:selBadgeV, pinned:false, newTab, tags:[], imported:false});
-    toast('✅ Page added!','success');
+    const nid = pages.length ? Math.max(...pages.map(p => p.id)) + 1 : 1;
+    pages.push({ id: nid, name, url, desc, category: cat, icon: selIco,
+                 color: selClr, badge: selBadgeV, pinned: false, newTab,
+                 tags: [], imported: false, passwordProtected: false });
+    toast('✅ Page added!', 'success');
   }
   save(); render(); closeEditModal();
 }
 
-/* Quick action buttons on cards */
-function quickPin(e, id)  { e.preventDefault(); e.stopPropagation(); if(!isAdmin){openPwModal();return;} togglePin(id); }
-function quickEdit(e, id) { e.preventDefault(); e.stopPropagation(); if(!isAdmin){openPwModal();return;} openEditModal(id); }
-function quickDel(e, id)  { e.preventDefault(); e.stopPropagation(); if(!isAdmin){openPwModal();return;} deletePage(id); }
+function quickPin(e, id)  { e.preventDefault(); e.stopPropagation(); if (!isAdmin) { openPwModal(); return; } togglePin(id); }
+function quickEdit(e, id) { e.preventDefault(); e.stopPropagation(); if (!isAdmin) { openPwModal(); return; } openEditModal(id); }
+function quickDel(e, id)  { e.preventDefault(); e.stopPropagation(); if (!isAdmin) { openPwModal(); return; } deletePage(id); }
 
 function togglePin(id) {
-  const p = pages.find(x=>x.id===id);
+  const p = pages.find(x => x.id === id);
   if (!p) return;
   p.pinned = !p.pinned;
   save(); render();
-  toast(p.pinned ? '📌 Page pinned!' : '📌 Page unpinned!','info');
+  toast(p.pinned ? '📌 Page pinned!' : '📌 Page unpinned!', 'info');
 }
 
 function deletePage(id) {
-  const p = pages.find(x=>x.id===id);
+  const p = pages.find(x => x.id === id);
   if (!p) return;
   if (!confirm(`Delete "${p.name}"? This cannot be undone.`)) return;
-  pages = pages.filter(x=>x.id!==id);
+  pages = pages.filter(x => x.id !== id);
   save(); render();
-  toast('🗑️ Page deleted.','info');
+  toast('🗑️ Page deleted.', 'info');
 }
 
-/* ════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    EMOJI / COLOR / BADGE PICKERS
-════════════════════════════════════════ */
-const EMOJIS = ['📄','🧠','⚡','🚀','🔌','📦','🔄','💻','🏠','⚙️','🔧','📊','🗂️','🔍','🛠️','📡','🎯','🔐','💾','🖥️','📱','🌐','🔬','⚗️','📋','🗃️','📁','🔑','🛡️','⚖️','🧩','🎛️'];
-const COLORS  = ['#009999','#00d7be','#4da6ff','#b46fff','#f5a623','#e05252','#4cdf8a','#ff6eb4','#ff8c42','#7ec8e3','#c9f0a8','#ffd166'];
+══════════════════════════════════════════════════ */
+const EMOJIS = ['📄','🧠','⚡','🚀','🔌','📦','🔄','💻','🏠','⚙️','🔧','📊',
+                '🗂️','🔍','🛠️','📡','🎯','🔐','💾','🖥️','📱','🌐','🔬','⚗️',
+                '📋','🗃️','📁','🔑','🛡️','⚖️','🧩','🎛️'];
+const COLORS  = ['#009999','#00d7be','#4da6ff','#b46fff','#f5a623','#e05252',
+                 '#4cdf8a','#ff6eb4','#ff8c42','#7ec8e3','#c9f0a8','#ffd166'];
 
 function buildEmojiGrid() {
-  document.getElementById('emoji-grid').innerHTML = EMOJIS.map(e=>`<button class="eb" onclick="pickEmoji('${e}',this)">${e}</button>`).join('');
+  document.getElementById('emoji-grid').innerHTML =
+    EMOJIS.map(e => `<button class="eb" onclick="pickEmoji('${e}',this)">${e}</button>`).join('');
 }
 function buildColorRow() {
-  document.getElementById('color-row').innerHTML = COLORS.map(c=>`<div class="cd" style="background:${c}" onclick="pickColor('${c}',this)" title="${c}"></div>`).join('');
+  document.getElementById('color-row').innerHTML =
+    COLORS.map(c => `<div class="cd" style="background:${c}" onclick="pickColor('${c}',this)" title="${c}"></div>`).join('');
 }
-function pickEmoji(e,btn) { selIco=e; document.querySelectorAll('.eb').forEach(b=>b.classList.remove('sel')); btn.classList.add('sel'); updatePrev(); }
-function pickColor(c,dot) { selClr=c; document.querySelectorAll('.cd').forEach(d=>d.classList.remove('sel')); dot.classList.add('sel'); updatePrev(); }
-function selBadge(el)     { selBadgeV=el.dataset.b; document.querySelectorAll('.bp').forEach(b=>b.classList.remove('sel')); el.classList.add('sel'); }
-function syncEmojiGrid()  { document.querySelectorAll('.eb').forEach(b=>b.classList.toggle('sel', b.textContent===selIco)); }
-function syncColorRow()   { document.querySelectorAll('.cd').forEach(d=>d.classList.toggle('sel', d.title===selClr)); }
-function syncBadgeRow()   { document.querySelectorAll('.bp').forEach(b=>b.classList.toggle('sel', b.dataset.b===selBadgeV)); }
+function pickEmoji(e, btn) {
+  selIco = e;
+  document.querySelectorAll('.eb').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  updatePrev();
+}
+function pickColor(c, dot) {
+  selClr = c;
+  document.querySelectorAll('.cd').forEach(d => d.classList.remove('sel'));
+  dot.classList.add('sel');
+  updatePrev();
+}
+function selBadge(el) {
+  selBadgeV = el.dataset.b;
+  document.querySelectorAll('.bp').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function syncEmojiGrid() { document.querySelectorAll('.eb').forEach(b => b.classList.toggle('sel', b.textContent === selIco)); }
+function syncColorRow()   { document.querySelectorAll('.cd').forEach(d => d.classList.toggle('sel', d.title === selClr)); }
+function syncBadgeRow()   { document.querySelectorAll('.bp').forEach(b => b.classList.toggle('sel', b.dataset.b === selBadgeV)); }
 
 function updatePrev() {
-  const name = document.getElementById('f-name').value || 'Page Name';
-  const desc = document.getElementById('f-desc').value || 'Description here';
   document.getElementById('pv-ico').textContent  = selIco;
-  document.getElementById('pv-name').textContent = name;
-  document.getElementById('pv-desc').textContent = desc;
+  document.getElementById('pv-name').textContent = document.getElementById('f-name').value || 'Page Name';
+  document.getElementById('pv-desc').textContent = document.getElementById('f-desc').value || 'Description here';
   document.getElementById('prev-mini').style.borderLeft = `3px solid ${selClr}`;
 }
 
-/* ════════════════════════════════════════
-   DOCUMENT UPLOAD / IMPORT SYSTEM
-════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   DOCUMENT IMPORT
+══════════════════════════════════════════════════ */
 function openDocModal() {
   if (!isAdmin) { openPwModal(); return; }
   pendingFiles = []; parsedCards = [];
   document.getElementById('file-list').innerHTML = '';
-  document.getElementById('parse-opts').style.display = 'none';
+  document.getElementById('parse-opts').style.display    = 'none';
   document.getElementById('parse-prog').classList.remove('show');
   document.getElementById('import-result').classList.remove('show');
   document.getElementById('doc-import-btn').style.display = 'none';
@@ -1248,27 +1391,22 @@ function openDocModal() {
   document.getElementById('doc-file-input').value = '';
   document.getElementById('doc-overlay').classList.add('open');
 }
-
 function closeDocModal() { document.getElementById('doc-overlay').classList.remove('open'); }
-function handleDocOverlay(e) { if (e.target===document.getElementById('doc-overlay')) closeDocModal(); }
+function handleDocOverlay(e) { if (e.target === document.getElementById('doc-overlay')) closeDocModal(); }
 
-/* Drag & Drop */
 function dzDragOver(e)  { e.preventDefault(); document.getElementById('drop-zone').classList.add('drag-over'); }
-function dzDragLeave(e) { document.getElementById('drop-zone').classList.remove('drag-over'); }
-function dzDrop(e)      { e.preventDefault(); document.getElementById('drop-zone').classList.remove('drag-over'); handleFiles(e.dataTransfer.files); }
+function dzDragLeave()  { document.getElementById('drop-zone').classList.remove('drag-over'); }
+function dzDrop(e)      { e.preventDefault(); dzDragLeave(); handleFiles(e.dataTransfer.files); }
 
 function handleFiles(files) {
   if (!files || !files.length) return;
-  Array.from(files).forEach(f => {
-    if (!pendingFiles.find(x=>x.name===f.name)) pendingFiles.push(f);
-  });
+  Array.from(files).forEach(f => { if (!pendingFiles.find(x => x.name === f.name)) pendingFiles.push(f); });
   renderFileList();
   document.getElementById('parse-opts').style.display = pendingFiles.length ? '' : 'none';
 }
 
 function renderFileList() {
-  const list = document.getElementById('file-list');
-  list.innerHTML = pendingFiles.map((f,i) => `
+  document.getElementById('file-list').innerHTML = pendingFiles.map((f, i) => `
     <div class="file-item">
       <div class="fi-ico">${fileIcon(f.name)}</div>
       <div class="fi-body">
@@ -1280,124 +1418,87 @@ function renderFileList() {
 }
 
 function removeFile(i) {
-  pendingFiles.splice(i,1);
+  pendingFiles.splice(i, 1);
   renderFileList();
   if (!pendingFiles.length) {
-    document.getElementById('parse-opts').style.display = 'none';
+    document.getElementById('parse-opts').style.display    = 'none';
     document.getElementById('import-result').classList.remove('show');
     document.getElementById('doc-import-btn').style.display = 'none';
     document.getElementById('doc-parse-btn').style.display  = '';
   }
 }
 
-/* Parse files → generate card data */
 async function parseFiles() {
-  if (!pendingFiles.length) { toast('⚠️ Please select at least one file.','warn'); return; }
+  if (!pendingFiles.length) { toast('⚠️ Please select at least one file.', 'warn'); return; }
   parsedCards = [];
-  const prog  = document.getElementById('parse-prog');
-  const bar   = document.getElementById('pp-bar');
-  const lbl   = document.getElementById('pp-label');
+  const prog = document.getElementById('parse-prog');
+  const bar  = document.getElementById('pp-bar');
+  const lbl  = document.getElementById('pp-label');
   prog.classList.add('show');
   document.getElementById('import-result').classList.remove('show');
   document.getElementById('doc-parse-btn').style.display = 'none';
 
   for (let i = 0; i < pendingFiles.length; i++) {
-    const f    = pendingFiles[i];
-    const pct  = Math.round(((i+1)/pendingFiles.length)*100);
+    const f   = pendingFiles[i];
     lbl.textContent = `Parsing ${f.name}… (${i+1}/${pendingFiles.length})`;
-    bar.style.width = pct + '%';
-
-    const card = await parseOneFile(f);
-    parsedCards.push(card);
-    await sleep(120); /* Small delay for visual feedback */
+    bar.style.width = Math.round(((i+1)/pendingFiles.length)*100) + '%';
+    parsedCards.push(await parseOneFile(f));
+    await sleep(120);
   }
 
   lbl.textContent = '✅ Parsing complete!';
   bar.style.width = '100%';
   await sleep(400);
   prog.classList.remove('show');
-
   renderImportResult();
   document.getElementById('import-result').classList.add('show');
   document.getElementById('doc-import-btn').style.display = '';
 }
 
 async function parseOneFile(file) {
-  const ext     = fileExt(file.name);
-  const useTitle= document.getElementById('opt-title').checked;
-  const useDesc = document.getElementById('opt-desc').checked;
-  const useIcon = document.getElementById('opt-icon').checked;
-  const useClr  = document.getElementById('opt-color').checked;
-  const newTab  = document.getElementById('opt-newtab').checked;
-  const pin     = document.getElementById('opt-pin').checked;
+  const ext      = fileExt(file.name);
+  const useTitle = document.getElementById('opt-title').checked;
+  const useDesc  = document.getElementById('opt-desc').checked;
+  const newTab   = document.getElementById('opt-newtab').checked;
+  const pin      = document.getElementById('opt-pin').checked;
 
   let name  = file.name.replace(/\.[^/.]+$/,'').replace(/[-_]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
   let desc  = `Imported from ${file.name}`;
   let icon  = fileIcon(file.name);
   let color = fileColor(ext);
-  let url   = file.name; /* Relative path — user can edit later */
+  let url   = file.name;
   let tags  = [ext.toUpperCase(), 'Imported'];
 
-  /* Try to read text content for smarter parsing */
   try {
     const text = await readFileText(file);
-
     if (useTitle) {
-      /* HTML: grab <title> or first <h1> */
       if (ext==='html'||ext==='htm') {
         const tm = text.match(/<title[^>]*>([^<]+)<\/title>/i);
         const hm = text.match(/<h1[^>]*>([^<]+)<\/h1>/i);
         if (tm) name = tm[1].trim();
         else if (hm) name = hm[1].replace(/<[^>]+>/g,'').trim();
       }
-      /* Markdown: grab first # heading */
-      if (ext==='md') {
-        const mm = text.match(/^#\s+(.+)/m);
-        if (mm) name = mm[1].trim();
-      }
-      /* JSON: try title/name key */
-      if (ext==='json') {
-        try {
-          const j = JSON.parse(text);
-          if (j.title) name = j.title;
-          else if (j.name) name = j.name;
-        } catch(e){}
-      }
+      if (ext==='md') { const m = text.match(/^#\s+(.+)/m); if (m) name = m[1].trim(); }
+      if (ext==='json') { try { const j=JSON.parse(text); if(j.title) name=j.title; else if(j.name) name=j.name; } catch(e){} }
     }
-
     if (useDesc) {
-      /* HTML: grab first <meta description> or first <p> */
       if (ext==='html'||ext==='htm') {
         const dm = text.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
         const pm = text.match(/<p[^>]*>([^<]{20,200})<\/p>/i);
         if (dm) desc = dm[1].trim();
         else if (pm) desc = pm[1].replace(/<[^>]+>/g,'').trim().substring(0,120)+'…';
       }
-      /* Markdown: grab first paragraph */
-      if (ext==='md') {
-        const lines = text.split('\n').filter(l=>l.trim()&&!l.startsWith('#'));
-        if (lines.length) desc = lines[0].trim().substring(0,120)+'…';
-      }
-      /* TXT: first non-empty line */
-      if (ext==='txt') {
-        const lines = text.split('\n').filter(l=>l.trim());
-        if (lines.length) desc = lines[0].trim().substring(0,120);
-      }
-      /* JSON: description key */
-      if (ext==='json') {
-        try {
-          const j = JSON.parse(text);
-          if (j.description) desc = j.description.substring(0,120);
-        } catch(e){}
-      }
+      if (ext==='md') { const lines=text.split('\n').filter(l=>l.trim()&&!l.startsWith('#')); if(lines.length) desc=lines[0].trim().substring(0,120)+'…'; }
+      if (ext==='txt') { const lines=text.split('\n').filter(l=>l.trim()); if(lines.length) desc=lines[0].trim().substring(0,120); }
+      if (ext==='json') { try { const j=JSON.parse(text); if(j.description) desc=j.description.substring(0,120); } catch(e){} }
     }
-  } catch(e) { /* Binary file or read error — use defaults */ }
+  } catch(e) {}
 
-  return { name, url, desc, icon, color, tags, newTab, pinned:pin, badge:'doc', imported:true };
+  return { name, url, desc, icon, color, tags, newTab, pinned: pin, badge: 'doc', imported: true };
 }
 
 function readFileText(file) {
-  return new Promise((res,rej) => {
+  return new Promise((res, rej) => {
     const r = new FileReader();
     r.onload  = e => res(e.target.result);
     r.onerror = () => rej(new Error('Read error'));
@@ -1406,8 +1507,7 @@ function readFileText(file) {
 }
 
 function renderImportResult() {
-  const cont = document.getElementById('ir-cards');
-  cont.innerHTML = parsedCards.map((c,i) => `
+  document.getElementById('ir-cards').innerHTML = parsedCards.map((c, i) => `
     <div class="ir-card">
       <input type="checkbox" id="irc-${i}" checked/>
       <div class="ir-ico">${c.icon}</div>
@@ -1420,85 +1520,120 @@ function renderImportResult() {
 
 function doImport() {
   let added = 0;
-  parsedCards.forEach((c,i) => {
+  parsedCards.forEach((c, i) => {
     const cb = document.getElementById(`irc-${i}`);
     if (!cb || !cb.checked) return;
-    const nid = pages.length ? Math.max(...pages.map(p=>p.id))+1 : 1;
-    pages.push({ id:nid, name:c.name, url:c.url, desc:c.desc, category:'docs',
-                 icon:c.icon, color:c.color, badge:c.badge, pinned:c.pinned,
-                 newTab:c.newTab, tags:c.tags, imported:true });
+    const nid = pages.length ? Math.max(...pages.map(p => p.id)) + 1 : 1;
+    pages.push({ id: nid, name: c.name, url: c.url, desc: c.desc, category: 'docs',
+                 icon: c.icon, color: c.color, badge: c.badge, pinned: c.pinned,
+                 newTab: c.newTab, tags: c.tags, imported: true, passwordProtected: false });
     added++;
   });
-  if (!added) { toast('⚠️ No cards selected.','warn'); return; }
+  if (!added) { toast('⚠️ No cards selected.', 'warn'); return; }
   save(); render(); closeDocModal();
-  toast(`✅ ${added} card${added!==1?'s':''} imported successfully!`,'success');
+  toast(`✅ ${added} card${added !== 1 ? 's' : ''} imported!`, 'success');
 }
 
-/* ════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    CONTEXT MENU
-════════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 function showCtx(e, id) {
   e.preventDefault(); e.stopPropagation();
   ctxId = id;
   const m = document.getElementById('ctx');
-  m.style.left = Math.min(e.clientX, window.innerWidth-180)+'px';
-  m.style.top  = Math.min(e.clientY, window.innerHeight-200)+'px';
-  /* Show admin options only if admin */
-  ['ctx-edit','ctx-pin','ctx-sep','ctx-del'].forEach(id=>{
-    document.getElementById(id).style.display = isAdmin ? '' : 'none';
-  });
+  m.style.left = Math.min(e.clientX, window.innerWidth  - 180) + 'px';
+  m.style.top  = Math.min(e.clientY, window.innerHeight - 200) + 'px';
+  ['ctx-edit','ctx-pin','ctx-sep','ctx-del'].forEach(eid =>
+    document.getElementById(eid).style.display = isAdmin ? '' : 'none');
   m.classList.add('open');
 }
 function hideCtx() { document.getElementById('ctx').classList.remove('open'); }
-function ctxOpen()    { const p=pages.find(x=>x.id===ctxId); if(p) window.location.href=p.url; hideCtx(); }
-function ctxOpenNew() { const p=pages.find(x=>x.id===ctxId); if(p) window.open(p.url,'_blank'); hideCtx(); }
-function ctxEdit()    { if(!isAdmin){openPwModal();return;} openEditModal(ctxId); hideCtx(); }
-function ctxPin()     { if(!isAdmin){openPwModal();return;} togglePin(ctxId); hideCtx(); }
-function ctxDel()     { if(!isAdmin){openPwModal();return;} deletePage(ctxId); hideCtx(); }
 
+function ctxOpen() {
+  const p = pages.find(x => x.id === ctxId);
+  if (p) {
+    if (p.passwordProtected && !unlockedPageIds.has(p.id)) openPagePw(p.id);
+    else navigateTo(p.id);
+  }
+  hideCtx();
+}
+function ctxOpenNew() {
+  const p = pages.find(x => x.id === ctxId);
+  if (p) {
+    if (p.passwordProtected && !unlockedPageIds.has(p.id)) openPagePw(p.id);
+    else window.open(p.url, '_blank');
+  }
+  hideCtx();
+}
+function ctxEdit() { if (!isAdmin) { openPwModal(); return; } openEditModal(ctxId); hideCtx(); }
+function ctxPin()  { if (!isAdmin) { openPwModal(); return; } togglePin(ctxId);    hideCtx(); }
+function ctxDel()  { if (!isAdmin) { openPwModal(); return; } deletePage(ctxId);   hideCtx(); }
+
+/* ══════════════════════════════════════════════════
+   KEYBOARD & GLOBAL EVENTS
+══════════════════════════════════════════════════ */
 document.addEventListener('click', hideCtx);
 document.addEventListener('keydown', e => {
-  if (e.key==='Escape') { closeEditModal(); closePwModal(); closeDocModal(); hideCtx(); }
-  if ((e.ctrlKey||e.metaKey)&&e.key==='k') { e.preventDefault(); document.querySelector('.nav-srch').focus(); }
+  if (e.key === 'Escape') {
+    /* Never close the gate with Escape */
+    closePwModal();
+    closeEditModal();
+    closeDocModal();
+    closePagePwModal();
+    hideCtx();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    document.querySelector('.nav-srch').focus();
+  }
 });
 
-/* ════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    TOAST
-════════════════════════════════════════ */
-function toast(msg, type='info') {
+══════════════════════════════════════════════════ */
+function toast(msg, type = 'info') {
   const w  = document.getElementById('toast-wrap');
   const el = document.createElement('div');
   el.className = `toast ${type}`;
   el.innerHTML = `<span>${msg}</span>`;
   w.appendChild(el);
-  setTimeout(()=>el.remove(), 3200);
+  setTimeout(() => el.remove(), 3200);
 }
 
-/* ════════════════════════════════════════
-   HELPERS
-════════════════════════════════════════ */
-function cap(s)    { return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
-function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
-function bLabel(b) { return {new:'🟢 New',hot:'🔥 Hot',pin:'📌 Pin',done:'✅ Done',doc:'📄 Doc'}[b]||''; }
-function fileExt(n){ return (n.split('.').pop()||'').toLowerCase(); }
-function fmtSize(b){ return b<1024?b+'B':b<1048576?(b/1024).toFixed(1)+'KB':(b/1048576).toFixed(1)+'MB'; }
+/* ══════════════════════════════════════════════════
+   SHARED EYE TOGGLE
+══════════════════════════════════════════════════ */
+function toggleEye(inputId) {
+  const inp = document.getElementById(inputId);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  inp.focus();
+}
 
-function fileIcon(name) {
-  const ext = fileExt(name);
-  const map = { html:'🌐', htm:'🌐', md:'📝', txt:'📄', json:'📋', csv:'📊',
-                js:'⚙️', css:'🎨', v:'🔌', sv:'🔌', verilog:'🔌', pdf:'📕' };
-  return map[ext] || '📄';
+/* ══════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════ */
+function cap(s)    { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function bLabel(b) {
+  return { new:'🟢 New', hot:'🔥 Hot', pin:'📌 Pin', done:'✅ Done', doc:'📄 Doc' }[b] || '';
+}
+function fileExt(n)  { return (n.split('.').pop() || '').toLowerCase(); }
+function fmtSize(b)  { return b<1024?b+'B':b<1048576?(b/1024).toFixed(1)+'KB':(b/1048576).toFixed(1)+'MB'; }
+function fileIcon(n) {
+  const m = { html:'🌐',htm:'🌐',md:'📝',txt:'📄',json:'📋',csv:'📊',
+               js:'⚙️',css:'🎨',v:'🔌',sv:'🔌',verilog:'🔌',pdf:'📕' };
+  return m[fileExt(n)] || '📄';
 }
 function fileColor(ext) {
-  const map = { html:'#4da6ff', htm:'#4da6ff', md:'#4cdf8a', txt:'#009999',
-                json:'#f5a623', csv:'#00d7be', js:'#f5a623', css:'#ff6eb4',
-                v:'#b46fff', sv:'#b46fff', verilog:'#b46fff', pdf:'#e05252' };
-  return map[ext] || '#009999';
+  const m = { html:'#4da6ff',htm:'#4da6ff',md:'#4cdf8a',txt:'#009999',
+               json:'#f5a623',csv:'#00d7be',js:'#f5a623',css:'#ff6eb4',
+               v:'#b46fff',sv:'#b46fff',verilog:'#b46fff',pdf:'#e05252' };
+  return m[ext] || '#009999';
 }
 
-/* ════════════════════════════════════════
-   BOOT
-════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   START
+══════════════════════════════════════════════════ */
 init();
 </script>
 </body>
