@@ -60,7 +60,7 @@ const SKYDASH_PAGES = [
     newTab: false,
     tags: ['Confidential', 'Docs'],
     passwordProtected: true   
-  }
+  },
   {
     id: 5,
     name: 'Resume',
