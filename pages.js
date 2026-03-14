@@ -61,6 +61,20 @@ const SKYDASH_PAGES = [
     tags: ['Confidential', 'Docs'],
     passwordProtected: true   
   }
+  {
+    id: 5,
+    name: 'Resume',
+    url: 'select/sat_res.html',
+    desc: 'My resume',
+    category: 'docs',
+    icon: '🔐',
+    color: '#e05255',
+    badge: 'done',
+    pinned: false,
+    newTab: false,
+    tags: ['Confidential', 'Docs'],
+    passwordProtected: true   
+  }
   // ─────────────────────────────────────────────────────
   // ADD MORE PAGES BELOW — push to Git and everyone sees!
   // ─────────────────────────────────────────────────────
