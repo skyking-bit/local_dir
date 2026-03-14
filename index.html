@@ -565,7 +565,8 @@
   <div class="admin-modal">
     <div class="am-head">
       <span class="am-lock-ico pulse-red">🔐</span>
-      <div class="am-title">Sky-Dash</div>
+      <div class="am-title">SkyDash — Access Required</div>
+      <div class="am-sub">This dashboard is password protected.<br/>Enter the password to continue.</div>
     </div>
     <div class="pw-wrap">
       <input class="pw-input" id="gate-input" type="password"
@@ -574,7 +575,7 @@
       <button class="pw-eye" onclick="toggleEye('gate-input')">👁</button>
     </div>
     <div class="pw-err" id="gate-err">Incorrect password. Please try again.</div>
-    <button class="am-btn red-btn" id="gate-btn" onclick="tryGateUnlock()">🔓 Login </button>
+    <button class="am-btn red-btn" id="gate-btn" onclick="tryGateUnlock()">🔓 Enter Dashboard</button>
   </div>
 </div>
 
@@ -586,6 +587,7 @@
     <div class="am-head">
       <span class="am-lock-ico pulse-teal">🔐</span>
       <div class="am-title">Admin Access</div>
+      <div class="am-sub">Enter your admin password to unlock editing features.</div>
     </div>
     <div class="pw-wrap">
       <input class="pw-input" id="pw-input" type="password"
